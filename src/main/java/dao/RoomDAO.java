@@ -106,7 +106,7 @@ public class RoomDAO {
         }
     }
 
-    // Delete room
+    // 🔹 Delete room
     public boolean deleteRoom(int roomId) {
         String sql = "DELETE FROM Room WHERE RoomId=?";
         try (Connection conn = DBConnection.getConnection();
@@ -116,7 +116,7 @@ public class RoomDAO {
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.out.println("Error deleting room: " + e.getMessage());
+            System.out.println("❌ Error deleting room: " + e.getMessage());
             return false;
         }
     }
