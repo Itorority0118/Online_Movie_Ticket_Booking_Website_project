@@ -11,16 +11,13 @@ public class UserMapper {
         user.setUserId(rs.getInt("UserId"));
         user.setFullName(rs.getString("FullName"));
         user.setEmail(rs.getString("Email"));
-        user.setPassword(rs.getString("PasswordHash"));
+        user.setPassword(rs.getString("Password"));
         user.setPhone(rs.getString("Phone"));
         user.setRole(rs.getString("Role"));
         user.setStatus(rs.getString("Status"));
 
         java.sql.Timestamp created = rs.getTimestamp("CreatedAt");
-        if (created != null)
-            user.setCreatedAt(created.toString());
-        else
-            user.setCreatedAt(null);
+        user.setCreatedAt(created != null ? created.toString() : null);
 
         return user;
     }
