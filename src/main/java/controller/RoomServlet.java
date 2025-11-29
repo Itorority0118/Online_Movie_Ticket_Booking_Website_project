@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
+@SuppressWarnings("serial")
 @WebServlet("/room")
 public class RoomServlet extends HttpServlet {
 
