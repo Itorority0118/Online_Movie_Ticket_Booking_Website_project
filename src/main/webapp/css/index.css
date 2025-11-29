@@ -1,0 +1,266 @@
+/* --- 1. THIẾT LẬP CHUNG VÀ FONT --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Arial, sans-serif; 
+}
+
+body {
+    background-color: #0d1117; /* Nền tối, phù hợp với rạp chiếu phim */
+    color: #f0f6f9; /* Chữ màu sáng */
+    line-height: 1.6;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* --- 2. HEADER & NAVIGATION --- */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 50px;
+    background-color: #161b22;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+/* THAY ĐỔI: Kích thước và style cho Logo */
+.logo {
+    height: 45px;
+    width: 45px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-right: 15px;
+    border: 2px solid #ff0000; /* Viền đỏ cho logo */
+    transition: transform 0.3s;
+}
+
+.logo:hover {
+    transform: scale(1.1); /* Hiệu ứng nhấp nháy nhẹ */
+}
+
+.cinema-location {
+    color: #ff0000;
+    font-weight: bold;
+    font-size: 18px;
+    cursor: pointer;
+    padding-right: 20px;
+    border-right: 2px solid #30363d;
+}
+
+.main-nav {
+    flex-grow: 1; /* Cho phép nav chiếm hết không gian trống */
+}
+
+.main-nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center; /* Canh giữa các mục trong nav */
+}
+
+.main-nav ul li a {
+    padding: 0 18px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #f0f6f9;
+    transition: color 0.3s, text-shadow 0.3s;
+}
+
+.main-nav ul li a:hover {
+    color: #ff0000;
+    text-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+}
+
+.user-status {
+    display: flex; 
+    align-items: center;
+}
+
+.user-status span {
+    font-size: 14px;
+    margin-right: 15px;
+    color: #8b949e;
+}
+
+.login-btn, .logout-btn {
+    padding: 9px 20px;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    background-color: #21262d;
+    color: #f0f6f9;
+    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.login-btn:hover, .logout-btn:hover {
+    background-color: #30363d;
+    border-color: #ff0000;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
+}
+
+/* THÊM: Style cho dải phân cách (giả định dùng thẻ <hr> hoặc <div> không có class) */
+.header + div, .movie-tabs-container + div { 
+    border-top: 1px dashed #30363d;
+    margin: 20px auto;
+    max-width: 1200px;
+}
+
+
+/* --- 3. MOVIE TABS (Thanh Lựa Chọn Phim) --- */
+.movie-tabs-container {
+    background-color: #161b22;
+    border-bottom: 2px solid #30363d;
+    padding-top: 10px;
+}
+
+.movie-tabs {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+}
+
+.tab-item {
+    padding: 15px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #8b949e;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s;
+}
+
+.tab-item:hover {
+    color: #ff0000;
+}
+
+.tab-item.active {
+    color: #ffffff;
+    border-bottom: 3px solid #ff0000;
+    text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
+}
+
+/* --- 4. MAIN CONTENT & MOVIE LIST (Danh sách Phim) --- */
+.main-content {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 15px;
+}
+
+.movie-list {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.movie-card {
+    background-color: #1f242a;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 260px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    padding: 15px;
+    position: relative;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.movie-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(255, 0, 0, 0.3);
+}
+
+.movie-image-wrapper {
+    position: relative;
+    margin-bottom: 15px;
+    line-height: 0;
+}
+
+.movie-poster {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    transition: opacity 0.3s;
+}
+
+/* --- 5. BADGES (Nhãn HOT, Rating) --- */
+.badge {
+    position: absolute;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 6px;
+    color: #1f242a;
+    text-transform: uppercase;
+}
+
+.badge.hot {
+    top: 10px;
+    right: 10px;
+    background-color: #ffc107;
+}
+
+.badge.rating-c18 {
+    top: 10px;
+    left: 10px;
+    background-color: #ff0000;
+    color: white;
+}
+
+/* --- 6. THÔNG TIN PHIM --- */
+.movie-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #ffffff;
+    height: 44px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.movie-info {
+    font-size: 13px;
+    margin: 3px 0;
+    color: #8b949e;
+}
+
+/* --- 7. NÚT MUA VÉ (Dùng thẻ <a> thay cho button) --- */
+/* Đã xóa style cũ cho .buy-ticket-btn */
+
+.buy-ticket-btn-link { /* Sửa tên class trong JSP và dùng style này */
+    background-color: #ff0000;
+    color: white;
+    border: none;
+    padding: 12px 0;
+    margin-top: 15px;
+    width: 100%;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+    /* Hiển thị như một button block */
+    display: block;
+    text-align: center;
+}
+
+.buy-ticket-btn-link:hover {
+    background-color: #cc0000;
+    transform: scale(1.02);
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+}
