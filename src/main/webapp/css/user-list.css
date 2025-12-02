@@ -1,0 +1,77 @@
+/* ---------- USER LIST PAGE ONLY ---------- */
+
+.table-container {
+    margin-top: 30px;
+    background: #11161d;
+    border-radius: 12px;
+    padding: 20px 30px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* Add user link */
+.add-btn {
+    display: inline-block;
+    margin-bottom: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #4ecdc4;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.add-btn:hover {
+    color: #fff;
+    transform: translateX(4px);
+}
+
+/* Table */
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.user-table th {
+    background: #0d1117;
+    padding: 14px 16px;
+    color: #ff4d4d;
+    text-transform: uppercase;
+    font-size: 14px;
+    border-bottom: 1px solid #30363d;
+    text-align: left;
+}
+
+.user-table td {
+    padding: 14px 16px;
+    font-size: 15px;
+    color: #fff;
+    border-bottom: 1px solid #30363d;
+}
+
+.user-table tr:hover {
+    background: #1c2229;
+}
+
+/* Action links */
+.action {
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.action.edit {
+    color: #4ecdc4;
+}
+
+.action.delete {
+    color: #ff6b6b;
+}
+
+.sep {
+    color: #666;
+}

@@ -1,0 +1,14 @@
+form select {
+    width: 100%;
+    padding: 10px;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+}
+
+form select option {
+    background: #0d1117;
+    color: white;
+}

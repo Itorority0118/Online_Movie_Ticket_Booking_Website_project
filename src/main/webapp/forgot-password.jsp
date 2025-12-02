@@ -4,7 +4,7 @@
 <html>
 <head>
     <title>Forgot Password</title>
-    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="<c:url value='/css/forgot.css?v=1'/>">
 </head>
 <body>
 
