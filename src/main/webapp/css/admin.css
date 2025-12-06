@@ -28,14 +28,6 @@ body {
     margin-bottom: 15px;
 }
 
-.logout {
-    margin-top: auto;
-}
-
-.logout li a {
-    font-weight: bold;
-}
-
 .sidebar h2 {
     color: #ff0000;
     margin-bottom: 25px;
@@ -168,8 +160,9 @@ body {
 
 /* ================= FILTER PANEL ================= */
 .filter-panel {
-    flex-shrink: 0; /* không co nhỏ */
-    width: 220px; /* cố định */
+    flex-shrink: 0;      
+    width: 220px;         
+    height: fit-content; 
     background: #161b22;
     padding: 15px;
     border-radius: 8px;
@@ -181,8 +174,9 @@ body {
 
 /* ================= SEARCH / FILTER PANEL ================= */
 .filter-panel {
-    width: auto;   /* cố định */
+    width: auto;   
     background: #161b22;
+    margin-top: 18px;
     padding: 20px;
     border-radius: 10px;
     border: 1px solid #30363d;
@@ -342,45 +336,6 @@ body {
 
 .submit-btn:hover {
     background: #ff4d4d;
-}
-
-/* ================= FORM ================= */
-form {
-    margin-top: 20px;
-    background: #161b22;
-    padding: 20px;
-    border-radius: 10px;
-    border: 1px solid #30363d;
-    width: 400px;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-form label {
-    display: block;
-    margin-bottom: 5px;
-    color: #ff4d4d;
-}
-
-form input,
-form select {
-    width: 100%;
-    padding: 10px;
-    background: #0d1117;
-    border: 1px solid #30363d;
-    border-radius: 6px;
-    color: #fff;
-}
-
-form select:hover {
-    border-color: #ff4d4d;
-}
-
-form select option {
-    background: #0d1117;
-    color: #fff;
 }
 
 /* ================= MODAL ================= */

@@ -225,7 +225,6 @@ public class UserServlet extends HttpServlet {
             String newPassword = request.getParameter("password");
             if (newPassword != null && !newPassword.isEmpty())
                 user.setPassword(newPassword);
-
             userDAO.updateUser(user);
         }
 
