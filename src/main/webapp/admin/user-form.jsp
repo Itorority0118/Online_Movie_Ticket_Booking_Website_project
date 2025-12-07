@@ -3,9 +3,12 @@
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/admin.css">
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/css/user-form.css">
+	href="${pageContext.request.contextPath}/css/user-form.css?v=1">
 
 <div class="user-form-page centered">
+    <a href="${pageContext.request.contextPath}/user?action=list" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to User List
+    </a>
 	<div class="user-form-title">
 		<h1>${user == null ? "Add User" : "Edit User"}</h1>
 	</div>

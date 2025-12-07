@@ -1,1 +1,113 @@
-@charset "UTF-8";
+.movie-form-page {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.movie-form-page.centered {
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.movie-form-page form {
+    width: 100%;
+    background: #1b1f28;
+    padding: 35px;
+    border: 1px solid #30363d;
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.55);
+}
+
+.movie-form-title {
+    color: #ff9500;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.movie-form-page .form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.movie-form-page label {
+    margin-bottom: 6px;
+    color: #4ecdc4;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.movie-form-page input,
+.movie-form-page select,
+.movie-form-page textarea {
+    padding: 12px;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 16px;
+    transition: .25s;
+}
+
+.movie-form-page textarea {
+    resize: vertical;
+}
+
+.movie-form-page input:focus,
+.movie-form-page select:focus,
+.movie-form-page textarea:focus {
+    border-color: #4ecdc4;
+    box-shadow: 0 0 6px rgba(78,205,196,0.45);
+    outline: none;
+}
+
+.movie-form-page .submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: rgba(78,205,196,0.15);
+    border: 1px solid rgba(78,205,196,0.3);
+    border-radius: 10px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #4ecdc4;
+    cursor: pointer;
+    transition: .25s;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 15px; /* khoảng cách với tiêu đề */
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #4ecdc4;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: 0.25s;
+}
+
+.back-btn i {
+    margin-right: 6px;
+}
+
+.back-btn:hover {
+    background: rgba(78, 205, 196, 0.2);
+    color: #ffffff;
+}
+
+.movie-form-page .submit-btn:hover {
+    background: rgba(78,205,196,0.25);
+    transform: translateY(-2px);
+}
+
+
+@media(max-width: 600px) {
+    .movie-form-page form {
+        padding: 20px;
+        margin: 10px;
+    }
+}

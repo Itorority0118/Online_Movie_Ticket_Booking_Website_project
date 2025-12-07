@@ -1,13 +1,19 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/css/movie/movie-list.css">
+	href="${pageContext.request.contextPath}/css/movie/movie-list.css?v=2">
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-<div class="movie-management">
-	<h1>Movie Management</h1>
-	<a href="${pageContext.request.contextPath}/movie?action=new"
-		class="add-movie-btn">+ Add Movie</a>
+<div class="movie-management-header">
+    <h1>Movie Management</h1>
+    <form action="${pageContext.request.contextPath}/movie" method="get" class="movie-search-form">
+        <input type="hidden" name="action" value="list" />
+        <input type="text" name="keyword" placeholder="Search movie..." value="${param.keyword != null ? param.keyword : ''}" />
+        <button type="submit"><i class="fa fa-search"></i></button>
+    </form>
+</div>
+
+<a href="${pageContext.request.contextPath}/movie?action=new" class="add-movie-btn">+ Add Movie</a>
 	<!-- Movie Cards -->
 	<div class="movie-cards-wrapper" id="movieCardsWrapper">
 		<c:forEach var="m" items="${movies}">
@@ -44,14 +50,16 @@
 			</div>
 		</c:forEach>
 	</div>
-	<!-- Pagination sample -->
+
 	<div class="pagination">
-		<c:forEach var="i" begin="1" end="${totalPages}">
-			<a class="page-link"
-				href="${pageContext.request.contextPath}/movie?action=list&page=${i}">
-				${i} </a>
-		</c:forEach>
+	    <c:forEach var="i" begin="1" end="${totalPages}">
+	        <a class="page-link"
+	           href="${pageContext.request.contextPath}/movie?action=list&page=${i}&keyword=${param.keyword != null ? param.keyword : ''}">
+	           ${i}
+	        </a>
+	    </c:forEach>
 	</div>
+
 	<!-- DELETE MODAL -->
 	<div id="deleteModal" class="modal">
 		<div class="modal-content">

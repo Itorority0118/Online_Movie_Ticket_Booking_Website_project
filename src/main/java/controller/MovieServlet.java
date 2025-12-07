@@ -46,8 +46,24 @@ public class MovieServlet extends HttpServlet {
 
             case "list":
             default:
-                List<Movie> movieList = movieDAO.getAllMovies();
+                String keyword = request.getParameter("keyword");
+
+                int page = 1;
+                int pageSize = 10;
+                try {
+                    page = Integer.parseInt(request.getParameter("page"));
+                } catch (NumberFormatException ignored) {}
+
+                List<Movie> movieList;
+                if (keyword != null && !keyword.trim().isEmpty()) {
+                    movieList = movieDAO.findByTitle(keyword.trim());
+                } else {
+                    movieList = movieDAO.getAllMovies();
+                }
+
                 request.setAttribute("movies", movieList);
+                request.setAttribute("keyword", keyword);
+                request.setAttribute("activeSidebar", "movie");
                 if (isAjax)
                     request.getRequestDispatcher("/admin/movie-list.jsp").forward(request, response);
                 else
@@ -76,9 +92,8 @@ public class MovieServlet extends HttpServlet {
                 out.print("{\"success\":" + deleted + "}");
             }
             out.flush();
-            return; // KHÔNG redirect, KHÔNG forward
+            return;
         }
-
 
         // ---------- ADD / UPDATE MOVIE ----------
         String idStr = request.getParameter("id");
