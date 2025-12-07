@@ -44,14 +44,23 @@ document.addEventListener("click", e => {
 
 // -------------------- HIGHLIGHT SIDEBAR --------------------
 function highlightActive(url) {
+    const urlObj = new URL(url, window.location.origin);
+    const path = urlObj.pathname;
+    const params = new URLSearchParams(urlObj.search);
+
     document.querySelectorAll(".sidebar ul li a[data-page]").forEach(link => {
-        if (url === link.getAttribute("data-page")) {
+        const linkUrl = new URL(link.getAttribute("data-page"), window.location.origin);
+        const linkPath = linkUrl.pathname;
+
+        // So sánh path + action cơ bản
+        if (path === linkPath && params.get("action") === new URLSearchParams(linkUrl.search).get("action")) {
             link.classList.add("active");
         } else {
             link.classList.remove("active");
         }
     });
 }
+
 
 // -------------------- AJAX LOAD CONTENT --------------------
 function loadPage(url) {

@@ -19,9 +19,9 @@
                 data-page="${pageContext.request.contextPath}/user?action=list">
                 Manage Users</a></li>
 
-            <li><a href="#"
-                data-page="${pageContext.request.contextPath}/movie?action=list">
-                Manage Movies</a></li>
+			<li class="${requestScope.activeSidebar eq 'movie' ? 'active' : ''}">
+			    <a href="#" data-page="${pageContext.request.contextPath}/movie?action=list">Manage Movies</a>
+			</li>
 
             <li><a href="#"
                 data-page="${pageContext.request.contextPath}/cinema?action=list">
@@ -74,6 +74,6 @@
         const contextPath = "${pageContext.request.contextPath}";
     </script>
 
-    <script src="<c:url value='/js/admin.js?v=2'/>"></script>
+    <script src="<c:url value='/js/admin.js?v=3'/>"></script>
 </body>
 </html>
