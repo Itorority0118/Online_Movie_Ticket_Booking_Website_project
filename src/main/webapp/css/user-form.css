@@ -1,0 +1,104 @@
+/* ================= USER FORM IMPROVED ================= */
+
+/* Tiêu đề */
+.user-form-title {
+    color: #ffffff;
+    font-size: 32px;
+    font-weight: 700;
+    text-align: left;
+}
+
+/* Vùng chứa form */
+.user-form-page {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start; 
+    flex-direction: column; 
+}
+
+/* Form chính */
+.user-form-page form {
+    width: 100%;
+    background: #1b1f28;
+    padding: 35px;
+    border: 1px solid #30363d;
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.55);
+}
+.user-form-page.centered {
+    display: flex;
+    justify-content: center !important; 
+    align-items: flex-start;
+}
+
+.user-form-page .form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.user-form-page label {
+    margin-bottom: 8px;
+    color: #4ecdc4;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.user-form-page input,
+.user-form-page select {
+    padding: 12px;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 16px;
+    transition: .25s;
+}
+
+.user-form-page input:focus,
+.user-form-page select:focus {
+    border-color: #4ecdc4;
+    box-shadow: 0 0 6px rgba(78,205,196,0.45);
+    outline: none;
+}
+
+/* Nút submit */
+.user-form-page .submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: rgba(78,205,196,0.15);
+    border: 1px solid rgba(78,205,196,0.3);
+    border-radius: 10px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #4ecdc4;
+    cursor: pointer;
+    transition: .25s;
+}
+
+.user-form-page .submit-btn:hover {
+    background: rgba(78,205,196,0.25);
+    transform: translateY(-2px);
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 15px; /* khoảng cách với tiêu đề */
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #4ecdc4;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: 0.25s;
+}
+
+.back-btn i {
+    margin-right: 6px;
+}
+
+.back-btn:hover {
+    background: rgba(78, 205, 196, 0.2);
+    color: #ffffff;
+}

@@ -18,7 +18,6 @@ public class DBConnection {
             if (connection == null || connection.isClosed()) {
                 Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
                 connection = DriverManager.getConnection(URL, USER, PASSWORD);
-                System.out.println("SQL Server connected successfully!");
             }
         } catch (SQLException e) {
             System.out.println("SQL Server connection failed: " + e.getMessage());

@@ -140,4 +140,37 @@ public class MovieDAO {
             return false;
         }
     }
+    
+    public List<Movie> findByTitle(String keyword) {
+        List<Movie> movies = new ArrayList<>();
+        String sql = "SELECT * FROM Movie WHERE Title LIKE ? ORDER BY CreatedAt DESC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + keyword + "%");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                movies.add(MovieMapper.mapMovie(rs));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error searching movies: " + e.getMessage());
+        }
+        return movies;
+    }
+
+    public int countMovies() {
+        String sql = "SELECT COUNT(*) FROM Movie"; 
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error counting movies: " + e.getMessage());
+        }
+        return 0;
+    }
+
 }

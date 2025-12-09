@@ -1,53 +1,73 @@
 package controller;
 
 import dao.MovieDAO;
+import dao.ShowtimeDAO;
 import model.Movie;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.http.*;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 @WebServlet("/movie")
 public class MovieServlet extends HttpServlet {
 
-    private MovieDAO movieDAO = new MovieDAO();
+    private final MovieDAO movieDAO = new MovieDAO();
+    private final ShowtimeDAO showtimeDAO = new ShowtimeDAO(); // kiểm tra ràng buộc showtime
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        boolean isAjax = "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
         String action = request.getParameter("action");
         if (action == null) action = "list";
 
         switch (action) {
             case "new":
-                // Show form to create new movie
-                request.getRequestDispatcher("/movie-form.jsp").forward(request, response);
+                request.setAttribute("movie", null);
+                if (isAjax)
+                    request.getRequestDispatcher("/admin/movie-form.jsp").forward(request, response);
+                else
+                    request.getRequestDispatcher("/admin/dashboard.jsp?page=movie-form.jsp").forward(request, response);
                 break;
 
             case "edit":
                 int editId = Integer.parseInt(request.getParameter("id"));
                 Movie movieToEdit = movieDAO.getMovieById(editId);
                 request.setAttribute("movie", movieToEdit);
-                request.getRequestDispatcher("/movie-form.jsp").forward(request, response);
+                if (isAjax)
+                    request.getRequestDispatcher("/admin/movie-form.jsp").forward(request, response);
+                else
+                    request.getRequestDispatcher("/admin/dashboard.jsp?page=movie-form.jsp").forward(request, response);
                 break;
 
-            case "delete":
-                int deleteId = Integer.parseInt(request.getParameter("id"));
-                movieDAO.deleteMovie(deleteId);
-                response.sendRedirect("movie");
-                break;
-                
+            case "list":
             default:
-                // Show all movies
-                List<Movie> movieList = movieDAO.getAllMovies();
+                String keyword = request.getParameter("keyword");
+
+                int page = 1;
+                int pageSize = 10;
+                try {
+                    page = Integer.parseInt(request.getParameter("page"));
+                } catch (NumberFormatException ignored) {}
+
+                List<Movie> movieList;
+                if (keyword != null && !keyword.trim().isEmpty()) {
+                    movieList = movieDAO.findByTitle(keyword.trim());
+                } else {
+                    movieList = movieDAO.getAllMovies();
+                }
+
                 request.setAttribute("movies", movieList);
-                request.getRequestDispatcher("/movie-list.jsp").forward(request, response);
+                request.setAttribute("keyword", keyword);
+                request.setAttribute("activeSidebar", "movie");
+                if (isAjax)
+                    request.getRequestDispatcher("/admin/movie-list.jsp").forward(request, response);
+                else
+                    request.getRequestDispatcher("/admin/dashboard.jsp?page=movie-list.jsp").forward(request, response);
                 break;
         }
     }
@@ -56,43 +76,47 @@ public class MovieServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        request.setCharacterEncoding("UTF-8"); // handle UTF-8 characters
+        request.setCharacterEncoding("UTF-8");
+        String action = request.getParameter("action");
 
+        if ("delete".equals(action)) {
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            PrintWriter out = response.getWriter();
+            int movieId = Integer.parseInt(request.getParameter("id"));
+
+            if (showtimeDAO.existsByMovieId(movieId)) {
+                out.print("{\"success\":false,\"message\":\"Cannot delete movie because it has showtimes or tickets.\"}");
+            } else {
+                boolean deleted = movieDAO.deleteMovie(movieId);
+                out.print("{\"success\":" + deleted + "}");
+            }
+            out.flush();
+            return;
+        }
+
+        // ---------- ADD / UPDATE MOVIE ----------
         String idStr = request.getParameter("id");
-        String title = request.getParameter("title");
-        String genre = request.getParameter("genre");
-        String director = request.getParameter("director");
-        String cast = request.getParameter("cast");
-        String description = request.getParameter("description");
-        String durationStr = request.getParameter("duration");
-        String language = request.getParameter("language");
-        String releaseDate = request.getParameter("releaseDate");
-        String posterUrl = request.getParameter("posterUrl");
-        String trailerUrl = request.getParameter("trailerUrl");
-        String status = request.getParameter("status");
-
         Movie movie = new Movie();
-        movie.setTitle(title);
-        movie.setGenre(genre);
-        movie.setDirector(director);
-        movie.setCast(cast);
-        movie.setDescription(description);
-        movie.setDuration(Integer.parseInt(durationStr));
-        movie.setLanguage(language);
-        movie.setReleaseDate(releaseDate);
-        movie.setPosterUrl(posterUrl);
-        movie.setTrailerUrl(trailerUrl);
-        movie.setStatus(status);
+        movie.setTitle(request.getParameter("title"));
+        movie.setGenre(request.getParameter("genre"));
+        movie.setDirector(request.getParameter("director"));
+        movie.setCast(request.getParameter("cast"));
+        movie.setDescription(request.getParameter("description"));
+        movie.setDuration(Integer.parseInt(request.getParameter("duration")));
+        movie.setLanguage(request.getParameter("language"));
+        movie.setReleaseDate(request.getParameter("releaseDate"));
+        movie.setPosterUrl(request.getParameter("posterUrl"));
+        movie.setTrailerUrl(request.getParameter("trailerUrl"));
+        movie.setStatus(request.getParameter("status"));
 
         if (idStr == null || idStr.isEmpty()) {
-            // Add new movie
             movieDAO.addMovie(movie);
         } else {
-            // Update existing movie
             movie.setMovieId(Integer.parseInt(idStr));
             movieDAO.updateMovie(movie);
         }
 
-        response.sendRedirect("movie");
+        response.sendRedirect(request.getContextPath() + "/movie?action=list");
     }
 }
