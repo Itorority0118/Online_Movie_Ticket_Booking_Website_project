@@ -42,7 +42,7 @@ public class MovieServlet extends HttpServlet {
                 movieDAO.deleteMovie(deleteId);
                 response.sendRedirect("movie");
                 break;
-
+                
             default:
                 // Show all movies
                 List<Movie> movieList = movieDAO.getAllMovies();
