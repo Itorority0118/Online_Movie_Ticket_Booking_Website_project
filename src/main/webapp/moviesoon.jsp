@@ -7,26 +7,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    
     <title>Beta Cinemas - 
         <c:choose>
             <c:when test="${param.action == 'now_showing'}">Phim Đang Chiếu</c:when>
-            <c:when test="${param.action == 'special_show'}">Suất Chiếu Đặc Biệt</c:when>
             <c:otherwise>Phim Sắp Chiếu</c:otherwise>
         </c:choose>
     </title>
 
     <c:if test="${empty requestScope.movieList}">
-        <meta http-equiv="refresh" content="0; url=${pageContext.request.contextPath}/movie?action=now_showing">
+        <meta http-equiv="refresh" content="0; url=${pageContext.request.contextPath}/movie?action=coming_soon">
     </c:if>
 
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/index.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/index.css"> 
 </head>
 <body>
 
 <header class="header">
     <div class="logo-container">
-        <img src="${pageContext.request.contextPath}/images/movies/action_blast.jpg" class="logo">
+        <img src="${pageContext.request.contextPath}/images/meme.png" alt="Beta Cinemas Logo" class="logo">
         <span class="cinema-location">Beta Thái Nguyên</span>
     </div>
 
@@ -41,7 +40,7 @@
             <li><a href="#">THÀNH VIÊN</a></li>
         </ul>
     </nav>
-
+    
     <div class="user-status">
         <c:choose>
             <c:when test="${not empty sessionScope.user}">
@@ -58,9 +57,8 @@
 <!-- Tabs -->
 <div class="movie-tabs-container">
     <div class="movie-tabs">
-
         <a href="${pageContext.request.contextPath}/movie?action=coming_soon" 
-           class="tab-item ${param.action == 'now_showing' || param.action == 'special_show' ? '' : 'active'}">
+           class="tab-item ${param.action == 'now_showing' ? '' : 'active'}">
            PHIM SẮP CHIẾU
         </a> 
         
@@ -76,50 +74,55 @@
     </div>
 </div>
 
-<!-- Main content -->
+<!-- MAIN -->
 <main class="main-content">
     <div class="movie-list">
-
         <c:forEach var="movie" items="${requestScope.movieList}">
             <div class="movie-card">
 
+                <!-- ✅ FIX PHẦN ẢNH -->
                 <div class="movie-image-wrapper">
 
-                    <!-- ✅ FIX ẢNH 100% -->
                     <c:set var="poster" value="${fn:trim(movie.posterUrl)}" />
 
-                    <img 
-						    src="${pageContext.request.contextPath}/images/movies/${fn:replace(poster,'/images/','')}"
-						    alt="${movie.title}"
-						    class="movie-poster">
+                    <c:choose>
+                        <c:when test="${not empty poster}">
+                            <img
+                                src="${pageContext.request.contextPath}/images/movies/${fn:replace(poster, '/images/', '')}"
+                                alt="${movie.title}"
+                                class="movie-poster">
+                        </c:when>
+                        <c:otherwise>
+                            <img
+                                src="${pageContext.request.contextPath}/images/movies/meme.jpg"
+                                alt="No image"
+                                class="movie-poster">
+                        </c:otherwise>
+                    </c:choose>
 
-                    <!-- ✅ END FIX -->
-
-                    <c:if test="${movie.status == 'HOT'}">
+                    <c:if test="${movie.status eq 'Now Showing' or movie.status eq 'HOT'}">
                         <span class="badge hot">HOT</span>
                     </c:if>
 
-                    <span class="badge rating-c18">C18</span>
-
+                    <span class="badge rating-c18">C18</span> 
                 </div>
 
+                <!-- Info -->
                 <h3 class="movie-title">${movie.title}</h3>
                 <p class="movie-info">Thể loại: ${movie.genre}</p>
                 <p class="movie-info">Thời lượng: ${movie.duration} phút</p>
-                <button class="buy-ticket-btn">MUA VÉ</button>
 
+                <button class="buy-ticket-btn">MUA VÉ</button>
             </div>
         </c:forEach>
-
+        
         <c:if test="${empty requestScope.movieList}">
             <p style="text-align: center; width: 100%; margin-top: 50px;">
-                Hiện tại chưa có phim nào trong mục này.
+                Hiện tại chưa có phim nào.
             </p>
         </c:if>
-
     </div>
 </main>
 
 </body>
 </html>
-

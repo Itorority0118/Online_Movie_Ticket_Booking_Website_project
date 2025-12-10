@@ -10,7 +10,7 @@ import model.Showtime;
 import utils.DBConnection;
 
 public class ShowtimeDAO {
-
+	
     // Thêm suất chiếu mới
     public boolean addShowtime(Showtime showtime) {
         String query = "INSERT INTO Showtime (movie_id, room_id, start_time, end_time, ticket_price) VALUES (?, ?, ?, ?, ?)";
