@@ -44,7 +44,7 @@ public class ShowtimeServlet extends HttpServlet {
                 showtimeDAO.deleteShowtime(deleteId);
                 response.sendRedirect("showtime");
                 break;
-
+                
             default:
                 // Display list of all showtimes
                 List<Showtime> showtimeList = showtimeDAO.getAllShowtimes();
