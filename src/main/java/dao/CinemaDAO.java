@@ -101,4 +101,44 @@ public class CinemaDAO {
             return false;
         }
     }
+
+    public List<Cinema> searchCinemas(String keyword, String city) {
+        List<Cinema> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM Cinema WHERE 1=1");
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND Name LIKE ?");
+        }
+
+        if (city != null && !city.trim().isEmpty()) {
+            sql.append(" AND City = ?");
+        }
+
+        sql.append(" ORDER BY Name ASC");
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+
+            int index = 1;
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                stmt.setString(index++, "%" + keyword.trim() + "%");
+            }
+
+            if (city != null && !city.trim().isEmpty()) {
+                stmt.setString(index++, city.trim());
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(CinemaMapper.map(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error searching cinemas: " + e.getMessage());
+        }
+
+        return list;
+    }
+
 }

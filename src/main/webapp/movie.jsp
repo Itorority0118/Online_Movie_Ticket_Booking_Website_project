@@ -57,7 +57,7 @@
 <!-- ===== HEADER GIỮ NGUYÊN ===== -->
 <header class="header">
     <div class="logo-container">
-        <img src="${pageContext.request.contextPath}/images/movies/action_blast.jpg" class="logo">
+        <img src="${pageContext.request.contextPath}/images/movies/gengu1.jpg" class="logo">
         <span class="cinema-location">Beta Thái Nguyên</span>
     </div>
 

@@ -1,18 +1,13 @@
 (function(){
     console.log("MOVIE LIST JS LOADED at", new Date().toISOString());
 
-    // movieContext MUST be set in JSP: <script>window.movieContext='${pageContext.request.contextPath}';</script>
     const base = window.movieContext || '';
-
-    // Use delegation on document body so it works regardless when this script is loaded
     document.body.addEventListener("click", function(e) {
 
-        // Open delete modal
         if (e.target.matches(".action.delete, .action.delete *")) {
             e.preventDefault();
             const btn = e.target.closest(".action.delete");
             if (!btn) return;
-            // store id on the modal element so both admin.js and this script can see it
             const id = btn.dataset.id;
             const modal = document.getElementById("deleteModal");
             modal.dataset.deleteId = id;
@@ -20,7 +15,6 @@
             return;
         }
 
-        // Confirm delete inside modal
         if (e.target.id === "confirmDeleteBtn") {
             e.preventDefault();
             const modal = document.getElementById("deleteModal");
@@ -52,7 +46,6 @@
             return;
         }
 
-        // Cancel modal
         if (e.target.classList.contains("cancel")) {
             const modal = document.getElementById("deleteModal");
             if (modal) {
@@ -62,7 +55,6 @@
             return;
         }
 
-        // Click outside modal
         const modal = document.getElementById("deleteModal");
         if (modal && e.target === modal) {
             modal.style.display = "none";
@@ -72,4 +64,3 @@
     });
 
 })();
-
