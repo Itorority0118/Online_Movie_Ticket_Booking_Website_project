@@ -43,6 +43,27 @@ public class MovieServlet extends HttpServlet {
                 else
                     request.getRequestDispatcher("/admin/dashboard.jsp?page=movie-form.jsp").forward(request, response);
                 break;
+               
+            case "now_showing":
+            	
+                List<Movie> nowShowingMovies = movieDAO.getAllMovies(); 
+                request.setAttribute("movieList", nowShowingMovies);
+
+                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                break;
+                
+            case "coming_soon": 
+                List<Movie> comingSoonMovies = movieDAO.getMoviesByStatus("Coming Soon"); 
+                request.setAttribute("movieList", comingSoonMovies);
+
+                request.getRequestDispatcher("/index.jsp").forward(request, response); 
+                break;
+            case "special_show": 
+                List<Movie> specialMovies = movieDAO.getMoviesByStatus("Special Show");
+                request.setAttribute("movieList", specialMovies);
+
+                request.getRequestDispatcher("/moviespecial.jsp").forward(request, response); 
+                break;
 
             case "list":
             default:
