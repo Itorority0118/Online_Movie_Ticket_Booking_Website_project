@@ -23,9 +23,9 @@
 			    <a href="#" data-page="${pageContext.request.contextPath}/movie?action=list">Manage Movies</a>
 			</li>
 
-            <li><a href="#"
-                data-page="${pageContext.request.contextPath}/cinema?action=list">
-                Manage Cinemas</a></li>
+			<li>
+			    <a href="#" data-page="${pageContext.request.contextPath}/cinema?action=list">Manage Cinemas</a>
+			</li>
 
             <li><a href="#"
                 data-page="${pageContext.request.contextPath}/room?action=list">

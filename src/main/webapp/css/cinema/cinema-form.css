@@ -1,0 +1,208 @@
+/* ===== Cinema Form Page ===== */
+.cinema-form-page {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    position: relative;
+    z-index: 10;
+}
+
+.cinema-form-page form {
+    width: 100%;
+    background: #1b1f28;
+    padding: 35px;
+    border: 1px solid #30363d;
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.55);
+    position: relative;
+    z-index: 20;
+}
+
+.cinema-form-page .form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.cinema-form-page label {
+    margin-bottom: 6px;
+    color: #4ecdc4;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.cinema-form-page input,
+.cinema-form-page textarea,
+.cinema-form-page select {
+    padding: 12px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    appearance: none;
+}
+
+.cinema-form-page select {
+    background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='10'><polygon points='0,0 14,0 7,10' fill='white'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 14px 10px;
+    cursor: pointer;
+}
+
+.cinema-form-page input:focus,
+.cinema-form-page textarea:focus,
+.cinema-form-page select:focus {
+    border-color: #4ecdc4;
+    box-shadow: 0 0 6px rgba(78,205,196,0.45);
+}
+
+.cinema-form-page textarea {
+    resize: vertical;
+}
+
+.cinema-form-page .submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: rgba(78,205,196,0.15);
+    border: 1px solid rgba(78,205,196,0.3);
+    border-radius: 10px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #4ecdc4;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.cinema-form-page .submit-btn:hover {
+    background: rgba(78,205,196,0.25);
+    transform: translateY(-2px);
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 8px 14px;
+    background: rgba(255,255,255,0.05);
+    color: #4ecdc4;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: 0.25s;
+}
+
+.back-btn i {
+    margin-right: 6px;
+}
+
+.back-btn:hover {
+    background: rgba(78,205,196,0.2);
+    color: #fff;
+}
+
+.cinema-form-title {
+    color: #ff9500;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+@media (max-width: 600px) {
+    .cinema-form-page form {
+        padding: 20px;
+        margin: 10px;
+    }
+}
+
+/* ===== Filter Panel ===== */
+.filter-panel {
+    background: #1b1f28;
+    padding: 20px;
+    border: 1px solid #30363d;
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.55);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.filter-panel .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-panel label {
+    color: #4ecdc4;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.filter-panel input,
+.filter-panel select {
+    padding: 10px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    appearance: none;
+}
+
+.filter-panel input:focus,
+.filter-panel select:focus {
+    border-color: #4ecdc4;
+    box-shadow: 0 0 6px rgba(78,205,196,0.45);
+}
+
+.filter-panel .submit-btn {
+    width: 100%;
+    padding: 12px;
+    background: rgba(78,205,196,0.15);
+    border: 1px solid rgba(78,205,196,0.3);
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #4ecdc4;
+    cursor: pointer;
+    transition: .25s;
+}
+
+.filter-panel .submit-btn:hover {
+    background: rgba(78,205,196,0.25);
+    transform: translateY(-2px);
+}
+
+/* ===== Table Containers ===== */
+.cinema-table-container,
+.table-container {
+    position: relative;
+    z-index: 0;
+    overflow: visible;
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #0d1117;
+    color: #fff;
+}
+
+.user-table th,
+.user-table td {
+    padding: 10px 12px;
+    border: 1px solid #30363d;
+    text-align: left;
+}
+
+.user-table th {
+    background-color: #1b1f28;
+    color: #ff9500;
+}
