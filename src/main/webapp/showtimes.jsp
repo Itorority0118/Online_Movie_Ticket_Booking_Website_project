@@ -44,7 +44,6 @@
     </div>
 </header>
 
-<!-- Tabs giữ nguyên -->
 <div class="movie-tabs-container">
     <div class="movie-tabs">
         <a href="moviesoon.jsp" class="tab-item">PHIM SẮP CHIẾU</a>
@@ -53,7 +52,6 @@
     </div>
 </div>
 
-<!-- ✅ PHẦN MỚI: FILTER -->
 <div class="filter-container">
     <form action="showtime" method="get" class="filter-form">
         <input type="hidden" name="action" value="search">
@@ -79,7 +77,6 @@
     </form>
 </div>
 
-<!-- ✅ PHẦN HIỂN THỊ PHIM -->
 <div class="movie-list-container">
 
     <c:choose>

@@ -54,7 +54,6 @@
     </div>
 </header>
 
-<!-- Tabs -->
 <div class="movie-tabs-container">
     <div class="movie-tabs">
         <a href="${pageContext.request.contextPath}/movie?action=coming_soon" 
@@ -74,13 +73,11 @@
     </div>
 </div>
 
-<!-- MAIN -->
 <main class="main-content">
     <div class="movie-list">
         <c:forEach var="movie" items="${requestScope.movieList}">
             <div class="movie-card">
 
-                <!-- ✅ FIX PHẦN ẢNH -->
                 <div class="movie-image-wrapper">
 
                     <c:set var="poster" value="${fn:trim(movie.posterUrl)}" />
@@ -107,7 +104,6 @@
                     <span class="badge rating-c18">C18</span> 
                 </div>
 
-                <!-- Info -->
                 <h3 class="movie-title">${movie.title}</h3>
                 <p class="movie-info">Thể loại: ${movie.genre}</p>
                 <p class="movie-info">Thời lượng: ${movie.duration} phút</p>
@@ -123,6 +119,5 @@
         </c:if>
     </div>
 </main>
-
 </body>
 </html>

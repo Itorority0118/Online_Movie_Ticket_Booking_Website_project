@@ -10,26 +10,16 @@ import java.io.IOException;
 import dao.MovieDAO;
 import dao.UserDAO;
 
-/**
- * Servlet implementation class DashboardServlet
- */
 @WebServlet("/admin")
 public class DashboardServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     UserDAO userDAO = new UserDAO();
     MovieDAO movieDAO = new MovieDAO();
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
     public DashboardServlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
@@ -50,12 +40,7 @@ public class DashboardServlet extends HttpServlet {
            .forward(req, resp);
     }
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
-
 }

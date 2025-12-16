@@ -1,4 +1,4 @@
-/* ===== Cinema Form Page ===== */
+
 .cinema-form-page {
     width: 100%;
     display: flex;
@@ -120,7 +120,6 @@
     }
 }
 
-/* ===== Filter Panel ===== */
 .filter-panel {
     background: #1b1f28;
     padding: 20px;
@@ -180,7 +179,6 @@
     transform: translateY(-2px);
 }
 
-/* ===== Table Containers ===== */
 .cinema-table-container,
 .table-container {
     position: relative;

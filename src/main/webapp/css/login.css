@@ -1,4 +1,4 @@
-/* GLOBAL */
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -17,7 +17,6 @@ body {
     background-size: cover;
 }
 
-/* CONTAINER */
 .login-container {
     width: 100%;
     max-width: 400px;
@@ -48,7 +47,6 @@ h2 {
     text-shadow: 0 0 8px rgba(255,0,0,0.4);
 }
 
-/* FORM */
 .form-group {
     margin-bottom: 18px;
     text-align: left;
@@ -84,7 +82,6 @@ input:focus {
     box-shadow: 0 0 10px rgba(255,0,0,0.75);
 }
 
-/* BUTTON */
 .btn {
     width: 100%;
     padding: 13px;
@@ -105,7 +102,6 @@ button:hover {
     box-shadow: none;
 }
 
-/* LINKS */
 .register-link {
     margin-top: 15px;
     display: flex;
@@ -123,7 +119,6 @@ button:hover {
     text-shadow: 0 0 6px rgba(255,0,0,0.7);
 }
 
-/* ERROR BOX */
 .error {
     background-color: #ff4d4d;
     color: white;
@@ -143,7 +138,6 @@ button:hover {
     100% { transform: translateX(0); }
 }
 
-/* -------- RESPONSIVE -------- */
 @media (max-width: 480px) {
 
     body {
@@ -176,7 +170,6 @@ button:hover {
     }
 }
 
-/* Extra rule stays same */
 @media (max-width: 480px) {
     .login-container { width: 100%; }
 }

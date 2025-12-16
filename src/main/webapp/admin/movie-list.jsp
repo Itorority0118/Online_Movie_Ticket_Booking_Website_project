@@ -60,7 +60,6 @@
 	    </c:forEach>
 	</div>
 
-	<!-- DELETE MODAL -->
 	<div id="deleteModal" class="modal">
 		<div class="modal-content">
 			<h3>Are you sure?</h3>
@@ -71,7 +70,6 @@
 			</div>
 		</div>
 	</div>
-	<!-- contextPath JS -->
 <script>
     window.movieContext = '${pageContext.request.contextPath}';
 </script>

@@ -191,14 +191,10 @@ public class UserServlet extends HttpServlet {
 
         // ---------------- ADD / EDIT ----------------
         String idStr = request.getParameter("id");
-
-        // Important: NEW user only created when adding
         User user;
 
         if (idStr == null || idStr.isEmpty()) {
             user = new User();
-
-            // check duplicate only for add
             if (userDAO.emailExists(request.getParameter("email"))) {
                 request.setAttribute("error", "Email already exists!");
                 request.setAttribute("user", user);

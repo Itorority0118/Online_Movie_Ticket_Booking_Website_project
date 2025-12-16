@@ -8,7 +8,6 @@
 
 <div class="cinema-table-container" style="display: flex; gap: 20px; align-items: flex-start;">
 
-    <!-- Cinema Table -->
     <div class="table-container" style="flex:1 1 auto; min-width:700px; overflow-x:auto;">
         <table class="user-table">
             <thead>
@@ -40,7 +39,6 @@
         </table>
     </div>
 
-    <!-- Filter Panel -->
     <form method="get" action="${pageContext.request.contextPath}/cinema" class="filter-panel" style="flex-shrink:0; width:230px;">
         <input type="hidden" name="action" value="list"/>
 	
@@ -66,7 +64,6 @@
 
 </div>
 
-<!-- Delete Modal -->
 <div id="deleteModal" class="modal">
     <div class="modal-content">
         <h3>Are you sure?</h3>

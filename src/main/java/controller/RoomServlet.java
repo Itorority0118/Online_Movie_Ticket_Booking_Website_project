@@ -27,7 +27,6 @@ public class RoomServlet extends HttpServlet {
 
         switch (action) {
             case "new":
-                // Show form to create a new room
                 request.getRequestDispatcher("/room-form.jsp").forward(request, response);
                 break;
 
@@ -45,7 +44,6 @@ public class RoomServlet extends HttpServlet {
                 break;
 
             default:
-                // Show all rooms
                 List<Room> roomList = roomDAO.getAllRooms();
                 request.setAttribute("rooms", roomList);
                 request.getRequestDispatcher("/room-list.jsp").forward(request, response);
@@ -57,7 +55,7 @@ public class RoomServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        request.setCharacterEncoding("UTF-8"); // handle UTF-8 characters
+        request.setCharacterEncoding("UTF-8");
         String idStr = request.getParameter("id");
         String cinemaIdStr = request.getParameter("cinemaId");
         String roomName = request.getParameter("roomName");
@@ -78,7 +76,6 @@ public class RoomServlet extends HttpServlet {
             room.setRoomId(Integer.parseInt(idStr));
             roomDAO.updateRoom(room);
         }
-
         response.sendRedirect("room");
     }
 }

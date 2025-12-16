@@ -13,7 +13,6 @@
 <div class="container">
     <h2>Register</h2>
 
-    <!-- Hiển thị lỗi -->
     <c:if test="${not empty error}">
         <div class="error">${error}</div>
     </c:if>

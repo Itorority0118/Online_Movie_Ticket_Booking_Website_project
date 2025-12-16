@@ -5,10 +5,8 @@ const contentArea = document.getElementById("content-area");
 let deleteId = null;
 let deleteType = null;
 
-// -------------------- EVENT DELEGATION --------------------
 document.addEventListener("click", e => {
 
-    // Sidebar link click
     const link = e.target.closest("a[data-page]");
     if (link) {
         e.preventDefault();
@@ -18,7 +16,6 @@ document.addEventListener("click", e => {
         return;
     }
 
-    // Delete button click (generic - delegation)
     const btn = e.target.closest("a.action.delete");
     if (btn) {
         e.preventDefault();
@@ -28,21 +25,17 @@ document.addEventListener("click", e => {
         return;
     }
 
-    // Confirm Delete click
     if (e.target && e.target.id === "confirmDeleteBtn") {
-        // allow movie to be handled by movie-list.js if it sets type "movie"
         if (deleteType === "movie") return;
         if (!deleteId || !deleteType) return;
         window.location.href = `${contextPath}/${deleteType}?action=delete&id=${deleteId}`;
     }
 
-    // Cancel
     if (e.target && e.target.classList.contains("cancel")) {
         closeModal();
     }
 });
 
-// -------------------- HIGHLIGHT SIDEBAR --------------------
 function highlightActive(url) {
     const urlObj = new URL(url, window.location.origin);
     const path = urlObj.pathname;
@@ -52,7 +45,6 @@ function highlightActive(url) {
         const linkUrl = new URL(link.getAttribute("data-page"), window.location.origin);
         const linkPath = linkUrl.pathname;
 
-        // So sánh path + action cơ bản
         if (path === linkPath && params.get("action") === new URLSearchParams(linkUrl.search).get("action")) {
             link.classList.add("active");
         } else {
@@ -61,8 +53,6 @@ function highlightActive(url) {
     });
 }
 
-
-// -------------------- AJAX LOAD CONTENT --------------------
 function loadPage(url) {
     if (!contentArea) return;
 
@@ -72,27 +62,22 @@ function loadPage(url) {
     fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
         .then(res => res.text())
         .then(html => {
-            // parse returned HTML and extract content-area + scripts
             const doc = new DOMParser().parseFromString(html, "text/html");
             const newContent = doc.querySelector("#content-area");
             contentArea.innerHTML = newContent ? newContent.innerHTML : html;
 
-            // execute scripts found in the returned fragment (both external and inline)
             executeScriptsFromDocument(doc, url);
         })
         .catch(() => contentArea.innerHTML = `<p style="color:red;">Error loading page</p>`);
 }
 
-// Execute scripts contained in parsed document
 function executeScriptsFromDocument(doc, baseUrl) {
-    // First: run inline scripts that are inside the #content-area (if any)
     const newContent = doc.querySelector("#content-area");
     if (newContent) {
         const inlineScripts = newContent.querySelectorAll("script:not([src])");
         inlineScripts.forEach(s => {
             try {
                 const code = s.textContent;
-                // use Function to run in global scope
                 (new Function(code))();
             } catch (err) {
                 console.error("Error executing inline script:", err);
@@ -100,10 +85,8 @@ function executeScriptsFromDocument(doc, baseUrl) {
         });
     }
 
-    // Then: load external scripts found in the document (including ones referenced in fragment)
     const externalScripts = Array.from(doc.querySelectorAll("script[src]"))
         .map(s => s.src)
-        // normalize relative src if necessary (some servers return relative paths)
         .map(src => {
             try {
                 return new URL(src, window.location.origin + baseUrl).href;
@@ -112,7 +95,6 @@ function executeScriptsFromDocument(doc, baseUrl) {
             }
         });
 
-    // Append them sequentially to ensure order (optional)
     loadExternalScriptsSequentially(externalScripts);
 }
 
@@ -120,10 +102,8 @@ function loadExternalScriptsSequentially(sources) {
     if (!sources || !sources.length) return;
     const loadNext = (i) => {
         if (i >= sources.length) return;
-        // avoid re-adding same script (by src) if already present with same src
         const existing = document.querySelector(`script[src="${sources[i]}"]`);
         if (existing) {
-            // already present — skip to next (but might be cached)
             loadNext(i + 1);
             return;
         }
@@ -139,7 +119,6 @@ function loadExternalScriptsSequentially(sources) {
     loadNext(0);
 }
 
-// -------------------- DELETE MODAL --------------------
 function showModal() {
     const modal = document.getElementById("deleteModal");
     if (modal) modal.style.display = "flex";
@@ -152,12 +131,10 @@ function closeModal() {
     deleteType = null;
 }
 
-// -------------------- DOM READY --------------------
 document.addEventListener("DOMContentLoaded", () => {
     const url = window.location.pathname + window.location.search;
     highlightActive(url);
 
-    // handle browser back/forward to re-load content via AJAX
     window.addEventListener("popstate", () => {
         loadPage(location.pathname + location.search);
     });

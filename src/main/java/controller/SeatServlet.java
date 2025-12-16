@@ -27,14 +27,12 @@ public class SeatServlet extends HttpServlet {
 
         switch (action) {
             case "edit":
-                // Forward to seat status update form
                 int seatId = Integer.parseInt(request.getParameter("id"));
                 request.setAttribute("seatId", seatId);
                 request.getRequestDispatcher("/seat-form.jsp").forward(request, response);
                 break;
 
             default:
-                // Display seat list by showtime
                 String showtimeIdStr = request.getParameter("showtimeId");
                 if (showtimeIdStr != null) {
                     try {
