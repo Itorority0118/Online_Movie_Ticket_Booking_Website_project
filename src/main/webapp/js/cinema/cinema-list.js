@@ -3,14 +3,11 @@
 
     const base = window.cinemaContext || '';
 
-    // -------------------- MODAL --------------------
     const modal = document.getElementById("deleteModal");
     const confirmBtn = document.getElementById("confirmDeleteBtn");
 
-    // Event delegation trên body
     document.body.addEventListener("click", function(e) {
 
-        // Mở modal delete
         if (e.target.matches(".action.delete, .action.delete *")) {
             e.preventDefault();
             const btn = e.target.closest(".action.delete");
@@ -24,7 +21,6 @@
             return;
         }
 
-        // Confirm delete
         if (e.target === confirmBtn) {
             e.preventDefault();
             if (!modal) return;
@@ -42,7 +38,6 @@
                     const row = document.querySelector(`tr[data-id='${id}']`);
                     if (row) row.remove();
 
-                    // Highlight sidebar vẫn giữ nguyên
                     highlightSidebar();
                 } else {
                     alert(data.message || "Delete failed");
@@ -59,14 +54,12 @@
             return;
         }
 
-        // Cancel modal
         if (e.target.classList.contains("cancel") && modal) {
             modal.style.display = "none";
             delete modal.dataset.deleteId;
             return;
         }
 
-        // Click ngoài modal
         if (modal && e.target === modal) {
             modal.style.display = "none";
             delete modal.dataset.deleteId;
@@ -74,7 +67,6 @@
         }
     });
 
-    // -------------------- SIDEBAR HIGHLIGHT --------------------
     function highlightSidebar() {
         const currentPath = window.location.pathname;
         const currentAction = new URLSearchParams(window.location.search).get("action");
@@ -92,7 +84,6 @@
         });
     }
 
-    // Highlight sidebar khi load
     highlightSidebar();
 
 })();

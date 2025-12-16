@@ -140,5 +140,4 @@ public class CinemaDAO {
 
         return list;
     }
-
 }

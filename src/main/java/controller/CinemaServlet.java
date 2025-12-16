@@ -92,7 +92,6 @@ public class CinemaServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
 
-        // AJAX DELETE
         if ("delete".equals(action)) {
             int id = Integer.parseInt(request.getParameter("id"));
             boolean success = cinemaDAO.deleteCinema(id);
@@ -105,7 +104,6 @@ public class CinemaServlet extends HttpServlet {
             return;
         }
 
-        // Save or update
         String idStr = request.getParameter("id");
         String name = request.getParameter("name");
         String address = request.getParameter("address");

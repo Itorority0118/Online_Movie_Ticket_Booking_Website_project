@@ -11,7 +11,6 @@ import utils.DBConnection;
 
 public class TicketDAO {
 
-    // Đặt vé mới
     public boolean bookTicket(Ticket ticket) {
         String query = "INSERT INTO Tickets (user_id, showtime_id, seat_id, price, booking_time, status) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -22,8 +21,8 @@ public class TicketDAO {
             ps.setInt(2, ticket.getShowtimeId());
             ps.setInt(3, ticket.getSeatId());
             ps.setDouble(4, ticket.getPrice());
-            ps.setString(5, ticket.getBookingTime()); // ví dụ: "2025-10-20 18:45"
-            ps.setString(6, ticket.getStatus());      // ví dụ: "Booked"
+            ps.setString(5, ticket.getBookingTime()); 
+            ps.setString(6, ticket.getStatus());   
 
             int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;
@@ -34,7 +33,6 @@ public class TicketDAO {
         }
     }
 
-    // Hủy vé (cập nhật trạng thái)
     public boolean cancelTicket(int ticketId) {
         String query = "UPDATE Tickets SET status = 'Cancelled' WHERE ticket_id = ?";
 
@@ -51,7 +49,6 @@ public class TicketDAO {
         }
     }
 
-    // Xem lịch sử vé của người dùng
     public List<Ticket> getTicketsByUser(int userId) {
         List<Ticket> tickets = new ArrayList<>();
         String query = "SELECT * FROM Tickets WHERE user_id = ? ORDER BY booking_time DESC";
@@ -78,7 +75,6 @@ public class TicketDAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return tickets;
     }
 }

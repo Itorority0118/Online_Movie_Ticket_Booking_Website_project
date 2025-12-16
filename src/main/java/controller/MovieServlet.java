@@ -15,7 +15,7 @@ import java.util.List;
 public class MovieServlet extends HttpServlet {
 
     private final MovieDAO movieDAO = new MovieDAO();
-    private final ShowtimeDAO showtimeDAO = new ShowtimeDAO(); // kiểm tra ràng buộc showtime
+    private final ShowtimeDAO showtimeDAO = new ShowtimeDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -137,7 +137,6 @@ public class MovieServlet extends HttpServlet {
             movie.setMovieId(Integer.parseInt(idStr));
             movieDAO.updateMovie(movie);
         }
-
         response.sendRedirect(request.getContextPath() + "/movie?action=list");
     }
 }

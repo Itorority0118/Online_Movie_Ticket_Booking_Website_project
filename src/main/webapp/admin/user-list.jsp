@@ -4,12 +4,10 @@
 
 <h1>User Management</h1>
 
-<!-- ADD USER BUTTON -->
 <a href="${pageContext.request.contextPath}/user?action=new" class="add-btn">+ Add User</a>
 
 <div class="user-table-container" style="display: flex; gap: 20px; align-items: flex-start;">
 
-    <!-- USER TABLE -->
     <div class="table-container" style="flex:1 1 auto; min-width:700px; overflow-x:auto;">
         <table class="user-table">
             <thead>
@@ -42,7 +40,6 @@
         </table>
     </div>
 
-    <!-- FILTER PANEL -->
     <form method="get" action="${pageContext.request.contextPath}/user" class="filter-panel" style="flex-shrink:0; width:230px;">
         <input type="hidden" name="action" value="list"/>
 
@@ -74,7 +71,6 @@
 
 </div>
 
-<!-- DELETE MODAL -->
 <div id="deleteModal" class="modal">
     <div class="modal-content">
         <h3>Are you sure?</h3>

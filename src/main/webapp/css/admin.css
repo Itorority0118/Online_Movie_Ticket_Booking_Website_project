@@ -1,4 +1,4 @@
-/* ================= GLOBAL ================= */
+
 * {
     margin: 0;
     padding: 0;
@@ -13,7 +13,6 @@ body {
     min-height: 100vh;
 }
 
-/* ================= SIDEBAR ================= */
 .sidebar {
     width: 200px;
     background: #161b22;
@@ -93,7 +92,6 @@ body {
     background-color: #ff4d4d;
 }
 
-/* ================= CONTENT ================= */
 .content {
     flex: 1;
     padding: 40px 60px;
@@ -113,7 +111,6 @@ body {
     font-size: 16px;
 }
 
-/* ================= CARDS ================= */
 .cards {
     display: flex;
     gap: 20px;
@@ -140,25 +137,22 @@ body {
     transform: translateY(-3px);
 }
 
-/* ================= TABLE WRAPPER ================= */
 .table-wrapper {
     display: flex;
     gap: 20px;
-    flex-wrap: nowrap; /* giữ table + filter cùng hàng */
+    flex-wrap: nowrap; 
     margin-top: 20px;
 }
 
-/* ================= TABLE ================= */
 .table-container {
-    flex: 1 1 auto; /* table chiếm hết chỗ còn lại */
+    flex: 1 1 auto; 
     min-width: 600px;
     background: #11161d;
     border-radius: 12px;
     padding: 15px;
-    overflow-x: auto; /* nếu table quá rộng thì cuộn */
+    overflow-x: auto; 
 }
 
-/* ================= FILTER PANEL ================= */
 .filter-panel {
     flex-shrink: 0;      
     width: 220px;         
@@ -172,7 +166,6 @@ body {
     gap: 10px;
 }
 
-/* ================= SEARCH / FILTER PANEL ================= */
 .filter-panel {
     width: auto;   
     background: #161b22;
@@ -213,7 +206,7 @@ body {
 .filter-group input[type="checkbox"] {
     width: 16px;
     height: 16px;
-    accent-color: #ff4d4d; /* màu checkbox */
+    accent-color: #ff4d4d;
 }
 
 .submit-btn {
@@ -231,7 +224,6 @@ body {
     background: #ff4d4d;
 }
 
-/* ================= RESPONSIVE ================= */
 @media(max-width:768px) {
     .filter-panel {
         width: 100%;
@@ -284,7 +276,6 @@ body {
     background: #1c2229;
 }
 
-/* ================= BUTTONS ================= */
 .add-btn {
     display: inline-block;
     margin-bottom: 10px;
@@ -338,7 +329,6 @@ body {
     background: #ff4d4d;
 }
 
-/* ================= MODAL ================= */
 .modal {
     position: fixed;
     top: 0;
@@ -410,7 +400,6 @@ body {
     background: #ff4d4d;
 }
 
-/* ================= FILTER PANEL ================= */
 .filter-panel {
     flex-shrink: 0;
     width: 220px;
@@ -441,7 +430,6 @@ body {
     margin-right: 5px;
 }
 
-/* ================= LOADING ================= */
 .loading {
     padding: 20px;
     font-size: 18px;
@@ -449,7 +437,6 @@ body {
     opacity: .7;
 }
 
-/* ================= RESPONSIVE ================= */
 @media(max-width:768px) {
     body {
         flex-direction: column;

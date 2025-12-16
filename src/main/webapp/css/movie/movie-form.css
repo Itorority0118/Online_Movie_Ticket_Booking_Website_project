@@ -80,7 +80,7 @@
 .back-btn {
     display: inline-flex;
     align-items: center;
-    margin-bottom: 15px; /* khoảng cách với tiêu đề */
+    margin-bottom: 15px; 
     padding: 8px 14px;
     background: rgba(255, 255, 255, 0.05);
     color: #4ecdc4;

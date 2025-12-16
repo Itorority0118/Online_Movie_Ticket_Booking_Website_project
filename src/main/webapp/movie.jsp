@@ -172,7 +172,6 @@
 
 </div>
 
-<!-- ✅ FIXED JS (đặt cuối body để chạy đúng) -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const genreItems = document.querySelectorAll(".genre-item");

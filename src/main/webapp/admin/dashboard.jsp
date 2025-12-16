@@ -69,7 +69,6 @@
         </c:choose>
     </div>
 
-    <!-- Khai báo contextPath Ở ĐÚNG VỊ TRÍ -->
     <script>
         const contextPath = "${pageContext.request.contextPath}";
     </script>
