@@ -1,5 +1,6 @@
 package controller;
 
+import dao.CinemaDAO;
 import dao.RoomDAO;
 import model.Room;
 
@@ -22,31 +23,64 @@ public class RoomServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        boolean isAjax = "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
         String action = request.getParameter("action");
         if (action == null) action = "list";
 
+        request.setAttribute("activeSidebar", "room");
+
         switch (action) {
+
             case "new":
-                request.getRequestDispatcher("/room-form.jsp").forward(request, response);
+                request.setAttribute("room", null);
+
+                if (isAjax)
+                    request.getRequestDispatcher("/admin/room-form.jsp").forward(request, response);
+                else
+                    request.getRequestDispatcher("/admin/dashboard.jsp?page=room-form.jsp")
+                           .forward(request, response);
                 break;
 
             case "edit":
                 int editId = Integer.parseInt(request.getParameter("id"));
-                Room roomToEdit = roomDAO.getRoomById(editId);
-                request.setAttribute("room", roomToEdit);
-                request.getRequestDispatcher("/room-form.jsp").forward(request, response);
+                Room room = roomDAO.getRoomById(editId);
+                request.setAttribute("room", room);
+
+                if (isAjax)
+                    request.getRequestDispatcher("/admin/room-form.jsp").forward(request, response);
+                else
+                    request.getRequestDispatcher("/admin/dashboard.jsp?page=room-form.jsp")
+                           .forward(request, response);
                 break;
 
-            case "delete":
-                int deleteId = Integer.parseInt(request.getParameter("id"));
-                roomDAO.deleteRoom(deleteId);
-                response.sendRedirect("room");
-                break;
-
+            case "list":
             default:
-                List<Room> roomList = roomDAO.getAllRooms();
-                request.setAttribute("rooms", roomList);
-                request.getRequestDispatcher("/room-list.jsp").forward(request, response);
+                String cinemaIdStr = request.getParameter("cinemaId");
+                String keyword = request.getParameter("keyword");
+                String roomType = request.getParameter("roomType");
+
+                Integer cinemaId = (cinemaIdStr != null && !cinemaIdStr.isEmpty())
+                                    ? Integer.parseInt(cinemaIdStr) : null;
+
+                // Lấy danh sách room theo filter
+                List<Room> rooms = roomDAO.searchRooms(cinemaId, keyword, roomType);
+
+                if (cinemaId != null) {
+                    CinemaDAO cinemaDAO = new CinemaDAO();
+                    var cinema = cinemaDAO.getCinemaById(cinemaId);
+                    if (cinema != null) request.setAttribute("cinemaName", cinema.getName());
+                    else request.setAttribute("cinemaName", "Unknown Cinema");
+
+                    request.setAttribute("cinemaId", cinemaId);
+                }
+
+                request.setAttribute("rooms", rooms);
+
+                if (isAjax)
+                    request.getRequestDispatcher("/admin/room-table.jsp").forward(request, response);
+                else
+                    request.getRequestDispatcher("/admin/dashboard.jsp?page=room-list.jsp")
+                           .forward(request, response);
                 break;
         }
     }
@@ -56,16 +90,25 @@ public class RoomServlet extends HttpServlet {
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
+        String action = request.getParameter("action");
+        if ("delete".equals(action)) {
+            int id = Integer.parseInt(request.getParameter("id"));
+            boolean success = roomDAO.deleteRoom(id);
+
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().print("{\"success\": " + success + "}");
+            return;
+        }
+        
         String idStr = request.getParameter("id");
         String cinemaIdStr = request.getParameter("cinemaId");
         String roomName = request.getParameter("roomName");
-        String seatCountStr = request.getParameter("seatCount");
         String roomType = request.getParameter("roomType");
 
         Room room = new Room();
         room.setCinemaId(Integer.parseInt(cinemaIdStr));
         room.setRoomName(roomName);
-        room.setSeatCount(Integer.parseInt(seatCountStr));
         room.setRoomType(roomType);
 
         if (idStr == null || idStr.isEmpty()) {
@@ -76,6 +119,6 @@ public class RoomServlet extends HttpServlet {
             room.setRoomId(Integer.parseInt(idStr));
             roomDAO.updateRoom(room);
         }
-        response.sendRedirect("room");
+        response.sendRedirect(request.getContextPath() + "/room?action=list&cinemaId=" + cinemaIdStr);
     }
 }

@@ -1,12 +1,12 @@
 (function () {
 
-    const base = window.cinemaContext || '';
+    const base = window.seatContext || '';
     const modal = document.getElementById("deleteModal");
     const confirmBtn = document.getElementById("confirmDeleteBtn");
 
     document.body.addEventListener("click", function (e) {
 
-        const deleteBtn = e.target.closest(".action.delete[data-type='cinema']");
+        const deleteBtn = e.target.closest(".action.delete[data-type='seat']");
         if (deleteBtn) {
             e.preventDefault();
             e.stopPropagation();
@@ -23,7 +23,7 @@
             const id = modal.dataset.deleteId;
             if (!id) return;
 
-            fetch(`${base}/cinema`, {
+            fetch(`${base}/seat`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",

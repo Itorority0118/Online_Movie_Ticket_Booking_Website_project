@@ -1,8 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/cinema/cinema-form.css">
-
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/cinema/cinema-form.css?v=10">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <div class="cinema-form-page centered">
 
     <a href="${pageContext.request.contextPath}/cinema?action=list" class="back-btn">

@@ -51,7 +51,7 @@ public class CinemaDAO {
     // Get all cinemas
     public List<Cinema> getAllCinemas() {
         List<Cinema> list = new ArrayList<>();
-        String sql = "SELECT * FROM Cinema ORDER BY Name ASC";
+        String sql = "SELECT * FROM Cinema ORDER BY CinemaId ASC";
 
         try (Connection conn = DBConnection.getConnection();
              Statement stmt = conn.createStatement();
@@ -114,7 +114,7 @@ public class CinemaDAO {
             sql.append(" AND City = ?");
         }
 
-        sql.append(" ORDER BY Name ASC");
+        sql.append(" ORDER BY CinemaId ASC");
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
