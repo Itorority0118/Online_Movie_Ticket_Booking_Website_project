@@ -306,6 +306,12 @@ body {
     color: #ff6b6b;
 }
 
+.user-table a.action[href*="maps.google.com"]:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+
 .action:hover {
     opacity: .7;
 }

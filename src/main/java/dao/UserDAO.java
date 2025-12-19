@@ -78,7 +78,7 @@ public class UserDAO {
 
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT * FROM AppUser ORDER BY CreatedAt DESC";
+        String sql = "SELECT * FROM AppUser ORDER BY UserId ASC";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);

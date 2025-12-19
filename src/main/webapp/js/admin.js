@@ -55,7 +55,10 @@ function highlightActive(url) {
 
 function loadPage(url) {
     if (!contentArea) return;
-
+	if (url.includes("cinema?action=list")) {
+	    window.location.href = url;
+	    return;
+	}
     history.pushState(null, "", url);
     contentArea.innerHTML = `<div class="loading">Loading...</div>`;
 
