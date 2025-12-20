@@ -66,6 +66,60 @@ public class CinemaDAO {
         }
         return list;
     }
+    
+    // ✅ PHƯƠNG THỨC ĐÃ CẬP NHẬT: Lấy danh sách thành phố độc lập (DISTINCT Cities)
+    public List<String> getDistinctCities() {
+        List<String> cities = new ArrayList<>();
+        // Sử dụng TRIM(City) trong SQL (giả sử DB hỗ trợ như SQL Server/MySQL) và kiểm tra chuỗi trống
+        String sql = "SELECT DISTINCT TRIM(City) as City FROM Cinema WHERE City IS NOT NULL AND TRIM(City) <> '' ORDER BY City ASC";
+
+        try (Connection conn = DBConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                // Lấy giá trị đã được TRIM (hoặc cột City nếu TRIM không hoạt động)
+                String city = rs.getString("City"); 
+                
+                // Cần kiểm tra lại và trim() lần nữa trong Java để chắc chắn
+                if (city != null) {
+                    cities.add(city.trim());
+                }
+            }
+            
+            // Debug: Giúp bạn kiểm tra Console xem DAO có lấy được dữ liệu không
+            System.out.println("DEBUG (CinemaDAO): Found " + cities.size() + " distinct cities."); 
+
+        } catch (SQLException e) {
+            System.out.println("❌ ERROR fetching distinct cities (Check DB connection and TRIM function): " + e.getMessage());
+            // In stack trace để tìm lỗi kết nối/query
+            e.printStackTrace();
+        }
+        return cities;
+    }
+    
+    // ✅ PHƯƠNG THỨC GIỮ NGUYÊN: Lấy danh sách Rạp theo Thành phố
+    public List<Cinema> getCinemasByCity(String city) {
+        List<Cinema> list = new ArrayList<>();
+        String sql = "SELECT * FROM Cinema WHERE City = ? ORDER BY Name ASC";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            // Trim giá trị city trước khi truyền vào query
+            stmt.setString(1, city != null ? city.trim() : "");
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(CinemaMapper.map(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error fetching cinemas by city: " + e.getMessage());
+        }
+        return list;
+    }
+
 
     // Update cinema
     public boolean updateCinema(Cinema cinema) {
@@ -75,7 +129,8 @@ public class CinemaDAO {
 
             stmt.setString(1, cinema.getName());
             stmt.setString(2, cinema.getAddress());
-            stmt.setString(3, cinema.getCity());
+            // Trim() giá trị City khi cập nhật
+            stmt.setString(3, cinema.getCity() != null ? cinema.getCity().trim() : null); 
             stmt.setString(4, cinema.getPhone());
             stmt.setInt(5, cinema.getCinemaId());
 
