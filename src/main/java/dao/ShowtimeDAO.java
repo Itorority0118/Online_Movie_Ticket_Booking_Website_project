@@ -38,7 +38,6 @@ public class ShowtimeDAO {
         }
     }
 
-    // Sửa thông tin suất chiếu
     public boolean updateShowtime(Showtime showtime) {
         String query = "UPDATE Showtime SET movie_id = ?, room_id = ?, start_time = ?, end_time = ?, ticket_price = ? WHERE showtime_id = ?";
 
@@ -61,7 +60,6 @@ public class ShowtimeDAO {
         }
     }
 
-    // Xóa suất chiếu
     public boolean deleteShowtime(int showtimeId) {
         String query = "DELETE FROM Showtime WHERE showtime_id = ?";
 
@@ -78,7 +76,6 @@ public class ShowtimeDAO {
         }
     }
 
-    // Lấy danh sách tất cả suất chiếu
     public List<Showtime> getAllShowtimes() {
         List<Showtime> showtimes = new ArrayList<>();
         String query = "SELECT * FROM Showtime";

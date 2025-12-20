@@ -1,16 +1,14 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/cinema/cinema-form.css">
-
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/cinema/cinema-form.css?v=10">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <div class="cinema-form-page centered">
 
-    <!-- BACK BUTTON -->
     <a href="${pageContext.request.contextPath}/cinema?action=list" class="back-btn">
         <i class="fas fa-arrow-left"></i> Back to Cinema List
     </a>
 
-    <!-- TITLE -->
     <h1 class="cinema-form-title">
         <c:choose>
             <c:when test="${cinema != null}">Edit Cinema</c:when>
@@ -18,10 +16,8 @@
         </c:choose>
     </h1>
 
-    <!-- FORM -->
     <form method="post" action="${pageContext.request.contextPath}/cinema">
 
-        <!-- Hidden ID if editing -->
         <c:if test="${cinema != null}">
             <input type="hidden" name="id" value="${cinema.cinemaId}">
         </c:if>
@@ -60,7 +56,6 @@
                    value="${cinema != null ? cinema.phone : ''}">
         </div>
 
-        <!-- SUBMIT BUTTON -->
         <button type="submit" class="submit-btn">
             <c:choose>
                 <c:when test="${cinema != null}">Save Changes</c:when>

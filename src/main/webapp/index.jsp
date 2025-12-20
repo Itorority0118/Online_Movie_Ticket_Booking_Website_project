@@ -73,7 +73,6 @@
     </div>
 </div>
 
-<!-- Main content -->
 <main class="main-content">
     <div class="movie-list">
 
@@ -81,16 +80,12 @@
             <div class="movie-card">
 
                 <div class="movie-image-wrapper">
-
-                    <!-- ✅ FIX ẢNH 100% -->
                     <c:set var="poster" value="${fn:trim(movie.posterUrl)}" />
 
                     <img 
 						    src="${pageContext.request.contextPath}/images/movies/${fn:replace(poster,'/images/','')}"
 						    alt="${movie.title}"
 						    class="movie-poster">
-
-                    <!-- ✅ END FIX -->
 
                     <c:if test="${movie.status == 'HOT'}">
                         <span class="badge hot">HOT</span>

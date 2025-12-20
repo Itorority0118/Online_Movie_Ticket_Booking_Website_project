@@ -106,12 +106,10 @@ public class ShowtimeServlet extends HttpServlet {
             // =========================================================
             
             case "new":
-                // Display form to add a new showtime
                 request.getRequestDispatcher("/showtime-form.jsp").forward(request, response);
                 break;
 
             case "edit":
-                // Display form to edit an existing showtime
                 int editId = Integer.parseInt(request.getParameter("id"));
                 request.setAttribute("editId", editId);
                 // (Cần thêm logic lấy đối tượng Showtime bằng ID)
@@ -119,7 +117,6 @@ public class ShowtimeServlet extends HttpServlet {
                 break;
 
             case "delete":
-                // Delete a showtime by ID
                 int deleteId = Integer.parseInt(request.getParameter("id"));
                 showtimeDAO.deleteShowtime(deleteId);
                 response.sendRedirect("showtime?action=list"); // Chuyển về danh sách admin
@@ -164,10 +161,8 @@ public class ShowtimeServlet extends HttpServlet {
 
 
         if (idStr == null || idStr.isEmpty()) {
-            // Add new showtime
             showtimeDAO.addShowtime(showtime);
         } else {
-            // Update existing showtime
             showtime.setShowtimeId(Integer.parseInt(idStr));
             showtimeDAO.updateShowtime(showtime);
         }

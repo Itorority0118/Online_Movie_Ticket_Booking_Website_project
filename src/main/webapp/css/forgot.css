@@ -1,4 +1,4 @@
-/* GLOBAL */
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -16,7 +16,7 @@ body {
     min-height: 100vh;
 }
 
-/* MAIN CONTAINER */
+
 .container {
     width: 100%;
     max-width: 400px;
@@ -41,7 +41,7 @@ h2 {
     font-size: 28px;
 }
 
-/* FORM */
+
 .form-group {
     margin-bottom: 18px;
     text-align: left;
@@ -72,7 +72,7 @@ input:focus {
     box-shadow: 0 0 8px rgba(255,0,0,0.6);
 }
 
-/* BUTTON */
+
 .btn {
     width: 100%;
     padding: 13px;
@@ -89,10 +89,10 @@ input:focus {
 .btn:hover {
     background-color: #cc0000;
     transform: translateY(-1px);
-    box-shadow: none; /* No shining */
+    box-shadow: none; 
 }
 
-/* LINKS */
+
 .register-link {
     margin-top: 15px;
 }
@@ -107,7 +107,6 @@ input:focus {
     color: #ff0000;
 }
 
-/* ERROR + SUCCESS BOX */
 .error, .success {
     padding: 12px;
     margin-bottom: 15px;
@@ -134,7 +133,6 @@ input:focus {
     100% { transform: translateX(0); }
 }
 
-/* MOBILE RESPONSIVE */
 @media (max-width: 480px) {
 
     .container {

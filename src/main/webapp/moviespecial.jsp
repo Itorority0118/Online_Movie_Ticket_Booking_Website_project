@@ -61,7 +61,6 @@
             <div class="movie-card">
                 <div class="movie-image-wrapper">
 
-                    <!-- ✅ FIX ẢNH -->
                     <c:set var="poster" value="${fn:trim(movie.posterUrl)}" />
 
                     <c:choose>

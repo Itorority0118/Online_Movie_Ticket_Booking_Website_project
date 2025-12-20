@@ -21,9 +21,6 @@ public class TestConnectionServlet extends HttpServlet {
         super();
     }
 
-    /**
-     * @see HttpServlet#doGet
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

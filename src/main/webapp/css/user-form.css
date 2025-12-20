@@ -1,6 +1,4 @@
-/* ================= USER FORM IMPROVED ================= */
 
-/* Tiêu đề */
 .user-form-title {
     color: #ffffff;
     font-size: 32px;
@@ -8,7 +6,6 @@
     text-align: left;
 }
 
-/* Vùng chứa form */
 .user-form-page {
     width: 100%;
     display: flex;
@@ -16,7 +13,6 @@
     flex-direction: column; 
 }
 
-/* Form chính */
 .user-form-page form {
     width: 100%;
     background: #1b1f28;
@@ -62,7 +58,6 @@
     outline: none;
 }
 
-/* Nút submit */
 .user-form-page .submit-btn {
     width: 100%;
     padding: 14px;
@@ -84,7 +79,7 @@
 .back-btn {
     display: inline-flex;
     align-items: center;
-    margin-bottom: 15px; /* khoảng cách với tiêu đề */
+    margin-bottom: 15px; 
     padding: 8px 14px;
     background: rgba(255, 255, 255, 0.05);
     color: #4ecdc4;

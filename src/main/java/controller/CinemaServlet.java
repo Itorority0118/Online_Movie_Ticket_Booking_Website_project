@@ -62,12 +62,23 @@ public class CinemaServlet extends HttpServlet {
                 String keyword = request.getParameter("keyword");
                 String city = request.getParameter("city");
 
-                List<Cinema> cinemas = cinemaDAO.searchCinemas(keyword, city);
+                boolean hasFilter =
+                        (keyword != null && !keyword.trim().isEmpty()) ||
+                        (city != null && !city.trim().isEmpty());
+
+                List<Cinema> cinemas;
+
+                if (hasFilter) {
+                    cinemas = cinemaDAO.searchCinemas(keyword, city);
+                } else {
+                    cinemas = cinemaDAO.getAllCinemas(); 
+                }
+
                 request.setAttribute("cinemas", cinemas);
                 request.setAttribute("cityList", getCityList());
 
                 if (isAjax)
-                    request.getRequestDispatcher("/admin/cinema-list.jsp").forward(request, response);
+                    request.getRequestDispatcher("/admin/cinema-table.jsp").forward(request, response);
                 else
                     request.getRequestDispatcher("/admin/dashboard.jsp?page=cinema-list.jsp").forward(request, response);
                 break;
@@ -78,7 +89,7 @@ public class CinemaServlet extends HttpServlet {
                 request.setAttribute("cityList", getCityList());
 
                 if (isAjax)
-                    request.getRequestDispatcher("/admin/cinema-list.jsp").forward(request, response);
+                    request.getRequestDispatcher("/admin/cinema-table.jsp").forward(request, response);
                 else
                     request.getRequestDispatcher("/admin/dashboard.jsp?page=cinema-list.jsp").forward(request, response);
                 break;
@@ -92,7 +103,6 @@ public class CinemaServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
 
-        // AJAX DELETE
         if ("delete".equals(action)) {
             int id = Integer.parseInt(request.getParameter("id"));
             boolean success = cinemaDAO.deleteCinema(id);
@@ -105,7 +115,6 @@ public class CinemaServlet extends HttpServlet {
             return;
         }
 
-        // Save or update
         String idStr = request.getParameter("id");
         String name = request.getParameter("name");
         String address = request.getParameter("address");

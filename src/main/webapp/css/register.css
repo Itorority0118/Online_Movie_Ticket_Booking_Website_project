@@ -1,4 +1,4 @@
-/* GLOBAL */
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -17,7 +17,7 @@ body {
     background-size: cover;
 }
 
-/* MAIN WRAPPER */
+
 .container {
     width: 100%;
     max-width: 420px;
@@ -48,7 +48,6 @@ h2 {
     text-shadow: 0 0 8px rgba(255,0,0,0.4);
 }
 
-/* FORM */
 label {
     text-align: left;
     width: 100%;
@@ -81,7 +80,6 @@ input:focus {
     box-shadow: 0 0 10px rgba(255,0,0,0.75);
 }
 
-/* BUTTON */
 button {
     width: 100%;
     padding: 13px;
@@ -103,7 +101,7 @@ button:hover {
     box-shadow: none;
 }
 
-/* ERROR BOX */
+
 .error {
     background-color: #ff4d4d;
     color: white;
@@ -123,7 +121,7 @@ button:hover {
     100% { transform: translateX(0); }
 }
 
-/* LINK */
+
 a {
     color: #9ea7b2;
     transition: .25s;
@@ -134,7 +132,7 @@ a:hover {
     text-shadow: 0 0 5px rgba(255,0,0,0.6);
 }
 
-/* RESPONSIVE */
+
 @media (max-width: 480px) {
     .container {
         padding: 28px 20px;
