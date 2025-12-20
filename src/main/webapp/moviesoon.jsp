@@ -31,10 +31,7 @@
 
     <nav class="main-nav">
         <ul>
-            <li><a href="showtimes.jsp">LỊCH CHIẾU THEO RẠP</a></li>
-            <li><a href="#">PHIM</a></li>
-            <li><a href="#">RẠP VÉ</a></li>
-            <li><a href="#">GIÁ VÉ</a></li>
+            <li><a href="${pageContext.request.contextPath}/showtime" class="tab-item">PHIM</a></li>
             <li><a href="#">TIN MỚI VÀ ƯU ĐÃI</a></li>
             <li><a href="#">NHƯỢNG QUYỀN</a></li>
             <li><a href="#">THÀNH VIÊN</a></li>

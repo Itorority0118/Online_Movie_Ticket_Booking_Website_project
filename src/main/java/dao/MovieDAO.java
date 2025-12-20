@@ -172,5 +172,49 @@ public class MovieDAO {
         }
         return 0;
     }
+    
+    public List<String> getDistinctGenres() {
+        List<String> genres = new ArrayList<>();
+        
+        String sql = "SELECT DISTINCT TRIM(Genre) as Genre FROM Movie WHERE Genre IS NOT NULL AND TRIM(Genre) <> '' ORDER BY Genre ASC";
+
+        try (Connection conn = DBConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                String genre = rs.getString("Genre");
+                if (genre != null && !genre.trim().isEmpty()) {
+                    genres.add(genre.trim());
+                }
+            }
+            
+            System.out.println("DEBUG (MovieDAO): Found " + genres.size() + " distinct genres."); 
+
+        } catch (SQLException e) {
+            System.out.println("❌ ERROR fetching distinct genres: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return genres;
+    }
+
+    public List<String> getAgeRatingList() {
+
+        List<String> ratings = new ArrayList<>();
+        String sql = "SELECT DISTINCT AgeRating FROM Movie WHERE AgeRating IS NOT NULL AND AgeRating != '' ORDER BY AgeRating ASC";
+        
+        try (Connection conn = DBConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+             
+            while (rs.next()) {
+                ratings.add(rs.getString("AgeRating"));
+            }
+        } catch (SQLException e) {
+             System.out.println("Error fetching distinct age ratings: " + e.getMessage());
+        }
+        return ratings;
+
+    }
 
 }

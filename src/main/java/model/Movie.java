@@ -1,5 +1,7 @@
 package model;
 
+import java.util.List;
+
 public class Movie {
     
     private int movieId;
@@ -15,13 +17,17 @@ public class Movie {
     private String trailerUrl;     // YouTube link or video
     private String status;         // "Now Showing" / "Coming Soon"
     
+    // ✅ THUỘC TÍNH MỚI CHO BỘ LỌC VÀ HIỂN THỊ
+    private String ageRating;      // E.g., "P", "T13", "T18"
+    private List<Showtime> showtimes; // Danh sách các suất chiếu của phim này (cho trang showtimes)
+    
     // Empty constructor
     public Movie() {}
 
-    // Constructor
+    // Constructor (Cập nhật để bao gồm ageRating)
     public Movie(int movieId, String title, String genre, String director, String cast, 
                  String description, int duration, String language, String releaseDate, 
-                 String posterUrl, String trailerUrl, String status) {
+                 String posterUrl, String trailerUrl, String status, String ageRating) { // ✅ ageRating added
         this.movieId = movieId;
         this.title = title;
         this.genre = genre;
@@ -34,7 +40,16 @@ public class Movie {
         this.posterUrl = posterUrl;
         this.trailerUrl = trailerUrl;
         this.status = status;
+        this.ageRating = ageRating; // ✅ Initialized
     }
+    
+    // Constructor cũ (giữ lại nếu cần)
+    public Movie(int movieId, String title, String genre, String director, String cast, 
+            	String description, int duration, String language, String releaseDate, 
+            	String posterUrl, String trailerUrl, String status) {
+		this(movieId, title, genre, director, cast, description, duration, language, releaseDate, posterUrl, trailerUrl, status, null); // Mặc định ageRating là null
+	}
+
 
     // Getters
     public int getMovieId() { return movieId; }
@@ -49,6 +64,13 @@ public class Movie {
     public String getPosterUrl() { return posterUrl; }
     public String getTrailerUrl() { return trailerUrl; }
     public String getStatus() { return status; }
+    
+    // ✅ Getters/Setters MỚI
+    public String getAgeRating() { return ageRating; }
+    public void setAgeRating(String ageRating) { this.ageRating = ageRating; }
+
+    public List<Showtime> getShowtimes() { return showtimes; }
+    public void setShowtimes(List<Showtime> showtimes) { this.showtimes = showtimes; }
 
     // Setters
     public void setMovieId(int movieId) { this.movieId = movieId; }
