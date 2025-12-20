@@ -32,7 +32,10 @@
         <c:choose>
             <c:when test="${not empty sessionScope.user}">
                 <span>Xin chào, ${sessionScope.user.fullName}</span>
-                <a href="logout" class="logout-btn">Đăng xuất</a>
+					<a href="${pageContext.request.contextPath}/user?action=logout"
+					   class="logout-btn">
+					   Đăng xuất
+					</a>
             </c:when>
             <c:otherwise>
                 <a href="login.jsp" class="login-btn">Đăng nhập</a> 
@@ -99,6 +102,7 @@
         </c:if>
     </div>
 </main>
-
+<script src="<c:url value='/js/common.js'/>"></script>
+<script src="<c:url value='/js/movie/movie.js'/>"></script>
 </body>
 </html>
