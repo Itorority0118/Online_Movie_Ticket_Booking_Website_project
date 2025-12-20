@@ -113,3 +113,300 @@
 }
 
 
+        /* CSS tạm thời để hiển thị đẹp hơn. Bạn nên chuyển vào showtimes.css */
+        .filter-form { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+
+        /* Bố cục lưới cho danh sách phim */
+        .movie-list-container {
+            padding: 20px;
+        }
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* 3-4 cột trên màn hình lớn */
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        /* Định dạng thẻ phim */
+        .movie-card { 
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background: #fff;
+            position: relative; /* Để định vị C18 */
+            padding: 10px; /* Thêm padding bên trong thẻ */
+        }
+        
+        .movie-poster-container {
+            width: 100%;
+            height: auto;
+            position: relative;
+            margin-bottom: 10px;
+        }
+        .movie-poster { 
+            width: 100%; 
+            height: auto; 
+            display: block;
+            border-radius: 4px;
+        }
+        
+        /* C18/Age Rating Badge */
+        .age-rating-badge {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: #dc3545; /* Màu đỏ */
+            color: white;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .movie-details {
+            padding: 5px 0;
+            text-align: center; /* Căn giữa thông tin */
+        }
+        .movie-details h3 {
+            font-size: 16px;
+            margin: 5px 0;
+            color: #333;
+        }
+        .movie-details p {
+            font-size: 13px;
+            color: #666;
+            margin: 2px 0;
+        }
+
+        /* Suất chiếu (Dùng cho chế độ lọc) */
+        .showtimes-wrapper { 
+            margin-top: 10px; 
+            border-top: 1px dashed #eee; 
+            padding-top: 10px; 
+            text-align: left; /* Căn trái suất chiếu */
+        }
+        .showtime-slot { 
+            display: block; /* Hiển thị mỗi slot trên 1 dòng mới */
+            margin: 5px 0; 
+            padding: 5px 10px; 
+            border: 1px solid #007bff; 
+            background: #e6f0ff; 
+            border-radius: 5px; 
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between; /* Để nút Đặt vé sang phải */
+            align-items: center;
+        }
+        .showtime-info {
+             line-height: 1.2;
+        }
+        .showtime-slot strong { font-size: 14px; display: inline; margin-right: 5px; }
+        .showtime-slot a.book-btn { 
+            background: #dc3545; 
+            padding: 5px 10px; 
+            border-radius: 3px; 
+            text-decoration: none; 
+            font-size: 12px;
+            white-space: nowrap; /* Ngăn nút xuống dòng */
+        }
+        
+        /* Nút MUA VÉ ở chế độ mặc định (thay cho showtimes) */
+        .buy-ticket-btn {
+            display: block;
+            width: 80%;
+            margin: 10px auto 0; /* Căn giữa */
+            padding: 10px;
+            background: #dc3545;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        /* ============================================== */
+        /* CSS CHUNG CHO GIAO DIỆN TỐI VÀ LƯỚI THẺ PHIM */
+        /* ============================================== */
+        
+        /* Bộ lọc - Căn giữa bộ lọc */
+        .filter-container {
+            padding: 20px 0;
+            text-align: center; /* Căn giữa form */
+        }
+        .filter-form { 
+            display: inline-flex; /* Chuyển thành inline-flex để có thể căn giữa */
+            gap: 10px; 
+            margin-bottom: 20px; 
+            flex-wrap: wrap; 
+            justify-content: center; /* Căn giữa các input bên trong form */
+        }
+
+        /* Container chứa các thẻ phim */
+        .movie-list-container { 
+            padding: 20px 0; 
+            background-color: #121212; /* Nền tối nhẹ cho khu vực phim */
+            text-align: center; /* Tạm thời căn giữa lưới */
+        }
+        
+        /* Bố cục lưới */
+        .movie-grid {
+            /* Tăng min-width của thẻ lên 250px để lấp đầy không gian tốt hơn */
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: 25px; /* Khoảng cách giữa các thẻ phim */
+            margin: 20px auto; /* Căn giữa lưới phim */
+            max-width: 1200px; /* Giới hạn chiều rộng tối đa của lưới */
+            padding: 0 20px; /* Khoảng cách từ lề màn hình */
+        }
+
+        /* Tiêu đề chính */
+        .movie-list-container h2 {
+            color: white;
+            padding-left: 20px;
+            margin-top: 0;
+            padding-top: 20px;
+            text-align: left; /* Căn trái lại tiêu đề */
+        }
+        .alert-info { 
+            padding: 15px; 
+            margin-bottom: 20px; 
+            background-color: #2a2a2a; 
+            border: 1px solid #444; 
+            color: #f0f0f0; 
+            border-radius: 5px; 
+            margin: 0 20px 20px 20px;
+            text-align: left;
+        }
+
+        /* Thẻ phim (Movie Card) */
+        .movie-card { 
+            background-color: #1e1e1e; 
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); 
+            position: relative;
+            padding: 10px;
+            color: #ccc; 
+            height: 100%; /* Đảm bảo tất cả các thẻ có cùng chiều cao */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; 
+            text-align: center; /* Căn giữa nội dung trong thẻ */
+        }
+        
+        /* Khu vực poster - Cố định tỉ lệ khung hình (2:3) */
+        .movie-poster-container {
+            width: 100%;
+            padding-top: 150%; 
+            position: relative;
+            margin-bottom: 10px;
+            overflow: hidden; 
+            border-radius: 4px;
+        }
+        
+        .movie-poster { 
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%; 
+            height: 100%; 
+            display: block;
+            object-fit: cover; 
+        }
+
+        /* Thẻ C18 (Age Rating Badge) */
+        .age-rating-badge {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: #dc3545; 
+            color: white;
+            padding: 3px 8px;
+            border-radius: 3px; 
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        /* Chi tiết phim - Đảm bảo chiều cao tối thiểu */
+        .movie-details {
+            padding: 5px 0 10px 0;
+            text-align: center; /* Căn giữa text */
+            min-height: 80px; 
+            flex-grow: 1; 
+        }
+        .movie-details h3 { 
+            font-size: 16px; 
+            margin: 5px 0; 
+            color: white; 
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* Chỉ hiển thị tối đa 2 dòng */
+            -webkit-box-orient: vertical;
+        }
+        .movie-details p { 
+            font-size: 13px; 
+            color: #999; 
+            margin: 2px 0; 
+        }
+
+        /* Nút MUA VÉ ở chế độ mặc định */
+        .buy-ticket-btn {
+            display: block;
+            width: 95%; 
+            margin: 10px auto 5px;
+            padding: 10px;
+            background: #dc3545; 
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        .buy-ticket-btn:hover {
+            background-color: #c82333;
+        }
+
+        
+        /* ============================================== */
+        /* CSS LỊCH CHIẾU CỤ THỂ (Dùng khi lọc) */
+        /* ============================================== */
+        
+        .showtimes-wrapper { 
+            margin-top: 10px; 
+            border-top: 1px dashed #3a3a3a; 
+            padding-top: 10px; 
+            text-align: left; /* Để lịch chiếu căn trái trong thẻ */
+            flex-grow: 1; 
+        }
+        .showtimes-wrapper h4 {
+            color: #ccc;
+            font-size: 14px;
+        }
+        .showtime-slot { 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 5px 0; 
+            padding: 5px 10px; 
+            background: #333; 
+            border: 1px solid #007bff; 
+            border-radius: 5px; 
+            font-size: 13px;
+            color: white;
+        }
+        .showtime-info { line-height: 1.2; }
+        .showtime-slot strong { font-size: 14px; display: inline; margin-right: 5px; color: #ffc107; }
+        .showtime-slot a.book-btn { 
+            background: #dc3545; 
+            padding: 5px 10px; 
+            border-radius: 3px; 
+            text-decoration: none; 
+            font-size: 12px;
+            white-space: nowrap;
+        }
+

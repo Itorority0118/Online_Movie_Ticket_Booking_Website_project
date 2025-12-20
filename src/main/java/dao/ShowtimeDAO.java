@@ -3,14 +3,19 @@ package dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import model.Showtime;
+import model.Movie; // Phải import Movie
 import utils.DBConnection;
+import utils.MovieMapper; // Phải import MovieMapper
 
 public class ShowtimeDAO {
-	
+
     // Thêm suất chiếu mới
     public boolean addShowtime(Showtime showtime) {
         String query = "INSERT INTO Showtime (movie_id, room_id, start_time, end_time, ticket_price) VALUES (?, ?, ?, ?, ?)";
@@ -100,7 +105,7 @@ public class ShowtimeDAO {
 
         return showtimes;
     }
-    
+
     public boolean existsByMovieId(int movieId) {
         String query = "SELECT 1 FROM Showtime WHERE MovieId = ?";
         
@@ -116,6 +121,75 @@ public class ShowtimeDAO {
             e.printStackTrace();
             return true;
         }
+    }
+    
+
+    public List<Movie> getShowtimesByFilter(
+            int cinemaId, String date, String genre, String ageRating) {
+            
+        List<Movie> results = new ArrayList<>();
+        
+        StringBuilder query = new StringBuilder("SELECT s.*, m.* FROM Showtime s ");
+        query.append("JOIN Movie m ON s.movie_id = m.MovieId ");
+        query.append("JOIN Room r ON s.room_id = r.RoomId "); 
+        
+        query.append("WHERE r.CinemaId = ? AND CAST(s.start_time AS DATE) = ?");
+
+        if (genre != null && !genre.isEmpty()) {
+            query.append(" AND m.Genre = ?");
+        }
+        if (ageRating != null && !ageRating.isEmpty()) {
+            query.append(" AND m.AgeRating = ?");
+        }
+
+        query.append(" ORDER BY m.Title, s.start_time");
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query.toString())) {
+
+            int index = 1;
+            ps.setInt(index++, cinemaId);
+            ps.setString(index++, date); 
+
+            if (genre != null && !genre.isEmpty()) {
+                ps.setString(index++, genre);
+            }
+            if (ageRating != null && !ageRating.isEmpty()) {
+                ps.setString(index++, ageRating);
+            }
+
+            Map<Integer, Movie> movieMap = new LinkedHashMap<>();
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Showtime showtime = new Showtime(
+                        rs.getInt("showtime_id"),
+                        rs.getInt("movie_id"),
+                        rs.getInt("room_id"),
+                        rs.getString("start_time"),
+                        rs.getString("end_time"),
+                        rs.getDouble("ticket_price")
+                    );
+
+                    int movieId = showtime.getMovieId();
+
+                    if (!movieMap.containsKey(movieId)) {
+                        Movie movie = MovieMapper.mapMovie(rs);
+                        movie.setShowtimes(new ArrayList<>()); 
+                        movieMap.put(movieId, movie);
+                    }
+
+                    movieMap.get(movieId).getShowtimes().add(showtime);
+                }
+            }
+
+            results.addAll(movieMap.values());
+
+        } catch (SQLException e) {
+            System.out.println("Error fetching showtimes by filter: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return results;
     }
 
 }
