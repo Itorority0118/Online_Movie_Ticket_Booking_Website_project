@@ -6,7 +6,6 @@ let deleteId = null;
 let deleteType = null;
 
 document.addEventListener("click", e => {
-
     const link = e.target.closest("a[data-page]");
     if (link) {
         e.preventDefault();
