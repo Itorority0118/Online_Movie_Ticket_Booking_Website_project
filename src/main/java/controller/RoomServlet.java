@@ -110,12 +110,10 @@ public class RoomServlet extends HttpServlet {
         room.setCinemaId(Integer.parseInt(cinemaIdStr));
         room.setRoomName(roomName);
         room.setRoomType(roomType);
-
+        room.setSeatCount(0);
         if (idStr == null || idStr.isEmpty()) {
-            // Add new room
             roomDAO.addRoom(room);
         } else {
-            // Update existing room
             room.setRoomId(Integer.parseInt(idStr));
             roomDAO.updateRoom(room);
         }

@@ -1,26 +1,24 @@
-(function () {
+(function(){
+    console.log("SEAT LIST JS LOADED at", new Date().toISOString());
 
     const base = window.seatContext || '';
-    const modal = document.getElementById("deleteModal");
-    const confirmBtn = document.getElementById("confirmDeleteBtn");
+    document.body.addEventListener("click", function(e) {
 
-    document.body.addEventListener("click", function (e) {
-
-        const deleteBtn = e.target.closest(".action.delete[data-type='seat']");
-        if (deleteBtn) {
+        if (e.target.matches(".delete-seat, .delete-seat *")) {
             e.preventDefault();
-            e.stopPropagation();
-
-            modal.dataset.deleteId = deleteBtn.dataset.id;
-            modal.style.display = "flex";
+            const btn = e.target.closest(".delete-seat");
+            if (!btn) return;
+            const id = btn.dataset.id;
+            const modal = document.getElementById("deleteModal");
+            modal.dataset.deleteId = id; 
+            modal.style.display = "flex"; 
             return;
         }
 
-        if (e.target === confirmBtn) {
+        if (e.target.id === "confirmDeleteBtn") {
             e.preventDefault();
-            e.stopPropagation();
-
-            const id = modal.dataset.deleteId;
+            const modal = document.getElementById("deleteModal");
+            const id = modal ? modal.dataset.deleteId : null;
             if (!id) return;
 
             fetch(`${base}/seat`, {
@@ -29,33 +27,48 @@
                     "Content-Type": "application/x-www-form-urlencoded",
                     "X-Requested-With": "XMLHttpRequest"
                 },
-                body: `action=delete&id=${id}`
+                body: "action=delete&id=" + encodeURIComponent(id)
             })
             .then(r => r.json())
             .then(data => {
                 if (data.success) {
-                    const row = document.querySelector(`tr[data-id='${id}']`);
-                    if (row) row.remove();
+                    const seatEl = document.querySelector(`.delete-seat[data-id="${id}"]`);
+                    seatEl?.closest(".seat")?.remove();
                 } else {
                     alert("Delete failed");
                 }
-
-                modal.style.display = "none";
-                delete modal.dataset.deleteId;
+                if (modal) {
+                    modal.style.display = "none";
+                    delete modal.dataset.deleteId;
+                }
             })
-            .catch(() => {
-                alert("Delete failed (network)");
-                modal.style.display = "none";
-                delete modal.dataset.deleteId;
+            .catch(err => {
+                console.error(err);
+                alert("Delete failed (network).");
+                const modal = document.getElementById("deleteModal");
+                if (modal) {
+                    modal.style.display = "none";
+                    delete modal.dataset.deleteId;
+                }
             });
-
             return;
         }
 
-        if (e.target.classList.contains("cancel") || e.target === modal) {
+        // Click nút cancel
+        if (e.target.classList.contains("cancel")) {
+            const modal = document.getElementById("deleteModal");
+            if (modal) {
+                modal.style.display = "none";
+                delete modal.dataset.deleteId;
+            }
+            return;
+        }
+
+        const modal = document.getElementById("deleteModal");
+        if (modal && e.target === modal) {
             modal.style.display = "none";
             delete modal.dataset.deleteId;
+            return;
         }
     });
-
 })();

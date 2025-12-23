@@ -11,13 +11,14 @@ import java.util.List;
 public class RoomDAO {
 
 	public boolean addRoom(Room room) {
-	    String sql = "INSERT INTO Room (CinemaId, RoomName, RoomType, CreatedAt) VALUES (?, ?, ?, GETDATE())";
+	    String sql = "INSERT INTO Room (CinemaId, RoomName, RoomType, SeatCount, CreatedAt) VALUES (?, ?, ?, ?, GETDATE())";
 	    try (Connection conn = DBConnection.getConnection();
 	         PreparedStatement stmt = conn.prepareStatement(sql)) {
 
 	        stmt.setInt(1, room.getCinemaId());
 	        stmt.setString(2, room.getRoomName());
 	        stmt.setString(3, room.getRoomType());
+	        stmt.setInt(4, room.getSeatCount());
 
 	        return stmt.executeUpdate() > 0;
 
@@ -26,7 +27,6 @@ public class RoomDAO {
 	        return false;
 	    }
 	}
-
 
     // Get room by ID
     public Room getRoomById(int roomId) {
