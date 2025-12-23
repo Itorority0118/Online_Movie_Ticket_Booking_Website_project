@@ -8,87 +8,78 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SeatDAO {
-	
+
     public Seat getSeatById(int seatId) {
         String sql = "SELECT * FROM Seat WHERE SeatId = ?";
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, seatId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return mapSeat(rs);
-                }
+            ps.setInt(1, seatId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return mapSeat(rs);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    // Get all seats
-    public List<Seat> getAllSeats() {
+    public List<Seat> getSeatsByRoomId(int roomId) {
         List<Seat> list = new ArrayList<>();
-        String sql = "SELECT * FROM Seat ORDER BY SeatId ASC";
+        String sql = """
+            SELECT * FROM Seat
+            WHERE RoomId = ?
+            ORDER BY SeatRow, SeatCol
+        """;
 
         try (Connection conn = DBConnection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
+            ps.setInt(1, roomId);
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 list.add(mapSeat(rs));
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return list;
     }
 
-    public List<Seat> getSeatsByRoomId(int roomId, String keyword, String status, String seatType) {
+    public List<Seat> getSeatsByRoomAndShowtime(int roomId, int showtimeId) {
         List<Seat> list = new ArrayList<>();
 
-        StringBuilder sql = new StringBuilder(
-            "SELECT * FROM Seat WHERE RoomId = ?"
-        );
-
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            sql.append(" AND SeatNumber LIKE ?");
-        }
-
-        if (status != null && !status.trim().isEmpty()) {
-            sql.append(" AND Status = ?");
-        }
-
-        if (seatType != null && !seatType.trim().isEmpty()) {
-            sql.append(" AND SeatType = ?");
-        }
-
-        sql.append(" ORDER BY SeatNumber ASC");
+        String sql = """
+            SELECT 
+                s.SeatId,
+                s.RoomId,
+                s.SeatNumber,
+                s.SeatRow,
+                s.SeatCol,
+                s.SeatType,
+                CASE 
+                    WHEN t.TicketId IS NULL THEN 'Available'
+                    ELSE 'Booked'
+                END AS Status
+            FROM Seat s
+            LEFT JOIN Ticket t 
+                ON s.SeatId = t.SeatId
+                AND t.ShowtimeId = ?
+                AND t.Status = 'Booked'
+            WHERE s.RoomId = ?
+            ORDER BY s.SeatRow, s.SeatCol
+        """;
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            int index = 1;
-            stmt.setInt(index++, roomId);
+            ps.setInt(1, showtimeId);
+            ps.setInt(2, roomId);
 
-            if (keyword != null && !keyword.trim().isEmpty()) {
-                stmt.setString(index++, "%" + keyword.trim() + "%");
-            }
-
-            if (status != null && !status.trim().isEmpty()) {
-                stmt.setString(index++, status);
-            }
-
-            if (seatType != null && !seatType.trim().isEmpty()) {
-                stmt.setString(index++, seatType);
-            }
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    list.add(mapSeat(rs));
-                }
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapSeat(rs));
             }
 
         } catch (SQLException e) {
@@ -99,68 +90,62 @@ public class SeatDAO {
     }
 
     public boolean addSeat(Seat seat) {
-        String sql = "INSERT INTO Seat (RoomId, SeatNumber, SeatType, Status) VALUES (?, ?, ?, ?)";
+        String sql = """
+            INSERT INTO Seat
+            (RoomId, SeatNumber, SeatRow, SeatCol, SeatType, Status)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """;
+
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, seat.getRoomId());
-            stmt.setString(2, seat.getSeatNumber());
-            stmt.setString(3, seat.getSeatType());
-            stmt.setString(4, seat.getStatus());
+            ps.setInt(1, seat.getRoomId());
+            ps.setString(2, seat.getSeatNumber());
+            ps.setString(3, seat.getSeatRow());
+            ps.setInt(4, seat.getSeatCol());
+            ps.setString(5, seat.getSeatType());
+            ps.setString(6, seat.getStatus());
 
-            return stmt.executeUpdate() > 0;
-
+            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    // Update seat
     public boolean updateSeat(Seat seat) {
-        String sql = "UPDATE Seat SET RoomId = ?, SeatNumber = ?, SeatType = ?, Status = ? WHERE SeatId = ?";
+        String sql = """
+            UPDATE Seat
+            SET RoomId = ?, SeatNumber = ?, SeatRow = ?, SeatCol = ?,
+                SeatType = ?, Status = ?
+            WHERE SeatId = ?
+        """;
+
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, seat.getRoomId());
-            stmt.setString(2, seat.getSeatNumber());
-            stmt.setString(3, seat.getSeatType());
-            stmt.setString(4, seat.getStatus());
-            stmt.setInt(5, seat.getSeatId());
+            ps.setInt(1, seat.getRoomId());
+            ps.setString(2, seat.getSeatNumber());
+            ps.setString(3, seat.getSeatRow());
+            ps.setInt(4, seat.getSeatCol());
+            ps.setString(5, seat.getSeatType());
+            ps.setString(6, seat.getStatus());
+            ps.setInt(7, seat.getSeatId());
 
-            return stmt.executeUpdate() > 0;
-
+            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    // Delete seat
     public boolean deleteSeat(int seatId) {
         String sql = "DELETE FROM Seat WHERE SeatId = ?";
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, seatId);
-            return stmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public boolean updateSeatStatus(int seatId, String newStatus) {
-        String sql = "UPDATE Seat SET Status = ? WHERE SeatId = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, newStatus);
-            stmt.setInt(2, seatId);
-
-            return stmt.executeUpdate() > 0;
-
+            ps.setInt(1, seatId);
+            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -168,12 +153,14 @@ public class SeatDAO {
     }
 
     private Seat mapSeat(ResultSet rs) throws SQLException {
-        Seat seat = new Seat();
-        seat.setSeatId(rs.getInt("SeatId"));
-        seat.setRoomId(rs.getInt("RoomId"));
-        seat.setSeatNumber(rs.getString("SeatNumber"));
-        seat.setSeatType(rs.getString("SeatType"));
-        seat.setStatus(rs.getString("Status"));
-        return seat;
+        return new Seat(
+            rs.getInt("SeatId"),
+            rs.getInt("RoomId"),
+            rs.getString("SeatNumber"),
+            rs.getString("SeatRow"),
+            rs.getInt("SeatCol"),
+            rs.getString("SeatType"),
+            rs.getString("Status")
+        );
     }
 }

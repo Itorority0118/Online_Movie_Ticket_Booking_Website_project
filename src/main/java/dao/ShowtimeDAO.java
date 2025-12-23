@@ -18,7 +18,7 @@ public class ShowtimeDAO {
 
     // Thêm suất chiếu mới
     public boolean addShowtime(Showtime showtime) {
-        String query = "INSERT INTO Showtime (movie_id, room_id, start_time, end_time, ticket_price) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Showtime (MovieId, RoomId, StartTime, EndTime, TicketPrice) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
@@ -39,7 +39,7 @@ public class ShowtimeDAO {
     }
 
     public boolean updateShowtime(Showtime showtime) {
-        String query = "UPDATE Showtime SET movie_id = ?, room_id = ?, start_time = ?, end_time = ?, ticket_price = ? WHERE showtime_id = ?";
+        String query = "UPDATE Showtime SET MovieId = ?, RoomId = ?, StartTime = ?, EndTime = ?, TicketPrice = ? WHERE ShowtimeId = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
@@ -61,7 +61,7 @@ public class ShowtimeDAO {
     }
 
     public boolean deleteShowtime(int showtimeId) {
-        String query = "DELETE FROM Showtime WHERE showtime_id = ?";
+        String query = "DELETE FROM Showtime WHERE ShowtimeId = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
@@ -86,12 +86,12 @@ public class ShowtimeDAO {
 
             while (rs.next()) {
                 Showtime showtime = new Showtime(
-                    rs.getInt("showtime_id"),
-                    rs.getInt("movie_id"),
-                    rs.getInt("room_id"),
-                    rs.getString("start_time"),
-                    rs.getString("end_time"),
-                    rs.getDouble("ticket_price")
+                    rs.getInt("ShowtimeId"),
+                    rs.getInt("MovieId"),
+                    rs.getInt("RoomId"),
+                    rs.getString("StartTime"),
+                    rs.getString("EndTime"),
+                    rs.getDouble("TicketPrice")
                 );
                 showtimes.add(showtime);
             }
@@ -130,7 +130,7 @@ public class ShowtimeDAO {
         query.append("JOIN Movie m ON s.movie_id = m.MovieId ");
         query.append("JOIN Room r ON s.room_id = r.RoomId "); 
         
-        query.append("WHERE r.CinemaId = ? AND CAST(s.start_time AS DATE) = ?");
+        query.append("WHERE r.CinemaId = ? AND CAST(s.StartTim AS DATE) = ?");
 
         if (genre != null && !genre.isEmpty()) {
             query.append(" AND m.Genre = ?");
@@ -139,7 +139,7 @@ public class ShowtimeDAO {
             query.append(" AND m.AgeRating = ?");
         }
 
-        query.append(" ORDER BY m.Title, s.start_time");
+        query.append(" ORDER BY m.Title, s.StartTime");
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(query.toString())) {
@@ -160,12 +160,12 @@ public class ShowtimeDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Showtime showtime = new Showtime(
-                        rs.getInt("showtime_id"),
-                        rs.getInt("movie_id"),
-                        rs.getInt("room_id"),
-                        rs.getString("start_time"),
-                        rs.getString("end_time"),
-                        rs.getDouble("ticket_price")
+                        rs.getInt("ShowtimeId"),
+                        rs.getInt("MovieId"),
+                        rs.getInt("RoomId"),
+                        rs.getString("StartTime"),
+                        rs.getString("EndTime"),
+                        rs.getDouble("TicketPrice")
                     );
 
                     int movieId = showtime.getMovieId();

@@ -1,11 +1,13 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/cinema/cinema-form.css?v=1">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<link rel="stylesheet"
+      href="${pageContext.request.contextPath}/css/cinema/cinema-form.css?v=1">
 
 <div class="cinema-form-page centered">
-
-    <a href="${pageContext.request.contextPath}/seat?action=list&roomId=${seat != null ? seat.roomId : param.roomId}" class="back-btn">
+    <a href="${pageContext.request.contextPath}/seat?action=list&roomId=${seat != null ? seat.roomId : param.roomId}"
+       class="back-btn">
         <i class="fas fa-arrow-left"></i> Back to Seat List
     </a>
 
@@ -15,19 +17,20 @@
             <c:otherwise>Add Seat</c:otherwise>
         </c:choose>
     </h1>
+
     <form method="post" action="${pageContext.request.contextPath}/seat">
-
-		<c:if test="${seat != null}">
-		    <input type="hidden" name="id" value="${seat.seatId}">
-		</c:if>
-
+        <c:if test="${seat != null}">
+            <input type="hidden" name="id" value="${seat.seatId}">
+        </c:if>
         <input type="hidden" name="roomId"
-               value="${seat != null ? seat.roomId : param.roomId}">
+               value="${seat != null ? seat.roomId : (param.roomId != null ? param.roomId : 0)}">
+        <input type="hidden" name="seatRow" value="${seat != null ? seat.seatRow : ''}">
+        <input type="hidden" name="seatCol" value="${seat != null ? seat.seatCol : ''}">
 
         <div class="form-group">
             <label>Seat Number</label>
             <input type="text" name="seatNumber"
-                   value="${seat != null ? seat.seatNumber : ''}"
+                   value="${seat != null ? seat.seatNumber : ''}" readonly
                    placeholder="Example: A1" required>
         </div>
 
@@ -51,12 +54,8 @@
             </select>
         </div>
 
-        <button type="submit" class="submit-btn">
-            <c:choose>
-                <c:when test="${seat != null}">Save Changes</c:when>
-                <c:otherwise>Create Seat</c:otherwise>
-            </c:choose>
-        </button>
-
+        <c:if test="${param.roomId != null || seat != null}">
+            <button type="submit" class="submit-btn">Save changes</button>
+        </c:if>
     </form>
 </div>
