@@ -30,30 +30,6 @@ public class TicketServlet extends HttpServlet {
 
         switch (action) {
 
-            case "new":
-                request.setAttribute("ticket", null);
-
-                if (isAjax)
-                    request.getRequestDispatcher("/admin/ticket-form.jsp")
-                           .forward(request, response);
-                else
-                    request.getRequestDispatcher("/admin/dashboard.jsp?page=ticket-form.jsp")
-                           .forward(request, response);
-                break;
-
-            case "edit":
-                int editId = Integer.parseInt(request.getParameter("id"));
-                Ticket ticket = ticketDAO.getTicketById(editId);
-                request.setAttribute("ticket", ticket);
-
-                if (isAjax)
-                    request.getRequestDispatcher("/admin/ticket-form.jsp")
-                           .forward(request, response);
-                else
-                    request.getRequestDispatcher("/admin/dashboard.jsp?page=ticket-form.jsp")
-                           .forward(request, response);
-                break;
-
             case "cancel":
                 int cancelId = Integer.parseInt(request.getParameter("id"));
                 ticketDAO.cancelTicket(cancelId);
@@ -142,10 +118,8 @@ public class TicketServlet extends HttpServlet {
         ticket.setStatus(status);
 
         if (ticketIdStr == null || ticketIdStr.isEmpty()) {
-            // ADD
             ticketDAO.bookTicket(ticket);
         } else {
-            // UPDATE
             ticket.setTicketId(Integer.parseInt(ticketIdStr));
             ticketDAO.updateTicket(ticket);
         }
