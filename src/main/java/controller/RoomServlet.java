@@ -62,7 +62,6 @@ public class RoomServlet extends HttpServlet {
                 Integer cinemaId = (cinemaIdStr != null && !cinemaIdStr.isEmpty())
                                     ? Integer.parseInt(cinemaIdStr) : null;
 
-                // Lấy danh sách room theo filter
                 List<Room> rooms = roomDAO.searchRooms(cinemaId, keyword, roomType);
 
                 if (cinemaId != null) {

@@ -163,4 +163,19 @@ public class RoomDAO {
 
         return list;
     }
+    public int getCinemaIdByRoom(int roomId) {
+        String sql = "SELECT CinemaId FROM Room WHERE RoomId = ?";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, roomId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("CinemaId");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }

@@ -1,11 +1,12 @@
 package controller;
 
 import dao.ShowtimeDAO;
-import dao.CinemaDAO; 
-import dao.MovieDAO; 
+import dao.CinemaDAO;
+import dao.MovieDAO;
+import dao.RoomDAO;
 import model.Showtime;
-import model.Movie; 
-import model.Cinema; 
+import model.Movie;
+import model.Cinema;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -14,15 +15,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("serial")
 @WebServlet("/showtime")
 public class ShowtimeServlet extends HttpServlet {
 
     private ShowtimeDAO showtimeDAO = new ShowtimeDAO();
-    private CinemaDAO cinemaDAO = new CinemaDAO(); 
-    private MovieDAO movieDAO = new MovieDAO(); 
+    private MovieDAO movieDAO = new MovieDAO();
+    private CinemaDAO cinemaDAO = new CinemaDAO();
+    private RoomDAO roomDAO = new RoomDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -31,104 +35,179 @@ public class ShowtimeServlet extends HttpServlet {
         String action = request.getParameter("action");
         if (action == null || action.isEmpty()) action = "search";
 
-        // ✅ 1. LUÔN CUNG CẤP DANH SÁCH LỌC CHO JSP (View)
+        String role = request.getParameter("role");
+        boolean isAdmin = "admin".equals(role);
+
         request.setAttribute("cityList", cinemaDAO.getDistinctCities());
         request.setAttribute("genreList", movieDAO.getDistinctGenres());
         request.setAttribute("ageRatingList", movieDAO.getAgeRatingList());
-        
-        // Lấy tham số cho bộ lọc
+
         String cityParam = request.getParameter("city");
         String cinemaIdStr = request.getParameter("cinemaId");
         String dateParam = request.getParameter("date");
         String genreParam = request.getParameter("genre");
         String ageRatingParam = request.getParameter("ageRating");
 
-        // Cập nhật danh sách rạp theo thành phố đã chọn (cần cho select box thứ hai)
-        List<Cinema> cinemaList;
-        if (cityParam != null && !cityParam.isEmpty()) {
-            cinemaList = cinemaDAO.getCinemasByCity(cityParam);
-        } else {
-            cinemaList = cinemaDAO.getAllCinemas(); 
-        }
-        request.setAttribute("cinemaList", cinemaList);
+        if (!isAdmin) {
+            // =========================
+            // LUỒNG USER
+            // =========================
+            List<Cinema> cinemaList;
+            if (cityParam != null && !cityParam.isEmpty()) {
+                cinemaList = cinemaDAO.getCinemasByCity(cityParam);
+            } else {
+                cinemaList = cinemaDAO.getAllCinemas();
+            }
+            request.setAttribute("cinemaList", cinemaList);
 
-
-        switch (action) {
-            case "search":
-                // =========================================================
-                // ✅ LOGIC CHÍNH: TÌM KIẾM LỊCH CHIẾU CHO KHÁCH HÀNG
-                // =========================================================
-                
-                // Kiểm tra điều kiện tìm kiếm tối thiểu (Rạp và Ngày là bắt buộc)
-                boolean isFilteredSearch = (cinemaIdStr != null && !cinemaIdStr.isEmpty() && dateParam != null && !dateParam.isEmpty());
-
-                List<Movie> showtimeMovies = null;
-
-                if (isFilteredSearch) {
-                    // ✅ TRƯỜNG HỢP 1: CÓ THAM SỐ LỌC HỢP LỆ (Thực hiện tìm kiếm lịch chiếu cụ thể)
-                    try {
-                        int cinemaId = Integer.parseInt(cinemaIdStr);
-                        
-                        // Gọi DAO với các bộ lọc đầy đủ
-                        showtimeMovies = 
-                                showtimeDAO.getShowtimesByFilter(
-                                    cinemaId, 
-                                    dateParam, 
-                                    genreParam, 
-                                    ageRatingParam
-                                );
-                        
-                    } catch (NumberFormatException e) {
-                         request.setAttribute("errorMessage", "ID Rạp không hợp lệ.");
-                    }
-                    
-                } else {
-                    // ✅ TRƯỜNG HỢP 2: LẦN TRUY CẬP ĐẦU TIÊN / THIẾU THAM SỐ (Hiển thị MẶC ĐỊNH)
-                    showtimeMovies = movieDAO.getAllMovies(); 
-                    
-                    if (showtimeMovies != null && !showtimeMovies.isEmpty()) {
-                        // Chỉ set defaultMessage khi có phim để hiển thị
-                        request.setAttribute("defaultMessage", "Dưới đây là tất cả các phim đang chiếu. Vui lòng chọn Rạp và Ngày để xem lịch chiếu cụ thể.");
+            switch (action) {
+                case "search":
+                    boolean isFiltered = (cinemaIdStr != null && !cinemaIdStr.isEmpty() && dateParam != null && !dateParam.isEmpty());
+                    List<Movie> showtimeMovies = null;
+                    if (isFiltered) {
+                        try {
+                            int cinemaId = Integer.parseInt(cinemaIdStr);
+                            showtimeMovies = showtimeDAO.getShowtimesByFilter(cinemaId, dateParam, genreParam, ageRatingParam);
+                        } catch (NumberFormatException e) {
+                            request.setAttribute("errorMessage", "ID rạp không hợp lệ.");
+                        }
                     } else {
-                         request.setAttribute("errorMessage", "Hiện tại không có phim nào đang chiếu.");
+                        showtimeMovies = movieDAO.getAllMovies();
+                        if (showtimeMovies != null && !showtimeMovies.isEmpty()) {
+                            request.setAttribute("defaultMessage", "Dưới đây là tất cả phim đang chiếu. Chọn rạp và ngày để xem lịch chiếu cụ thể.");
+                        } else {
+                            request.setAttribute("errorMessage", "Hiện tại không có phim nào đang chiếu.");
+                        }
+                    }
+                    request.setAttribute("showtimeMovies", showtimeMovies);
+                    request.getRequestDispatcher("/showtimes.jsp").forward(request, response);
+                    break;
+
+                case "listByRoom":
+                    String roomIdStr = request.getParameter("roomId");
+                    if (roomIdStr != null && !roomIdStr.isEmpty()) {
+                        try {
+                            int roomId = Integer.parseInt(roomIdStr);
+                            List<Showtime> roomShowtimes = showtimeDAO.getShowtimesByRoom(roomId);
+                            request.setAttribute("showtimes", roomShowtimes);
+                            request.setAttribute("roomId", roomId);
+                            request.getRequestDispatcher("/showtime-list.jsp").forward(request, response);
+                        } catch (NumberFormatException e) {
+                            request.setAttribute("errorMessage", "ID phòng không hợp lệ.");
+                            response.sendRedirect("cinema?action=list");
+                        }
+                    } else {
+                        response.sendRedirect("cinema?action=list");
+                    }
+                    break;
+
+                default:
+                    response.sendRedirect("showtime?action=search");
+            }
+
+        } else {
+            // =========================
+            // LUỒNG ADMIN
+            // =========================
+            request.setAttribute("activeSidebar", "showtime");
+
+            switch (action) {
+            case "list": {
+                String movieName = request.getParameter("movieName");
+                String startTime = request.getParameter("startTime");
+                String endTime = request.getParameter("endTime");
+                String roomIdStr = request.getParameter("roomId");
+
+                List<Showtime> showtimes;
+
+                if (roomIdStr != null && !roomIdStr.isEmpty()) {
+                    int roomId = Integer.parseInt(roomIdStr);
+                    showtimes = showtimeDAO.searchByAdminInRoom(
+                            roomId, movieName, startTime, endTime
+                    );
+                    request.setAttribute("roomId", roomId);
+                } else {
+                    showtimes = showtimeDAO.searchByAdmin(
+                            movieName, startTime, endTime
+                    );
+                }
+
+                request.setAttribute("showtimes", showtimes);
+
+                Map<Integer, String> movieMap = new HashMap<>();
+                for (Showtime s : showtimes) {
+                    if (!movieMap.containsKey(s.getMovieId())) {
+                        Movie m = movieDAO.getMovieById(s.getMovieId());
+                        if (m != null) movieMap.put(s.getMovieId(), m.getTitle());
                     }
                 }
-                
-                // ✅ FIX: Gán danh sách phim vào request scope CHỈ MỘT LẦN ở cuối logic search
-                request.setAttribute("showtimeMovies", showtimeMovies);
-                
-                // Chuyển tiếp đến trang hiển thị lịch chiếu (showtimes.jsp)
-                request.getRequestDispatcher("/showtimes.jsp").forward(request, response);
+                request.setAttribute("movieMap", movieMap);
+
+                request.getRequestDispatcher(
+                    "/admin/dashboard.jsp?page=showtime-list.jsp"
+                ).forward(request, response);
                 break;
-                
-            // =========================================================
-            // ✅ LOGIC CRUD: QUẢN LÝ SUẤT CHIẾU (Dành cho Admin)
-            // =========================================================
-            
-            case "new":
-                request.getRequestDispatcher("/showtime-form.jsp").forward(request, response);
+            }
+
+            case "listByRoom":
+                String roomIdStr = request.getParameter("roomId");
+                if (roomIdStr != null && !roomIdStr.isEmpty()) {
+                    try {
+                        int roomId = Integer.parseInt(roomIdStr);
+                        List<Showtime> roomShowtimes = showtimeDAO.getShowtimesByRoom(roomId);
+                        request.setAttribute("showtimes", roomShowtimes);
+                        request.setAttribute("roomId", roomId);
+                        int cinemaId = roomDAO.getCinemaIdByRoom(roomId);
+                        request.setAttribute("cinemaId", cinemaId);
+
+                        Map<Integer, String> roomMovieMap = new HashMap<>();
+                        for (Showtime s : roomShowtimes) {
+                            if (!roomMovieMap.containsKey(s.getMovieId())) {
+                                Movie m = movieDAO.getMovieById(s.getMovieId());
+                                if (m != null) roomMovieMap.put(s.getMovieId(), m.getTitle());
+                            }
+                        }
+                        request.setAttribute("movieMap", roomMovieMap);
+
+                    } catch (NumberFormatException e) {
+                        request.setAttribute("errorMessage", "ID phòng không hợp lệ.");
+                    }
+                } else {
+                    request.setAttribute("errorMessage", "Chưa chọn phòng.");
+                }
+
+                request.getRequestDispatcher("/admin/dashboard.jsp?page=showtime-list.jsp").forward(request, response);
                 break;
 
-            case "edit":
-                int editId = Integer.parseInt(request.getParameter("id"));
-                request.setAttribute("editId", editId);
-                // (Cần thêm logic lấy đối tượng Showtime bằng ID)
-                request.getRequestDispatcher("/showtime-form.jsp").forward(request, response);
-                break;
 
-            case "delete":
-                int deleteId = Integer.parseInt(request.getParameter("id"));
-                showtimeDAO.deleteShowtime(deleteId);
-                response.sendRedirect("showtime?action=list"); // Chuyển về danh sách admin
-                break;
-                
-            case "list":
-            default:
-                // Display list of all showtimes (Admin view)
-                List<Showtime> showtimeList = showtimeDAO.getAllShowtimes();
-                request.setAttribute("showtimes", showtimeList);
-                request.getRequestDispatcher("/showtime-list.jsp").forward(request, response);
-                break;
+                case "new":
+                    String roomIdParam = request.getParameter("roomId");
+                    if(roomIdParam != null && !roomIdParam.isEmpty()) {
+                        request.setAttribute("roomId", Integer.parseInt(roomIdParam));
+                    }
+                    request.setAttribute("movieList", movieDAO.getAllMovies());
+                    request.setAttribute("roomList", roomDAO.getAllRooms());
+                    request.getRequestDispatcher("/admin/dashboard.jsp?page=showtime-form.jsp").forward(request, response);
+                    break;
+
+                case "edit":
+                    int editId = Integer.parseInt(request.getParameter("id"));
+                    Showtime showtime = showtimeDAO.getShowtimeById(editId);
+                    request.setAttribute("showtime", showtime);
+                    request.setAttribute("movieList", movieDAO.getAllMovies());
+                    request.setAttribute("roomList", roomDAO.getAllRooms());
+
+                    if (showtime != null) {
+                        request.setAttribute("roomId", showtime.getRoomId());
+                    }
+
+                    request.getRequestDispatcher("/admin/dashboard.jsp?page=showtime-form.jsp").forward(request, response);
+                    break;
+
+                default:
+                    response.sendRedirect(request.getContextPath() + "/showtime?role=admin&action=list");
+                    break;
+            }
         }
     }
 
@@ -137,6 +216,28 @@ public class ShowtimeServlet extends HttpServlet {
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
+        String role = request.getParameter("role");
+        boolean isAdmin = "admin".equals(role);
+
+        if (!isAdmin) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Chỉ admin mới được thao tác dữ liệu.");
+            return;
+        }
+
+        String action = request.getParameter("action");
+
+        if ("delete".equals(action)) {
+            int id = Integer.parseInt(request.getParameter("id"));
+            boolean deleted = showtimeDAO.deleteShowtime(id);
+
+            if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"success\":" + deleted + "}");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/showtime?role=admin&action=list");
+            }
+            return;
+        }
 
         String idStr = request.getParameter("id");
         String movieIdStr = request.getParameter("movieId");
@@ -145,6 +246,9 @@ public class ShowtimeServlet extends HttpServlet {
         String endTime = request.getParameter("endTime");
         String ticketPriceStr = request.getParameter("ticketPrice");
 
+        if (startTime != null) startTime = startTime.replace("T", " ");
+        if (endTime != null) endTime = endTime.replace("T", " ");
+        
         Showtime showtime = new Showtime();
         try {
             showtime.setMovieId(Integer.parseInt(movieIdStr));
@@ -153,20 +257,23 @@ public class ShowtimeServlet extends HttpServlet {
             showtime.setEndTime(endTime);
             showtime.setTicketPrice(Double.parseDouble(ticketPriceStr));
         } catch (NumberFormatException e) {
-             // Xử lý lỗi input không hợp lệ
-             System.err.println("Lỗi chuyển đổi số trong doPost: " + e.getMessage());
-             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Dữ liệu nhập không hợp lệ.");
-             return;
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Dữ liệu nhập không hợp lệ.");
+            return;
         }
-
-
+        
+        boolean success;
         if (idStr == null || idStr.isEmpty()) {
-            showtimeDAO.addShowtime(showtime);
+            success = showtimeDAO.addShowtime(showtime);
         } else {
             showtime.setShowtimeId(Integer.parseInt(idStr));
-            showtimeDAO.updateShowtime(showtime);
+            success = showtimeDAO.updateShowtime(showtime);
         }
 
-        response.sendRedirect("showtime?action=list"); // Chuyển về danh sách admin
+        if (!success) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Không thể lưu showtime.");
+            return;
+        }
+
+        response.sendRedirect(request.getContextPath() + "/showtime?role=admin&action=listByRoom&roomId=" + roomIdStr);
     }
 }

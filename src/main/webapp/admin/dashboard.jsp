@@ -27,18 +27,10 @@
 			    <a href="${pageContext.request.contextPath}/cinema?action=list"
 			       data-page="${pageContext.request.contextPath}/cinema?action=list">Manage Cinemas</a>
 			</li>
-
-            <li><a href="#"
-                data-page="${pageContext.request.contextPath}/showtime?action=list">
-                Manage Showtimes</a></li>
-
-            <li><a href="#"
-                data-page="${pageContext.request.contextPath}/schedule?action=list">
-                Manage Schedules</a></li>
-
-            <li><a href="#"
-                data-page="${pageContext.request.contextPath}/ticket?action=list">
-                Manage Tickets</a></li>
+			
+			<li class="${requestScope.activeSidebar eq 'ticket' ? 'active' : ''}">
+			    <a href="#" data-page="${pageContext.request.contextPath}/ticket?action=list">Manage Tickets</a>
+			</li>
 
             <li><a href="#"
                 data-page="${pageContext.request.contextPath}/payment?action=list">
@@ -66,6 +58,6 @@
         const contextPath = "${pageContext.request.contextPath}";
     </script>
 
-    <script src="<c:url value='/js/admin.js?v=4'/>"></script>
+    <script src="<c:url value='/js/admin.js?v=5'/>"></script>
 </body>
 </html>
