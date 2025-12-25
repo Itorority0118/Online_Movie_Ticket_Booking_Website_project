@@ -188,5 +188,177 @@ public class ShowtimeDAO {
         }
         return results;
     }
+    
+    public List<Showtime> getShowtimesByRoom(int roomId) {
+        List<Showtime> showtimes = new ArrayList<>();
+        String query = "SELECT * FROM Showtime WHERE RoomId = ? ORDER BY StartTime";
 
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ps.setInt(1, roomId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Showtime showtime = new Showtime(
+                        rs.getInt("ShowtimeId"),
+                        rs.getInt("MovieId"),
+                        rs.getInt("RoomId"),
+                        rs.getString("StartTime"),
+                        rs.getString("EndTime"),
+                        rs.getDouble("TicketPrice")
+                    );
+                    showtimes.add(showtime);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return showtimes;
+    }
+    
+    public Showtime getShowtimeById(int showtimeId) {
+        String query = "SELECT * FROM Showtime WHERE ShowtimeId = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ps.setInt(1, showtimeId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Showtime(
+                        rs.getInt("ShowtimeId"),
+                        rs.getInt("MovieId"),
+                        rs.getInt("RoomId"),
+                        rs.getString("StartTime"),
+                        rs.getString("EndTime"),
+                        rs.getDouble("TicketPrice")
+                    );
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+    
+    public List<Showtime> searchByAdmin(
+            String movieName,
+            String startTime,
+            String endTime) {
+
+        List<Showtime> list = new ArrayList<>();
+
+        String sql =
+            "SELECT s.* FROM Showtime s " +
+            "JOIN Movie m ON s.MovieId = m.MovieId " +
+            "WHERE 1=1 ";
+
+        if (movieName != null && !movieName.isEmpty()) {
+            sql += " AND m.Title LIKE ? ";
+        }
+        if (startTime != null && !startTime.isEmpty()) {
+            sql += " AND s.StartTime >= ? ";
+        }
+        if (endTime != null && !endTime.isEmpty()) {
+            sql += " AND s.EndTime <= ? ";
+        }
+
+        sql += " ORDER BY s.StartTime";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            int i = 1;
+            if (movieName != null && !movieName.isEmpty()) {
+                ps.setString(i++, "%" + movieName + "%");
+            }
+            if (startTime != null && !startTime.isEmpty()) {
+                ps.setString(i++, startTime.replace("T", " "));
+            }
+            if (endTime != null && !endTime.isEmpty()) {
+                ps.setString(i++, endTime.replace("T", " "));
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new Showtime(
+                    rs.getInt("ShowtimeId"),
+                    rs.getInt("MovieId"),
+                    rs.getInt("RoomId"),
+                    rs.getString("StartTime"),
+                    rs.getString("EndTime"),
+                    rs.getDouble("TicketPrice")
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+    
+    public List<Showtime> searchByAdminInRoom(
+            int roomId,
+            String movieName,
+            String startTime,
+            String endTime) {
+
+        List<Showtime> list = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder(
+            "SELECT s.* FROM Showtime s " +
+            "JOIN Movie m ON s.MovieId = m.MovieId " +
+            "WHERE s.RoomId = ? "
+        );
+
+        if (movieName != null && !movieName.isEmpty()) {
+            sql.append(" AND m.Title LIKE ? ");
+        }
+        if (startTime != null && !startTime.isEmpty()) {
+            sql.append(" AND s.StartTime >= ? ");
+        }
+        if (endTime != null && !endTime.isEmpty()) {
+            sql.append(" AND s.EndTime <= ? ");
+        }
+
+        sql.append(" ORDER BY s.StartTime");
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            int i = 1;
+            ps.setInt(i++, roomId);
+
+            if (movieName != null && !movieName.isEmpty()) {
+                ps.setString(i++, "%" + movieName + "%");
+            }
+            if (startTime != null && !startTime.isEmpty()) {
+                ps.setString(i++, startTime.replace("T", " "));
+            }
+            if (endTime != null && !endTime.isEmpty()) {
+                ps.setString(i++, endTime.replace("T", " "));
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new Showtime(
+                    rs.getInt("ShowtimeId"),
+                    rs.getInt("MovieId"),
+                    rs.getInt("RoomId"),
+                    rs.getString("StartTime"),
+                    rs.getString("EndTime"),
+                    rs.getDouble("TicketPrice")
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
 }

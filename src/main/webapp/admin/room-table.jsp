@@ -34,7 +34,11 @@
                     <a class="action"
                        href="${pageContext.request.contextPath}/seat?action=list&roomId=${r.roomId}">
                         Seat
-                    </a>
+                    </a> |
+					<a class="action"
+					   href="${pageContext.request.contextPath}/showtime?role=admin&action=listByRoom&roomId=${r.roomId}&page=showtime-list.jsp">
+					    Showtimes
+					</a>
                 </td>
             </tr>
         </c:forEach>

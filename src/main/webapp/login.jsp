@@ -16,7 +16,7 @@
         <div class="error">${error}</div>
     </c:if>
 
-    <form action="user" method="post">
+    <form action="${pageContext.request.contextPath}/user" method="post">
         <input type="hidden" name="action" value="login">
 
         <div class="form-group">

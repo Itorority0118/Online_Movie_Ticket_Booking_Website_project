@@ -195,6 +195,12 @@
     text-decoration: none;
 }
 
+.user-table a.action[href*="showtime"] {
+    color: #ffffff;
+    font-weight: 600;
+    text-decoration: none;
+}
+
 .user-table th {
     background-color: #1b1f28;
     color: #ff9500;
@@ -370,4 +376,31 @@
 
 .seat-row-seats .seat:nth-child(5) {
     margin-right: 30px;
+}
+.ticket-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.ticket-table .col-id        { width: 60px; }
+.ticket-table .col-user      { width: 80px; }
+.ticket-table .col-showtime  { width: 90px; }
+.ticket-table .col-seat      { width: 70px; }
+.ticket-table .col-price     { width: 90px; }
+.ticket-table .col-status    { width: 90px; }
+.ticket-table .col-action    { width: 90px; }
+
+.ticket-table .col-time {
+    width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* tất cả td không cho giãn */
+.ticket-table td,
+.ticket-table th {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

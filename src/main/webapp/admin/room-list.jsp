@@ -1,7 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/room/room-form.css?v=2">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/room/room-form.css?v=5">
 
     <a href="${pageContext.request.contextPath}/cinema?action=list" class="back-btn">
         <i class="fas fa-arrow-left"></i> Back to Cinema List

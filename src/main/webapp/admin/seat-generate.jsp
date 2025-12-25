@@ -6,7 +6,17 @@
 
 <div class="room-form-page">
 
-    <a href="${pageContext.request.contextPath}/seat?action=list&roomId=${param.roomId}"
+    <c:set var="roomId" value="${roomId}" />
+    <c:set var="showtimeId" value="${showtimeId}" />
+
+    <a href="<c:choose>
+                <c:when test='${not empty roomId}'>
+                    ${pageContext.request.contextPath}/seat?action=list&roomId=${roomId}
+                </c:when>
+                <c:otherwise>
+                    ${pageContext.request.contextPath}/room
+                </c:otherwise>
+             </c:choose>"
        class="back-btn">
         ← Back to Seat Map
     </a>
@@ -16,7 +26,10 @@
     <form method="post" action="${pageContext.request.contextPath}/seat">
 
         <input type="hidden" name="action" value="generate"/>
-        <input type="hidden" name="roomId" value="${param.roomId}"/>
+        <input type="hidden" name="roomId" value="${roomId}"/>
+        <c:if test="${not empty showtimeId}">
+            <input type="hidden" name="showtimeId" value="${showtimeId}"/>
+        </c:if>
 
         <div class="form-group">
             <label>From Row</label>

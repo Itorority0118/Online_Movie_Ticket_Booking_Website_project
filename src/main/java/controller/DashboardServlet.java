@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import dao.MovieDAO;
+import dao.TicketDAO;
 import dao.UserDAO;
 
 @WebServlet("/admin")
@@ -15,6 +16,7 @@ public class DashboardServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     UserDAO userDAO = new UserDAO();
     MovieDAO movieDAO = new MovieDAO();
+    TicketDAO ticketDAO = new TicketDAO();
        
     public DashboardServlet() {
         super();
@@ -27,11 +29,13 @@ public class DashboardServlet extends HttpServlet {
         int totalAdmins = userDAO.countUsersByRole("admin");
         int totalActive = userDAO.countUsersByStatus("active");
         int totalInactive = userDAO.countUsersByStatus("inactive");
+        int totalTickets = ticketDAO.countSoldTickets();
 
         req.setAttribute("totalUsers", totalUsers);
         req.setAttribute("totalAdmins", totalAdmins);
         req.setAttribute("totalActive", totalActive);
         req.setAttribute("totalInactive", totalInactive);
+        req.setAttribute("totalTickets", totalTickets);
         
         int totalMovies = movieDAO.countMovies();
         req.setAttribute("totalMovies", totalMovies);
