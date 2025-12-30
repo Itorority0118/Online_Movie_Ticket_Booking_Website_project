@@ -1,0 +1,38 @@
+CẤU HÌNH HTTPS CHO TOMCAT 10 (Yêu cầu sử dụng java 11 hoặc hơn để tương thức với việc cài đặt HTTPS trên tomcat 10)
+Bước 1:
+Vào command prompt gõ lệnh:
+cd để di chuyển tới folder tomcat 10
+ví dụ: cd /d D:\Online_Movie_Booking_Ticket\apache-tomcat-10.0.27 
+Bước 2:
+Gõ lệnh: 
+keytool -genkeypair -alias tomcat -keyalg RSA -keysize 2048 -keystore conf\keystore.jks -validity 3650
+để tạo ra một keystore.jks với các thông tin:
+Keystore password	changeit
+Re-enter	changeit
+First and last name	localhost
+Organizational unit	IT
+Organization	MyApp
+City	Hanoi
+State	HN
+Country code	VN
+Correct?	yes
+sau đó sẽ có một file keystore.jks được tạo trong conf
+Bước 3:
+Stop tomcat server nếu đang chạy
+vào file server.xml trong conf sử dụng ctrl F gõ 8443 để đi đến đoạn mã được comment như sau:
+<Connector port="8443" protocol="org.apache.coyote.http11.Http11NioProtocol" maxThreads="150" SSLEnabled="true">
+<UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol"/>
+<SSLHostConfig>
+<Certificate certificateKeystoreFile="conf/keystore.jks"/>
+</SSLHostConfig>
+</Connector>
+
+sau đó thêm  certificateKeystorePassword="changeit" type="RSA" vào như sau:
+<Connector port="8443" protocol="org.apache.coyote.http11.Http11NioProtocol" maxThreads="150" SSLEnabled="true">
+<UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol"/>
+<SSLHostConfig>
+<Certificate certificateKeystoreFile="conf/keystore.jks" certificateKeystorePassword="changeit" type="RSA"/>
+</SSLHostConfig>
+</Connector>
+lưu lại và start tomcat cat server
+Lúc này tomcat đã được cấu hình HTTPS 
