@@ -27,8 +27,9 @@ public class UserServlet extends HttpServlet {
         switch (action) {
 
             case "new":
-                request.setAttribute("user", null);
-                request.getSession().setAttribute("user", null); 
+            	User emptyUser = new User();
+                request.setAttribute("user", emptyUser);
+                //request.getSession().setAttribute("user", null); 
                 if (isAjax)
                     request.getRequestDispatcher("/admin/user-form.jsp").forward(request, response);
                 else
@@ -56,7 +57,14 @@ public class UserServlet extends HttpServlet {
                 break;
 
             case "logout":
-                request.getSession().invalidate();
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    User user = (User) session.getAttribute("user");
+                    if (user != null) {
+                        OnlineUserListener.removeSession(user.getEmail(), session.getId());
+                    }
+                    session.invalidate();
+                }
                 response.sendRedirect("login.jsp");
                 break;
                 
@@ -131,6 +139,7 @@ public class UserServlet extends HttpServlet {
             if (user != null) {
                 HttpSession session = request.getSession();
                 session.setAttribute("user", user);
+                OnlineUserListener.addUser(user.getEmail(), session);
 
                 if ("admin".equalsIgnoreCase(user.getRole()))
                     response.sendRedirect(request.getContextPath() + "/admin");
@@ -205,7 +214,14 @@ public class UserServlet extends HttpServlet {
 
             user.setPassword(request.getParameter("password"));
         } else {
-            user = userDAO.getUserByID(Integer.parseInt(idStr));
+            int id = Integer.parseInt(idStr);
+            user = userDAO.getUserByID(id);
+            if (user == null) {
+                request.setAttribute("error", "User not found!");
+                request.getRequestDispatcher("/admin/dashboard.jsp?page=user-list.jsp")
+                        .forward(request, response);
+                return;
+            }
         }
 
         user.setUserId(idStr == null || idStr.isEmpty() ? 0 : Integer.parseInt(idStr));
