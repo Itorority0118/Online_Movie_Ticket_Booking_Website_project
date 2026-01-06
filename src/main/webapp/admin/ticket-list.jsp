@@ -3,6 +3,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/room/room-form.css?v=7">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/ticket/ticket-form.css?v=1">
+
+
 <h1>Ticket Management</h1>
 
 <div class="cinema-table-container"
