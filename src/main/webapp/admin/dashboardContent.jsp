@@ -6,6 +6,7 @@
 <meta charset="UTF-8">
 <title>Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+// changes
 <style>
 h1 {
     text-align: center;
