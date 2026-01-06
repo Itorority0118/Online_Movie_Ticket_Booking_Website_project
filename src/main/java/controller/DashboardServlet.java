@@ -30,16 +30,15 @@ public class DashboardServlet extends HttpServlet {
         int totalActive = userDAO.countUsersByStatus("active");
         int totalInactive = userDAO.countUsersByStatus("inactive");
         int totalTickets = ticketDAO.countSoldTickets();
-        int totalMovies = movieDAO.countMovies();
-        int onlineUsers = OnlineUserListener.getOnlineUsersCount();
-        
+
         req.setAttribute("totalUsers", totalUsers);
         req.setAttribute("totalAdmins", totalAdmins);
         req.setAttribute("totalActive", totalActive);
         req.setAttribute("totalInactive", totalInactive);
         req.setAttribute("totalTickets", totalTickets);
+        
+        int totalMovies = movieDAO.countMovies();
         req.setAttribute("totalMovies", totalMovies);
-        req.setAttribute("onlineUsers", onlineUsers);
 
         req.getRequestDispatcher("/admin/dashboard.jsp")
            .forward(req, resp);

@@ -27,8 +27,7 @@ public class UserServlet extends HttpServlet {
         switch (action) {
 
             case "new":
-            	User emptyUser = new User();
-                request.setAttribute("user", emptyUser);
+                request.setAttribute("user", null);
                 //request.getSession().setAttribute("user", null); 
                 if (isAjax)
                     request.getRequestDispatcher("/admin/user-form.jsp").forward(request, response);
@@ -57,15 +56,8 @@ public class UserServlet extends HttpServlet {
                 break;
 
             case "logout":
-                HttpSession session = request.getSession(false);
-                if (session != null) {
-                    User user = (User) session.getAttribute("user");
-                    if (user != null) {
-                        OnlineUserListener.removeSession(user.getEmail(), session.getId());
-                    }
-                    session.invalidate();
-                }
-                response.sendRedirect("login.jsp");
+                request.getSession().invalidate();
+                response.sendRedirect(request.getContextPath() + "/login.jsp");
                 break;
                 
             case "register":
@@ -139,7 +131,6 @@ public class UserServlet extends HttpServlet {
             if (user != null) {
                 HttpSession session = request.getSession();
                 session.setAttribute("user", user);
-                OnlineUserListener.addUser(user.getEmail(), session);
 
                 session.setAttribute(
                         "role",
@@ -240,14 +231,7 @@ public class UserServlet extends HttpServlet {
 
             user.setPassword(request.getParameter("password"));
         } else {
-            int id = Integer.parseInt(idStr);
-            user = userDAO.getUserByID(id);
-            if (user == null) {
-                request.setAttribute("error", "User not found!");
-                request.getRequestDispatcher("/admin/dashboard.jsp?page=user-list.jsp")
-                        .forward(request, response);
-                return;
-            }
+            user = userDAO.getUserByID(Integer.parseInt(idStr));
         }
 
         user.setUserId(idStr == null || idStr.isEmpty() ? 0 : Integer.parseInt(idStr));
