@@ -141,10 +141,16 @@ public class UserServlet extends HttpServlet {
                 session.setAttribute("user", user);
                 OnlineUserListener.addUser(user.getEmail(), session);
 
-                if ("admin".equalsIgnoreCase(user.getRole()))
-                    response.sendRedirect(request.getContextPath() + "/admin");
-                else
-                    response.sendRedirect("index.jsp");
+                session.setAttribute(
+                        "role",
+                        "admin".equalsIgnoreCase(user.getRole()) ? "ADMIN" : "CUSTOMER"
+                    );
+
+                    if ("admin".equalsIgnoreCase(user.getRole())) {
+                        response.sendRedirect(request.getContextPath() + "/admin/dashboard.jsp");
+                    } else {
+                        response.sendRedirect(request.getContextPath() + "/movie?action=now_showing");
+                    }
             } else {
                 request.setAttribute("error", "Invalid email or password");
                 request.getRequestDispatcher("/login.jsp").forward(request, response);
@@ -197,6 +203,26 @@ public class UserServlet extends HttpServlet {
             request.getRequestDispatcher("/forgot-password.jsp").forward(request, response);
             return;
         }
+     // ---------------- UPDATE PROFILE (CUSTOMER) ----------------
+        if ("updateProfile".equals(action)) {
+
+            HttpSession session = request.getSession();
+            User currentUser = (User) session.getAttribute("user");
+
+            if (currentUser != null) {
+                currentUser.setFullName(request.getParameter("fullName"));
+                currentUser.setPhone(request.getParameter("phone"));
+
+                userDAO.updateUser(currentUser);
+
+                // cập nhật lại session
+                session.setAttribute("user", currentUser);
+            }
+
+            response.sendRedirect(request.getContextPath() + "/movie?action=now_showing");
+            return;
+        }
+
 
         // ---------------- ADD / EDIT ----------------
         String idStr = request.getParameter("id");

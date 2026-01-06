@@ -65,11 +65,6 @@
            class="tab-item ${param.action == 'now_showing' ? 'active' : ''}">
            PHIM ĐANG CHIẾU
         </a> 
-        
-        <a href="${pageContext.request.contextPath}/movie?action=special_show" 
-           class="tab-item ${param.action == 'special_show' ? 'active' : ''}">
-           SUẤT CHIẾU ĐẶC BIỆT
-        </a>
     </div>
 </div>
 

@@ -15,6 +15,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
 
+import com.google.gson.Gson;
+
 @SuppressWarnings("serial")
 @WebServlet("/seat")
 public class SeatServlet extends HttpServlet {
@@ -63,6 +65,15 @@ public class SeatServlet extends HttpServlet {
                 Seat seat = seatDAO.getSeatById(editId);
                 request.setAttribute("seat", seat);
                 forward(request, response, isAjax, "seat-form.jsp");
+                break;
+                
+            case "byShowtime":
+                int showtimeId = Integer.parseInt(request.getParameter("showtimeId"));
+
+                List<Seat> seats = seatDAO.getSeatsByShowtime(showtimeId);
+
+                response.setContentType("application/json;charset=UTF-8");
+                new Gson().toJson(seats, response.getWriter());
                 break;
 
             case "list":

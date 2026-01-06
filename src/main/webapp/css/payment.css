@@ -1,0 +1,76 @@
+/* overlay riêng cho payment */
+
+.payment-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* CAO HƠN order modal */
+}
+
+.payment-box {
+    width: 420px;
+    background: #111;
+    color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+
+.payment-modal {
+    width: 420px;
+    background: #111;
+    color: #fff;
+    border-radius: 10px;
+    padding: 24px;
+    position: relative;
+}
+
+.payment-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.payment-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.btn-confirm {
+    background: #e50914;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-cancel {
+    background: #333;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.payment-methods {
+    margin: 15px 0;
+}
+
+.pm-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    cursor: pointer;
+}

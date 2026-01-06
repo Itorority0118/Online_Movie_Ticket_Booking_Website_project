@@ -1,6 +1,7 @@
 package controller;
 
 import dao.ShowtimeDAO;
+
 import dao.CinemaDAO;
 import dao.MovieDAO;
 import dao.RoomDAO;
@@ -15,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,8 +49,66 @@ public class ShowtimeServlet extends HttpServlet {
         String dateParam = request.getParameter("date");
         String genreParam = request.getParameter("genre");
         String ageRatingParam = request.getParameter("ageRating");
+        
+     // ===== API CHO MODAL (USER) =====
+        if ("byMovieCinema".equals(action)) {
+            int movieId = Integer.parseInt(request.getParameter("movieId"));
+            int cinemaId = Integer.parseInt(request.getParameter("cinemaId"));
+
+            List<Showtime> list =
+                showtimeDAO.getShowtimesByMovieAndCinema(movieId, cinemaId);
+
+            response.setContentType("application/json;charset=UTF-8");
+            PrintWriter out = response.getWriter();
+
+            out.print("[");
+            for (int i = 0; i < list.size(); i++) {
+                Showtime s = list.get(i);
+                out.print("{");
+                out.print("\"showtimeId\":" + s.getShowtimeId() + ",");
+                out.print("\"startTime\":\"" + s.getStartTime() + "\",");
+                out.print("\"ticketPrice\":" + s.getTicketPrice());
+                out.print("}");
+                if (i < list.size() - 1) out.print(",");
+            }
+            out.print("]");
+            out.flush();
+            return;
+        }
+
 
         if (!isAdmin) {
+        	if (!isAdmin && "byMovieCinema".equals(action)) {
+        	    int movieId = Integer.parseInt(request.getParameter("movieId"));
+        	    int cinemaId = Integer.parseInt(request.getParameter("cinemaId"));
+
+        	    List<Showtime> list =
+        	        showtimeDAO.getShowtimesByMovieAndCinema(movieId, cinemaId);
+
+        	    response.setContentType("application/json");
+        	    response.setCharacterEncoding("UTF-8");
+        	    response.setContentType("application/json");
+        	    response.setCharacterEncoding("UTF-8");
+
+        	    PrintWriter out = response.getWriter();
+        	    out.print("[");
+
+        	    for (int i = 0; i < list.size(); i++) {
+        	        Showtime s = list.get(i);
+        	        out.print("{");
+        	        out.print("\"showtimeId\":" + s.getShowtimeId() + ",");
+        	        out.print("\"startTime\":\"" + s.getStartTime() + "\",");
+        	        out.print("\"endTime\":\"" + s.getEndTime() + "\",");
+        	        out.print("\"ticketPrice\":" + s.getTicketPrice());
+        	        out.print("}");
+        	        if (i < list.size() - 1) out.print(",");
+        	    }
+
+        	    out.print("]");
+        	    out.flush();
+        	    return;
+        	}
+
             // =========================
             // LUỒNG USER
             // =========================
