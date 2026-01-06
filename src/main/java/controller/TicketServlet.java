@@ -2,7 +2,7 @@ package controller;
 
 import dao.TicketDAO;
 import model.Ticket;
-
+import model.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("serial")
@@ -33,7 +34,6 @@ public class TicketServlet extends HttpServlet {
             case "cancel":
                 int cancelId = Integer.parseInt(request.getParameter("id"));
                 ticketDAO.cancelTicket(cancelId);
-
                 response.sendRedirect(request.getContextPath() + "/ticket?action=list");
                 break;
 
@@ -72,7 +72,6 @@ public class TicketServlet extends HttpServlet {
                 }
                 break;
             }
-
         }
     }
 
@@ -81,9 +80,58 @@ public class TicketServlet extends HttpServlet {
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
-
         String action = request.getParameter("action");
 
+        // ===== BOOK TICKET (AJAX TỪ CLIENT) =====
+        if ("book".equals(action)) {
+
+            // 1. CHECK LOGIN
+            User user = (User) request.getSession().getAttribute("user");
+            if (user == null) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+
+            // 2. PARAM
+            String showtimeIdStr = request.getParameter("showtimeId");
+            String seatIdsStr = request.getParameter("seatIds");
+
+            if (showtimeIdStr == null || seatIdsStr == null) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
+
+            int showtimeId = Integer.parseInt(showtimeIdStr);
+            String[] seatIds = seatIdsStr.split(",");
+
+            // 3. CHUYỂN seatIds sang List<Integer>
+            List<Integer> seatIdList = new ArrayList<>();
+            for (String seatIdStr : seatIds) {
+                seatIdList.add(Integer.parseInt(seatIdStr));
+            }
+
+            // 4. HOLD GHẾ + TẠO VÉ TẠM
+            List<Ticket> tickets = ticketDAO.holdTickets(
+                user.getUserId(),
+                showtimeId,
+                seatIdList
+            );
+            if (tickets == null || tickets.isEmpty()) {
+                response.sendError(HttpServletResponse.SC_CONFLICT, "Cannot hold seats");
+                return;
+            }
+
+            // 5. LƯU SESSION ĐỂ THANH TOÁN
+            request.getSession().setAttribute("tickets", tickets);
+
+            // 6. RESPONSE
+            response.setContentType("application/json");
+            response.getWriter().print("{\"success\": true}");
+            return;
+
+        }
+
+        // ===== ADMIN DELETE =====
         if ("delete".equals(action)) {
             int id = Integer.parseInt(request.getParameter("id"));
 
@@ -95,35 +143,7 @@ public class TicketServlet extends HttpServlet {
             }
 
             response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
             response.getWriter().print("{\"success\": " + success + "}");
-            return;
         }
-
-        String ticketIdStr = request.getParameter("ticketId");
-
-        int userId = Integer.parseInt(request.getParameter("userId"));
-        int showtimeId = Integer.parseInt(request.getParameter("showtimeId"));
-        int seatId = Integer.parseInt(request.getParameter("seatId"));
-        double price = Double.parseDouble(request.getParameter("price"));
-        String bookingTime = request.getParameter("bookingTime");
-        String status = request.getParameter("status");
-
-        Ticket ticket = new Ticket();
-        ticket.setUserId(userId);
-        ticket.setShowtimeId(showtimeId);
-        ticket.setSeatId(seatId);
-        ticket.setPrice(price);
-        ticket.setBookingTime(bookingTime);
-        ticket.setStatus(status);
-
-        if (ticketIdStr == null || ticketIdStr.isEmpty()) {
-            ticketDAO.bookTicket(ticket);
-        } else {
-            ticket.setTicketId(Integer.parseInt(ticketIdStr));
-            ticketDAO.updateTicket(ticket);
-        }
-
-        response.sendRedirect(request.getContextPath() + "/ticket?action=list");
     }
 }

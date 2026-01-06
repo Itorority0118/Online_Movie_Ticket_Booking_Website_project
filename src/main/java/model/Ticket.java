@@ -1,12 +1,14 @@
 package model;
 
+import java.math.BigDecimal;
+
 public class Ticket {
     
     private int ticketId;
     private int userId;          // Foreign key to User
     private int showtimeId;      // Foreign key to Showtime
     private int seatId;          // Foreign key to Seat
-    private double price;        // Final ticket price
+    private double price;	// Final ticket price
     private String bookingTime;  // Example: "2025-10-20 18:45"
     private String status;       // "Booked", "Cancelled", "Used"
 
@@ -15,7 +17,7 @@ public class Ticket {
 
     // Constructor
     public Ticket(int ticketId, int userId, int showtimeId, int seatId, 
-                  double price, String bookingTime, String status) {
+    		double price, String bookingTime, String status) {
         this.ticketId = ticketId;
         this.userId = userId;
         this.showtimeId = showtimeId;

@@ -1,5 +1,6 @@
 package model;
 
+import model.Ticket;
 public class Seat {
 
     private int seatId;
@@ -58,4 +59,5 @@ public class Seat {
     public boolean isBooked() {
         return "Booked".equalsIgnoreCase(status);
     }
+
 }

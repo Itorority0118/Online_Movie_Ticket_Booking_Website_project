@@ -163,4 +163,48 @@ public class SeatDAO {
             rs.getString("Status")
         );
     }
+    
+    public List<Seat> getSeatsByShowtime(int showtimeId) {
+        List<Seat> list = new ArrayList<>();
+
+        String sql = """
+            SELECT 
+                s.SeatId,
+                s.SeatRow,
+                s.SeatCol,
+                s.SeatType,
+                CASE 
+                    WHEN t.TicketId IS NULL THEN 'Available'
+                    ELSE 'Booked'
+                END AS Status
+            FROM Seat s
+            JOIN Showtime st ON st.RoomId = s.RoomId
+            LEFT JOIN Ticket t 
+                ON t.SeatId = s.SeatId
+                AND t.ShowtimeId = st.ShowtimeId
+                AND t.Status IN ('Booked', 'HOLD')
+            WHERE st.ShowtimeId = ?
+            ORDER BY s.SeatRow, s.SeatCol
+        """;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, showtimeId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Seat seat = new Seat();
+                seat.setSeatId(rs.getInt("SeatId"));
+                seat.setSeatRow(rs.getString("SeatRow"));
+                seat.setSeatCol(rs.getInt("SeatCol"));
+                seat.setSeatType(rs.getString("SeatType"));
+                seat.setStatus(rs.getString("Status"));
+                list.add(seat);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

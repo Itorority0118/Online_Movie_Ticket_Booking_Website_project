@@ -38,6 +38,15 @@
     </form>
 
 </div>
-
 </body>
+<%
+    if (session.getAttribute("user") != null) {
+        String redirect = request.getParameter("redirect");
+        if (redirect != null && !redirect.isEmpty()) {
+            response.sendRedirect(redirect);
+            return;
+        }
+    }
+%>
+
 </html>
