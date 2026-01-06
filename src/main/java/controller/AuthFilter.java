@@ -25,7 +25,6 @@ public class AuthFilter implements Filter {
         String action = req.getParameter("action");
         String uri = req.getRequestURI();
 
-     // Cho phép login / register / forgot / updateProfile
         if (action != null && (
                 action.equals("login") ||
                 action.equals("register") ||
@@ -39,13 +38,11 @@ public class AuthFilter implements Filter {
         HttpSession session = req.getSession(false);
         User user = (session != null) ? (User) session.getAttribute("user") : null;
 
-        // Chưa login → về login
         if (user == null) {
             resp.sendRedirect(req.getContextPath() + "/login.jsp");
             return;
         }
 
-        // Chỉ ADMIN mới được vào các action admin
         if (uri.startsWith(req.getContextPath() + "/admin")) {
             if (!"admin".equalsIgnoreCase(user.getRole())) {
                 resp.sendRedirect(req.getContextPath() + "/error/access-denied.jsp");
@@ -54,6 +51,5 @@ public class AuthFilter implements Filter {
         }
 
         chain.doFilter(request, response);
-
     }
 }

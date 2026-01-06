@@ -343,11 +343,17 @@ a {
 }
 
 .modal-overlay {
-    display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 2000;
+    background: rgba(0,0,0,0.75);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-overlay.show {
+    display: flex;
 }
 
 .profile-modal {
@@ -358,16 +364,6 @@ a {
     border-radius: 10px;
 }
 
-/* ===== MODAL ===== */
-.modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.75);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
 
 .movie-modal {
     background: #fff;
@@ -636,16 +632,6 @@ a {
     border: 2px solid #00ffd5;
 }
 
-#orderModal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-
 /* MODAL CHA */
 .order-modal {
     width: 90vw;
@@ -708,7 +694,7 @@ a {
     color: #fff;
     border: none;
     border-radius: 6px;
-    cursor: pointer;
+    cursor: pointer;#orderModal
 }
 
 .order-modal {
@@ -733,25 +719,6 @@ a {
     color: #ff4d4f;
 }
 
-#orderModal {
-    z-index: 1000;
-}
-.modal-overlay {
-    display: none;              /* 🔒 mặc định ẩn */
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.7);
-    z-index: 9999;
-
-    align-items: center;
-    justify-content: center;
-}
-
 .modal-overlay.show {
-    display: flex;
+    background: red !important;
 }
-
-
-
-
-

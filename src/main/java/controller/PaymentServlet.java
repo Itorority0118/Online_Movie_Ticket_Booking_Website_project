@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.OrderDTO;
-import model.Ticket;
 import model.User;
 
 @WebServlet("/payment")
@@ -44,13 +43,12 @@ public class PaymentServlet extends HttpServlet {
 
         int showtimeId = Integer.parseInt(showtimeIdStr);
 
-        // ✅ LẤY VÉ HOLD
         List<OrderDTO> tickets =
         	    new OrderDAO().getOrdersByUser(user.getUserId())
         	        .stream()
         	        .filter(o ->
         	            "HOLD".equals(o.getStatus())
-        	            && o.getShowtime().getTime() > 0 // giữ nguyên
+        	            && o.getShowtime().getTime() > 0
         	        )
         	        .toList();
 

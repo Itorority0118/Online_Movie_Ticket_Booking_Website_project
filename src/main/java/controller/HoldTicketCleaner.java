@@ -17,8 +17,6 @@ public class HoldTicketCleaner implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
 
-        System.out.println("🚀 HOLD cleaner STARTED (controller)");
-
         scheduler = Executors.newSingleThreadScheduledExecutor();
 
         scheduler.scheduleAtFixedRate(() -> {

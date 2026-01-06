@@ -85,40 +85,104 @@ public class CinemaServlet extends HttpServlet {
 		            break;
 		        }
 
+	            case "new":
+	                request.setAttribute("cinema", null);
 
+	                if (isAjax)
+	                    request.getRequestDispatcher("/admin/cinema-form.jsp").forward(request, response);
+	                else
+	                    request.getRequestDispatcher("/admin/dashboard.jsp?page=cinema-form.jsp")
+	                           .forward(request, response);
+	                break;
 
-            case "new":
-                request.setAttribute("cinema", null);
-                if (isAjax)
-                    request.getRequestDispatcher("/admin/cinema-form.jsp").forward(request, response);
-                else
-                    request.getRequestDispatcher("/admin/dashboard.jsp?page=cinema-form.jsp").forward(request, response);
-                break;
+	            case "edit":
+	                int id = Integer.parseInt(request.getParameter("id"));
+	                Cinema cinema = cinemaDAO.getCinemaById(id);
+	                request.setAttribute("cinema", cinema);
 
-            case "edit":
-                int id = Integer.parseInt(request.getParameter("id"));
-                Cinema cinema = cinemaDAO.getCinemaById(id);
-                request.setAttribute("cinema", cinema);
-                if (isAjax)
-                    request.getRequestDispatcher("/admin/cinema-form.jsp").forward(request, response);
-                else
-                    request.getRequestDispatcher("/admin/dashboard.jsp?page=cinema-form.jsp").forward(request, response);
-                break;
+	                if (isAjax)
+	                    request.getRequestDispatcher("/admin/cinema-form.jsp").forward(request, response);
+	                else
+	                    request.getRequestDispatcher("/admin/dashboard.jsp?page=cinema-form.jsp")
+	                           .forward(request, response);
+	                break;
 
-            case "list":
-            default:
-                List<Cinema> cinemaList = cinemaDAO.getAllCinemas();
-                request.setAttribute("cinemas", cinemaList);
-                request.setAttribute("cityList", getCityList());
-                if (isAjax)
-                    request.getRequestDispatcher("/admin/cinema-table.jsp").forward(request, response);
-                else
-                    request.getRequestDispatcher("/admin/dashboard.jsp?page=cinema-list.jsp").forward(request, response);
-                break;
-        }
-    }
+	            case "list":
+	                String keyword = request.getParameter("keyword");
+	                String city = request.getParameter("city");
 
-    private String escape(String s) {
-        return s == null ? "" : s.replace("\"", "\\\"");
-    }
-}
+	                boolean hasFilter =
+	                        (keyword != null && !keyword.trim().isEmpty()) ||
+	                        (city != null && !city.trim().isEmpty());
+
+	                List<Cinema> cinemas;
+
+	                if (hasFilter) {
+	                    cinemas = cinemaDAO.searchCinemas(keyword, city);
+	                } else {
+	                    cinemas = cinemaDAO.getAllCinemas(); 
+	                }
+
+	                request.setAttribute("cinemas", cinemas);
+	                request.setAttribute("cityList", getCityList());
+
+	                if (isAjax)
+	                    request.getRequestDispatcher("/admin/cinema-table.jsp").forward(request, response);
+	                else
+	                    request.getRequestDispatcher("/admin/dashboard.jsp?page=cinema-list.jsp").forward(request, response);
+	                break;
+	                
+	            default:
+	                List<Cinema> cinemaList = cinemaDAO.getAllCinemas();
+	                request.setAttribute("cinemas", cinemaList);
+	                request.setAttribute("cityList", getCityList());
+
+	                if (isAjax)
+	                    request.getRequestDispatcher("/admin/cinema-table.jsp").forward(request, response);
+	                else
+	                    request.getRequestDispatcher("/admin/dashboard.jsp?page=cinema-list.jsp").forward(request, response);
+	                break;
+	        }
+	    }
+
+	    @Override
+	    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+	            throws ServletException, IOException {
+
+	        request.setCharacterEncoding("UTF-8");
+	        String action = request.getParameter("action");
+
+	        if ("delete".equals(action)) {
+	            int id = Integer.parseInt(request.getParameter("id"));
+	            boolean success = cinemaDAO.deleteCinema(id);
+
+	            response.setContentType("application/json");
+	            response.setCharacterEncoding("UTF-8");
+	            PrintWriter out = response.getWriter();
+	            out.print("{\"success\": " + success + "}");
+	            out.flush();
+	            return;
+	        }
+
+	        String idStr = request.getParameter("id");
+	        String name = request.getParameter("name");
+	        String address = request.getParameter("address");
+	        String city = request.getParameter("city");
+	        String phone = request.getParameter("phone");
+
+	        Cinema cinema = new Cinema();
+	        cinema.setName(name);
+	        cinema.setAddress(address);
+	        cinema.setCity(city);
+	        cinema.setPhone(phone);
+
+	        if (idStr == null || idStr.isEmpty()) {
+	            cinemaDAO.addCinema(cinema);
+	        } else {
+	            cinema.setCinemaId(Integer.parseInt(idStr));
+	            cinemaDAO.updateCinema(cinema);
+	        }
+
+	        response.sendRedirect(request.getContextPath() + "/cinema?action=list");
+	    }
+	}

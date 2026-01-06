@@ -17,7 +17,7 @@ import model.User;
 public class OrderServlet extends HttpServlet {
 
     private OrderDAO orderDAO = new OrderDAO();
-    private TicketDAO ticketDAO = new TicketDAO(); // ✅ THÊM
+    private TicketDAO ticketDAO = new TicketDAO();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
