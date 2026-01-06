@@ -27,30 +27,45 @@
 
 <header class="header">
     <div class="logo-container">
-        <img src="${pageContext.request.contextPath}/images/movies/action_blast.jpg" alt="Beta Cinemas Logo" class="logo">
+        <img src="${pageContext.request.contextPath}/images/movies/action_blast.jpg" class="logo">
         <span class="cinema-location">Beta Thái Nguyên</span>
     </div>
 
     <nav class="main-nav">
         <ul>
-            <li><a href="${pageContext.request.contextPath}/showtime" class="tab-item active">PHIM</a></li>
+            <li><a href="${pageContext.request.contextPath}/showtime">PHIM</a></li>
             <li><a href="#">TIN MỚI VÀ ƯU ĐÃI</a></li>
             <li><a href="#">NHƯỢNG QUYỀN</a></li>
             <li><a href="#">THÀNH VIÊN</a></li>
-        </ul> 
+        </ul>
     </nav>
-    
+
     <div class="user-status">
         <c:choose>
             <c:when test="${not empty sessionScope.user}">
-                <span>Xin chào, ${sessionScope.user.fullName}</span>
-					<a href="${pageContext.request.contextPath}/user?action=logout"
-					   class="logout-btn">
-					   Đăng xuất
-					</a>
+                <div class="user-menu">
+                    <span>Xin chào, ${sessionScope.user.fullName}</span>
+                    <div class="user-icon" onclick="toggleUserDropdown()">👤</div>
+
+                    <div class="user-dropdown" id="userDropdown">
+                        <c:if test="${sessionScope.role == 'CUSTOMER'}">
+                            <a href="javascript:void(0)" onclick="openProfileModal()">Thông tin cá nhân</a>
+                        </c:if>
+
+                        <a href="javascript:void(0)" onclick="openOrderModal()">Đơn hàng</a>
+
+                        <c:if test="${sessionScope.role == 'ADMIN'}">
+                            <a href="${pageContext.request.contextPath}/admin/dashboard">Trang quản trị</a>
+                        </c:if>
+
+                        <hr>
+                        <a href="${pageContext.request.contextPath}/user?action=logout">Đăng xuất</a>
+                    </div>
+                </div>
             </c:when>
+
             <c:otherwise>
-                <a href="login.jsp" class="login-btn">Đăng nhập</a> 
+                <a href="${pageContext.request.contextPath}/login.jsp" class="login-btn">Đăng nhập</a>
             </c:otherwise>
         </c:choose>
     </div>
@@ -67,11 +82,6 @@
            class="tab-item ${param.action == 'now_showing' ? 'active' : ''}">
            PHIM ĐANG CHIẾU
         </a> 
-        
-        <a href="${pageContext.request.contextPath}/movie?action=special_show" 
-           class="tab-item ${param.action == 'special_show' ? 'active' : ''}">
-           SUẤT CHIẾU ĐẶC BIỆT
-        </a>
     </div>
 </div>
 

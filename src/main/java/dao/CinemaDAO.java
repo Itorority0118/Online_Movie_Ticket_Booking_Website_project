@@ -10,6 +10,64 @@ import java.util.List;
 
 public class CinemaDAO {
 
+	
+	public List<String> getCitiesByMovie(int movieId) {
+	    List<String> list = new ArrayList<>();
+
+	    String sql = """
+	        SELECT DISTINCT c.City
+	        FROM Cinema c
+	        JOIN Room r ON r.CinemaId = c.CinemaId
+	        JOIN Showtime s ON s.RoomId = r.RoomId
+	        WHERE s.MovieId = ?
+	    """;
+
+	    try (Connection conn = DBConnection.getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+	        ps.setInt(1, movieId);
+	        ResultSet rs = ps.executeQuery();
+
+	        while (rs.next()) {
+	            list.add(rs.getString("City"));
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return list;
+	}
+
+	public List<Cinema> getCinemasByMovieAndCity(int movieId, String city) {
+	    List<Cinema> list = new ArrayList<>();
+
+	    String sql = """
+	        SELECT DISTINCT c.CinemaId, c.Name
+	        FROM Cinema c
+	        JOIN Room r ON r.CinemaId = c.CinemaId
+	        JOIN Showtime s ON s.RoomId = r.RoomId
+	        WHERE s.MovieId = ?
+	          AND c.City = ?
+	    """;
+
+	    try (Connection conn = DBConnection.getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+	        ps.setInt(1, movieId);
+	        ps.setString(2, city);
+
+	        ResultSet rs = ps.executeQuery();
+	        while (rs.next()) {
+	            Cinema c = new Cinema();
+	            c.setCinemaId(rs.getInt("CinemaId"));
+	            c.setName(rs.getString("Name"));
+	            list.add(c);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return list;
+	}
+
     // Add a new cinema
     public boolean addCinema(Cinema cinema) {
         String sql = "INSERT INTO Cinema (Name, Address, City, Phone, CreatedAt) VALUES (?, ?, ?, ?, GETDATE())";
@@ -195,4 +253,31 @@ public class CinemaDAO {
 
         return list;
     }
+    
+    public List<Cinema> getCinemasByMovie(int movieId) {
+        String sql = """
+            SELECT DISTINCT c.*
+            FROM Cinema c
+            JOIN Room r ON c.CinemaId = r.CinemaId
+            JOIN Showtime s ON r.RoomId = s.RoomId
+            WHERE s.MovieId = ?
+        """;
+
+        List<Cinema> list = new ArrayList<>();
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, movieId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                list.add(CinemaMapper.map(rs));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
 }

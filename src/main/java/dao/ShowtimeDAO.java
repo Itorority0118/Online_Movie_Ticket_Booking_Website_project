@@ -361,4 +361,39 @@ public class ShowtimeDAO {
 
         return list;
     }
+    
+    public List<Showtime> getShowtimesByMovieAndCinema(int movieId, int cinemaId) {
+        String sql = """
+            SELECT s.*
+            FROM Showtime s
+            JOIN Room r ON s.RoomId = r.RoomId
+            WHERE s.MovieId = ? AND r.CinemaId = ?
+            ORDER BY s.StartTime
+        """;
+
+        List<Showtime> list = new ArrayList<>();
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, movieId);
+            ps.setInt(2, cinemaId);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new Showtime(
+                    rs.getInt("ShowtimeId"),
+                    movieId,
+                    rs.getInt("RoomId"),
+                    rs.getString("StartTime"),
+                    rs.getString("EndTime"),
+                    rs.getDouble("TicketPrice")
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
 }
