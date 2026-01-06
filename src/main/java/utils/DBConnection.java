@@ -1,49 +1,29 @@
 package utils;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 
 public class DBConnection {
+	// changes
+    private static DataSource dataSource;
 
-	private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=CinemaDB;encrypt=false";
-	private static final String USER = "movie_user";
-	private static final String PASSWORD = "123456";
-    private static Connection connection = null;
+    static {
+        try {
+            Context ctx = new InitialContext();
+            dataSource = (DataSource) ctx.lookup("java:comp/env/jdbc/CinemaDB");
+            System.out.println("DataSource initialized successfully.");
+        } catch (NamingException e) {
+            System.err.println("Failed to initialize DataSource: " + e.getMessage());
+        }
+    }
 
     private DBConnection() {}
 
-    public static Connection getConnection() {
-        try {
-            if (connection == null || connection.isClosed()) {
-                Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-                connection = DriverManager.getConnection(URL, USER, PASSWORD);
-            }
-        } catch (SQLException e) {
-            System.out.println("SQL Server connection failed: " + e.getMessage());
-        } catch (ClassNotFoundException e) {
-            System.out.println("JDBC Driver not found: " + e.getMessage());
-        }
-        return connection;
-    }
-
-    public static void closeConnection() {
-        try {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-                System.out.println("🔒 SQL Server connection closed.");
-            }
-        } catch (SQLException e) {
-            System.out.println("Error closing connection: " + e.getMessage());
-        }
-    }
-
-    public static void main(String[] args) {
-        Connection conn = DBConnection.getConnection();
-        if (conn != null) {
-            System.out.println("Connection successful!");
-        } else {
-            System.out.println("Connection failed!");
-        }
+    public static Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
     }
 }
