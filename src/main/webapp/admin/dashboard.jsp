@@ -24,7 +24,7 @@
 			</li>
 
 			<li class="${requestScope.activeSidebar eq 'cinema' ? 'active' : ''}">
-			    <a href="#"
+			    <a href="${pageContext.request.contextPath}/cinema?action=list"
 			       data-page="${pageContext.request.contextPath}/cinema?action=list">Manage Cinemas</a>
 			</li>
 			
@@ -58,6 +58,6 @@
         const contextPath = "${pageContext.request.contextPath}";
     </script>
 
-    <script src="<c:url value='/js/admin.js?v=7'/>"></script>
+    <script src="<c:url value='/js/admin.js?v=5'/>"></script>
 </body>
 </html>
