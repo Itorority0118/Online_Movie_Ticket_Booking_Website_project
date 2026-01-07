@@ -217,3 +217,29 @@
     color: #ff9500;    
     font-weight: 600;
 }
+.cinema-form-page .error {
+    margin-top: 6px;
+    padding-left: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #ff7b7b; 
+    letter-spacing: 0.2px;
+}
+
+.cinema-form-page input.error-input,
+.cinema-form-page select.error-input {
+    border-color: rgba(255, 123, 123, 0.8);
+    box-shadow: 0 0 6px rgba(255, 123, 123, 0.35);
+}
+
+.cinema-form-page input.error-input:focus,
+.cinema-form-page select.error-input:focus {
+    border-color: #ff7b7b;
+    box-shadow: 0 0 8px rgba(255, 123, 123, 0.5);
+}
+
+.cinema-form-page .required {
+    color: #ff7b7b;
+    margin-left: 2px;
+    font-weight: 700;
+}

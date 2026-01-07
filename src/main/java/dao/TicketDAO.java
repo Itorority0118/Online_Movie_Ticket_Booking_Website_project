@@ -1,6 +1,5 @@
 package dao;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -135,8 +134,6 @@ public class TicketDAO {
 	
 	public void deleteExpiredHoldTickets() {
 
-	    System.out.println("⏱ RUN HOLD CLEANER");
-
 	    String sql = """
 	        DELETE FROM Ticket
 	        WHERE Status = 'HOLD'
@@ -147,7 +144,6 @@ public class TicketDAO {
 	         PreparedStatement ps = conn.prepareStatement(sql)) {
 
 	        int rows = ps.executeUpdate();
-	        System.out.println("🧹 Deleted HOLD = " + rows);
 
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -607,6 +603,26 @@ public class TicketDAO {
             e.printStackTrace();
         }
         return false;
+    }
+    
+    public int countTicketsByStatus(String status) {
+        String sql = "SELECT COUNT(*) FROM Ticket WHERE Status = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, status);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
     }
 
 }

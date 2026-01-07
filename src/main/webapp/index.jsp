@@ -15,20 +15,16 @@
         </c:choose>
     </title>
     
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/index.css?v=5">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/index.css?v=${System.currentTimeMillis()}">
 
-    <!-- Nếu vào trực tiếp index.jsp thì redirect về servlet -->
     <c:if test="${movieList == null}">
         <meta http-equiv="refresh"
               content="0;url=${pageContext.request.contextPath}/movie?action=now_showing">
     </c:if>
-
-
 </head>
 
 <body>
 
-<!-- ===== MODAL CHI TIẾT PHIM ===== -->
 <div id="movieModal" class="modal-overlay" style="display:none;">
     <div class="movie-modal">
         <span class="close-btn" onclick="closeMovieModal()">✖</span>
@@ -47,12 +43,10 @@
                 </a>
                 <p id="movieDescription"></p>
 						
-						<!-- ====== THÊM TỪ ĐÂY ====== -->
 						<hr>
 						
 						<div class="booking-section">
 						
-							<!-- CHỌN THÀNH PHỐ -->
 							<label>Chọn thành phố:</label>
 							<select id="citySelect" onchange="loadCinemasByCity()">
 							    <option value="">-- Chọn thành phố --</option>
@@ -60,19 +54,16 @@
 							
 							<br><br>
 						
-						    <!-- CHỌN RẠP -->
 						    <label>Chọn rạp:</label>
 						    <select id="cinemaSelect" onchange="loadShowtimesInModal()" display>
 						        <option value="">-- Chọn rạp --</option>
 						    </select>
 						
-						    <!-- GIỜ CHIẾU -->
 							<div style="margin-top:10px">
 							    <strong>Giờ chiếu:</strong>
 							    <div id="showtimeList"></div>
 							</div>
 							
-							<!-- ✅ THÔNG TIN VÉ ĐÃ CHỌN -->
 							<div id="selectedTicketInfo" style="display:none; margin-top:10px;">
 							    <h4>🎟 Vé đã chọn</h4>
 							    <p><b>Ghế:</b> <span id="selectedSeatsText"></span></p>
@@ -82,13 +73,10 @@
 							<div id="seatModal" class="seat-modal-overlay">
 							  <div class="seat-modal">
 							
-							    <!-- SCREEN -->
 							    <div class="screen-label">MÀN HÌNH</div>
 							
-							    <!-- SEAT MAP -->
 							    <div id="seatMap" class="seat-map"></div>
 							
-							    <!-- LEGEND -->
 							    <div class="seat-legend">
 								  <div class="legend-item">
 								    <span class="seat-sample booked"></span>
@@ -116,7 +104,6 @@
 								  </div>
 								</div>
 			
-							    <!-- ACTION -->
 							    <div id="bookingSummary"></div>
 									<div class="seat-actions">
 									  <button class="confirm-btn" onclick="confirmSeat()">Xác nhận</button>
@@ -129,21 +116,18 @@
 						    <p><b>Tổng tiền:</b> <span id="totalPrice">0</span> </p>
 						    
 						
-						    <!-- NÚT HÀNH ĐỘNG -->
 						    <div style="margin-top:15px">
 						        <button onclick="buyTicketInModal()">MUA VÉ</button>
 						        <button onclick="addToCartInModal()">THÊM VÀO ĐƠN HÀNG</button>
 						    </div>
 						
 						</div>
-						<!-- ====== KẾT THÚC ====== -->
             </div>
         </div>
     </div>
 </div>
 
 
-<!-- ================= MODAL THÔNG TIN CÁ NHÂN ================= -->
 <c:if test="${sessionScope.role == 'CUSTOMER'}">
 <div class="modal-overlay" id="profileModal" style="display:none;">
     <div class="profile-modal">
@@ -184,9 +168,6 @@
     </div>
 </div>
 </c:if>
-<!-- ========================================================== -->
-
-<!-- ================= MODAL ĐƠN HÀNG ================= -->
 <div class="modal-overlay" id="orderModal" style="display:none;">
     <div class="profile-modal order-modal">
         <div class="profile-header">
@@ -194,7 +175,6 @@
         </div>
 
         <div id="orderContent">
-            <!-- AJAX sẽ đổ HTML vào đây -->
         </div>
 
         <div class="profile-actions">
@@ -252,7 +232,6 @@
     </div>
 </header>
 
-<!-- =================== TABS =================== -->
 <div class="movie-tabs-container">
     <div class="movie-tabs">
         <a href="${pageContext.request.contextPath}/movie?action=coming_soon"

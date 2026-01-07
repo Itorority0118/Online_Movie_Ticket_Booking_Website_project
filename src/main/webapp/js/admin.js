@@ -62,6 +62,11 @@ function loadPage(url) {
 	    window.location.href = url;
 	    return;
 	}
+	if (url.includes("payment?action=list")) {
+	    window.location.href = url;
+	    return;
+	}
+	
     history.pushState(null, "", url);
     contentArea.innerHTML = `<div class="loading">Loading...</div>`;
 

@@ -97,3 +97,29 @@
     background: rgba(78, 205, 196, 0.2);
     color: #ffffff;
 }
+
+.user-form-page .error {
+    margin-top: 6px;
+    padding-left: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #ff7b7b; 
+    letter-spacing: 0.2px;
+}
+
+.user-form-page input.error-input,
+.user-form-page select.error-input {
+    border-color: rgba(255, 123, 123, 0.8);
+    box-shadow: 0 0 6px rgba(255, 123, 123, 0.35);
+}
+
+.user-form-page input.error-input:focus,
+.user-form-page select.error-input:focus {
+    border-color: #ff7b7b;
+    box-shadow: 0 0 8px rgba(255, 123, 123, 0.5);
+}
+.user-form-page .required {
+    color: #ff7b7b;
+    margin-left: 2px;
+    font-weight: 700;
+}

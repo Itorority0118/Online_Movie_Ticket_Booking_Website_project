@@ -2,17 +2,14 @@
 
     const base = window.ticketContext || '';
 
-    /* ===== DELETE ===== */
     const deleteModal = document.getElementById("deleteModal");
     const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 
-    /* ===== CANCEL ===== */
     const cancelModal = document.getElementById("cancelModal");
     const confirmCancelBtn = document.getElementById("confirmCancelBtn");
 
     document.body.addEventListener("click", function (e) {
 
-        /* ================= CANCEL ================= */
 
         const cancelBtn = e.target.closest(".action.cancel");
         if (cancelBtn) {
@@ -40,12 +37,10 @@
                 const row = document.querySelector(`tr[data-id='${id}']`);
                 if (!row) return;
 
-                // update status
                 const statusSpan = row.querySelector(".status");
                 statusSpan.textContent = "Cancelled";
                 statusSpan.className = "status Cancelled";
 
-                // change action -> Delete
                 const actionCell = row.querySelector(".col-action");
                 actionCell.innerHTML = `
                     <a class="action delete"
@@ -62,8 +57,6 @@
 
             return;
         }
-
-        /* ================= DELETE (GIỮ NGUYÊN) ================= */
 
         const deleteBtn = e.target.closest(".action.delete[data-type='ticket']");
         if (deleteBtn) {
@@ -110,8 +103,6 @@
 
             return;
         }
-
-        /* ================= CLOSE MODAL ================= */
 
         if (
             e.target.classList.contains("cancel") ||

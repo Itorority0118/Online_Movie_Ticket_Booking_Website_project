@@ -306,21 +306,68 @@ public class ShowtimeServlet extends HttpServlet {
         String endTime = request.getParameter("endTime");
         String ticketPriceStr = request.getParameter("ticketPrice");
 
-        if (startTime != null) startTime = startTime.replace("T", " ");
-        if (endTime != null) endTime = endTime.replace("T", " ");
-        
+        // Validate
+        Map<String, String> errors = new HashMap<>();
+
+        if (movieIdStr == null || movieIdStr.isEmpty()) {
+            errors.put("movieId", "Movie is required");
+        }
+        if (roomIdStr == null || roomIdStr.isEmpty()) {
+            errors.put("roomId", "Room is required");
+        }
+        if (startTime == null || startTime.isEmpty()) {
+            errors.put("startTime", "Start Time is required");
+        }
+        if (endTime == null || endTime.isEmpty()) {
+            errors.put("endTime", "End Time is required");
+        }
+        if (ticketPriceStr == null || ticketPriceStr.isEmpty()) {
+            errors.put("ticketPrice", "Ticket Price is required");
+        }
+
         Showtime showtime = new Showtime();
         try {
-            showtime.setMovieId(Integer.parseInt(movieIdStr));
-            showtime.setRoomId(Integer.parseInt(roomIdStr));
-            showtime.setStartTime(startTime);
-            showtime.setEndTime(endTime);
-            showtime.setTicketPrice(Double.parseDouble(ticketPriceStr));
+            if (movieIdStr != null && !movieIdStr.isEmpty()) showtime.setMovieId(Integer.parseInt(movieIdStr));
+            if (roomIdStr != null && !roomIdStr.isEmpty()) showtime.setRoomId(Integer.parseInt(roomIdStr));
+            if (startTime != null) showtime.setStartTime(startTime.replace("T", " "));
+            if (endTime != null) showtime.setEndTime(endTime.replace("T", " "));
+            if (ticketPriceStr != null && !ticketPriceStr.isEmpty()) {
+                try {
+                    int price = Integer.parseInt(ticketPriceStr);
+
+                    if (price < 1000) {
+                        errors.put("ticketPrice", "Ticket price must be at least 1,000 VND");
+                    } else if (price % 1000 != 0) {
+                        errors.put("ticketPrice", "Ticket price must be a multiple of 1,000 VND");
+                    } else {
+                        showtime.setTicketPrice(price);
+                    }
+
+                } catch (NumberFormatException e) {
+                    errors.put("ticketPrice", "Invalid ticket price format");
+                }
+            }
+            if (startTime != null && endTime != null && !startTime.isEmpty() && !endTime.isEmpty()) {
+                if (startTime.compareTo(endTime) >= 0) {
+                    errors.put("endTime", "End Time must be after Start Time");
+                }
+            }
         } catch (NumberFormatException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Dữ liệu nhập không hợp lệ.");
+            errors.put("ticketPrice", "Invalid number format");
+        }
+
+        if (!errors.isEmpty()) {
+            request.setAttribute("errors", errors);
+            request.setAttribute("showtime", showtime);
+            request.setAttribute("movieList", movieDAO.getAllMovies());
+            request.setAttribute("roomList", roomDAO.getAllRooms());
+            request.setAttribute("roomId", roomIdStr);
+
+            request.getRequestDispatcher("/admin/dashboard.jsp?page=showtime-form.jsp")
+                   .forward(request, response);
             return;
         }
-        
+
         boolean success;
         if (idStr == null || idStr.isEmpty()) {
             success = showtimeDAO.addShowtime(showtime);
