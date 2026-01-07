@@ -109,3 +109,47 @@
         margin: 10px;
     }
 }
+
+.showtime-form-page .error {
+    margin-top: 6px;
+    padding-left: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #ff7b7b; 
+    letter-spacing: 0.2px;
+}
+
+.showtime-form-page input.error-input,
+.showtime-form-page select.error-input {
+    border-color: rgba(255, 123, 123, 0.8);
+    box-shadow: 0 0 6px rgba(255, 123, 123, 0.35);
+}
+
+.showtime-form-page input.error-input:focus,
+.showtime-form-page select.error-input:focus {
+    border-color: #ff7b7b;
+    box-shadow: 0 0 8px rgba(255, 123, 123, 0.5);
+}
+
+.showtime-form-page .required {
+    color: #ff7b7b;
+    margin-left: 2px;
+    font-weight: 700;
+}
+
+.price-input-wrapper {
+    position: relative;
+}
+
+.price-input-wrapper input {
+    padding-right: 32px;
+}
+
+.price-input-wrapper .currency {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+    pointer-events: none;
+}

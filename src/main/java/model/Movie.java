@@ -17,7 +17,6 @@ public class Movie {
     private String trailerUrl;     // YouTube link or video
     private String status;         // "Now Showing" / "Coming Soon"
     
-    // ✅ THUỘC TÍNH MỚI CHO BỘ LỌC VÀ HIỂN THỊ
     private String ageRating;      // E.g., "P", "T13", "T18"
     private List<Showtime> showtimes; // Danh sách các suất chiếu của phim này (cho trang showtimes)
     

@@ -28,30 +28,36 @@
         <input type="hidden" name="seatCol" value="${seat != null ? seat.seatCol : ''}">
 
         <div class="form-group">
-            <label>Seat Number</label>
+            <label>Seat Number <span class="required">*</span></label>
             <input type="text" name="seatNumber"
                    value="${seat != null ? seat.seatNumber : ''}" readonly
                    placeholder="Example: A1" required>
         </div>
 
         <div class="form-group">
-            <label>Seat Type</label>
+            <label>Seat Type <span class="required">*</span></label>
             <select name="seatType" required>
                 <option value="">-- Select Type --</option>
                 <option value="Regular" ${seat != null && seat.seatType == 'Regular' ? 'selected' : ''}>Regular</option>
                 <option value="VIP" ${seat != null && seat.seatType == 'VIP' ? 'selected' : ''}>VIP</option>
                 <option value="Double" ${seat != null && seat.seatType == 'Double' ? 'selected' : ''}>Double</option>
             </select>
+            <c:if test="${errors != null && errors['seatType'] != null}">
+                <span class="error">${errors['seatType']}</span>
+            </c:if>
         </div>
 
         <div class="form-group">
-            <label>Status</label>
+            <label>Status <span class="required">*</span></label>
             <select name="status" required>
                 <option value="">-- Select Status --</option>
                 <option value="Available" ${seat != null && seat.status == 'Available' ? 'selected' : ''}>Available</option>
                 <option value="Booked" ${seat != null && seat.status == 'Booked' ? 'selected' : ''}>Booked</option>
                 <option value="Unavailable" ${seat != null && seat.status == 'Unavailable' ? 'selected' : ''}>Unavailable</option>
             </select>
+            <c:if test="${errors != null && errors['status'] != null}">
+                <span class="error">${errors['status']}</span>
+            </c:if>
         </div>
 
         <c:if test="${param.roomId != null || seat != null}">

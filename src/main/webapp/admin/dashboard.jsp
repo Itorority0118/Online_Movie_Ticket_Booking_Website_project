@@ -5,7 +5,7 @@
 <html>
 <head>
 <title>Admin Dashboard</title>
-<link rel="stylesheet" href="<c:url value='/css/admin.css?v=11'/>">
+<link rel="stylesheet" href="<c:url value='/css/admin.css?v=12'/>">
 </head>
 <body>
 
@@ -32,9 +32,9 @@
 			    <a href="#" data-page="${pageContext.request.contextPath}/ticket?action=list">Manage Tickets</a>
 			</li>
 
-            <li><a href="#"
-                data-page="${pageContext.request.contextPath}/payment?action=list">
-                Manage Payments</a></li>
+			<li class="${requestScope.activeSidebar eq 'ticket' ? 'active' : ''}">
+			    <a href="#" data-page="${pageContext.request.contextPath}/payment?action=list">Manage Payments</a>
+			</li>
         </ul>
 
         <ul class="logout">
@@ -52,12 +52,13 @@
                 <jsp:include page="dashboardContent.jsp" />
             </c:otherwise>
         </c:choose>
+           
     </div>
 
+    
     <script>
         const contextPath = "${pageContext.request.contextPath}";
     </script>
-
-    <script src="<c:url value='/js/admin.js?v=5'/>"></script>
+    <script src="<c:url value='/js/admin.js?v=6'/>"></script>
 </body>
 </html>

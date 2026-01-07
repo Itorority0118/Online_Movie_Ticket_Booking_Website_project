@@ -470,3 +470,12 @@ body {
         min-width: 100%;
     }
 }
+.admin-footer {
+    width: 100%;
+    padding: 10px 20px;
+    font-size: 13px;
+    color: #8b949e;
+    text-align: center;
+    border-top: 1px solid #30363d;
+    background: #0d1117;
+}

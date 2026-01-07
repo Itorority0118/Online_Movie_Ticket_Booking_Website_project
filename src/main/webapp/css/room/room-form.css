@@ -397,10 +397,35 @@
     text-overflow: ellipsis;
 }
 
-/* tất cả td không cho giãn */
 .ticket-table td,
 .ticket-table th {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.room-form-page .error {
+    margin-top: 6px;
+    padding-left: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #ff7b7b; 
+    letter-spacing: 0.2px;
+}
+
+.room-form-page input.error-input,
+.room-form-page select.error-input {
+    border-color: rgba(255, 123, 123, 0.8);
+    box-shadow: 0 0 6px rgba(255, 123, 123, 0.35);
+}
+
+.room-form-page input.error-input:focus,
+.room-form-page select.error-input:focus {
+    border-color: #ff7b7b;
+    box-shadow: 0 0 8px rgba(255, 123, 123, 0.5);
+}
+.room-form-page .required {
+    color: #ff7b7b;
+    margin-left: 2px;
+    font-weight: 700;
 }

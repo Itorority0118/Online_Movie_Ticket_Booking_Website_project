@@ -1,8 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-<link rel="stylesheet"
-      href="${pageContext.request.contextPath}/css/room/room-form.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/room/room-form.css?v=1">
 
 <div class="room-form-page">
 
@@ -31,34 +30,63 @@
             <input type="hidden" name="showtimeId" value="${showtimeId}"/>
         </c:if>
 
-        <div class="form-group">
-            <label>From Row</label>
-            <input type="text" name="fromRow" placeholder="A" required>
-        </div>
+		<div class="form-group">
+		    <label>From Row <span class="required">*</span></label>
+		    <input type="text" name="fromRow"
+		           value="${param.fromRow}"
+		           class="${errors.fromRow != null || errors.rowOrder != null ? 'error-input' : ''}"
+		           placeholder="A" required>
+		
+		    <c:if test="${errors.fromRow != null}">
+		        <span class="error">${errors.fromRow}</span>
+		    </c:if>
+		</div>
 
-        <div class="form-group">
-            <label>To Row</label>
-            <input type="text" name="toRow" placeholder="H" required>
-        </div>
+		<div class="form-group">
+		    <label>To Row <span class="required">*</span></label>
+		    <input type="text" name="toRow"
+		           value="${param.toRow}"
+		           class="${errors.toRow != null || errors.rowOrder != null ? 'error-input' : ''}"
+		           placeholder="H" required>
+		
+		    <c:if test="${errors.toRow != null}">
+		        <span class="error">${errors.toRow}</span>
+		    </c:if>
+		</div>
 
-        <div class="form-group">
-            <label>Seats per Row</label>
-            <input type="number" name="seatPerRow" min="1" required>
-        </div>
+		<c:if test="${errors.rowOrder != null}">
+		    <span class="error">${errors.rowOrder}</span>
+		</c:if>
 
-        <div class="form-group">
-            <label>Default Seat Type</label>
-            <select name="seatType" required>
-                <option value="Regular">Regular</option>
-                <option value="VIP">VIP</option>
-                <option value="Double">Double</option>
-            </select>
-        </div>
+		<div class="form-group">
+		    <label>Seats per Row <span class="required">*</span></label>
+		    <input type="number" name="seatPerRow"
+		           value="${param.seatPerRow}"
+		           class="${errors.seatPerRow != null ? 'error-input' : ''}"
+		           min="1" required>
+		
+		    <c:if test="${errors.seatPerRow != null}">
+		        <span class="error">${errors.seatPerRow}</span>
+		    </c:if>
+		</div>
+
+		<div class="form-group">
+		    <label>Default Seat Type <span class="required">*</span></label>
+		    <select name="seatType"
+		            class="${errors.seatType != null ? 'error-input' : ''}" required>
+		        <option value="">-- Select Type --</option>
+		        <option value="Regular" ${param.seatType == 'Regular' ? 'selected' : ''}>Regular</option>
+		        <option value="VIP" ${param.seatType == 'VIP' ? 'selected' : ''}>VIP</option>
+		        <option value="Double" ${param.seatType == 'Double' ? 'selected' : ''}>Double</option>
+		    </select>
+		
+		    <c:if test="${errors.seatType != null}">
+		        <span class="error">${errors.seatType}</span>
+		    </c:if>
+		</div>
 
         <button type="submit" class="submit-btn">
             Generate Seats
         </button>
-
     </form>
-
 </div>

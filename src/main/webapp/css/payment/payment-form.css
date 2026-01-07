@@ -1,0 +1,43 @@
+.user-table a.action.cancel {
+	color: #2196f3; 
+    font-weight: 600;
+    text-decoration: none;
+}
+.user-table a.action.confirm {
+    color: #66BB6A;
+    font-weight: 600;
+    text-decoration: none;
+}
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-buttons .btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    color: #fff;
+}
+
+.modal-buttons .btn.confirm {
+    background: #ff0000;
+}
+
+.modal-buttons .btn.confirm:hover {
+    background: #ff4d4d;
+}
+
+.modal-buttons .btn.cancel {
+    background: #30363d;
+    color: #fff;
+}
+
+.modal-buttons .btn.cancel:hover {
+    background: #555;
+}

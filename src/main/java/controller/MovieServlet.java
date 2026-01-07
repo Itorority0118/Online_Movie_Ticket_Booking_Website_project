@@ -9,7 +9,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/movie")
 public class MovieServlet extends HttpServlet {
@@ -116,25 +118,82 @@ public class MovieServlet extends HttpServlet {
             return;
         }
 
-        // ---------- ADD / UPDATE MOVIE ----------
         String idStr = request.getParameter("id");
+
+        String title = request.getParameter("title");
+        String genre = request.getParameter("genre");
+        String director = request.getParameter("director");
+        String cast = request.getParameter("cast");
+        String description = request.getParameter("description");
+        String durationStr = request.getParameter("duration");
+        String language = request.getParameter("language");
+        String releaseDate = request.getParameter("releaseDate");
+        String posterUrl = request.getParameter("posterUrl");
+        String trailerUrl = request.getParameter("trailerUrl");
+        String status = request.getParameter("status");
+
+        // -------- VALIDATION --------
+        Map<String, String> errors = new HashMap<>();
+
+        if (title == null || title.trim().length() < 2)
+            errors.put("title", "Title must be at least 2 characters");
+        if (genre == null || genre.trim().length() < 2)
+            errors.put("genre", "Genre must be at least 2 characters");
+        if (director == null || director.trim().length() < 2)
+            errors.put("director", "Director must be at least 2 characters");
+        if (cast == null || cast.trim().length() < 2)
+            errors.put("cast", "Cast must be at least 2 characters");
+        if (language == null || language.trim().length() < 2)
+            errors.put("language", "Language must be at least 2 characters");
+        if (durationStr == null || !durationStr.matches("\\d+") || Integer.parseInt(durationStr) <= 0)
+            errors.put("duration", "Duration must be a positive number");
+        if (releaseDate == null || releaseDate.trim().isEmpty())
+            errors.put("releaseDate", "Release Date is required");
+        if (status == null || !(status.equals("Now Showing") || status.equals("Coming Soon") || status.equals("Archived")))
+            errors.put("status", "Invalid status");
+
+        if (!errors.isEmpty()) {
+            Movie movie = new Movie();
+            if (idStr != null && !idStr.isEmpty())
+                movie.setMovieId(Integer.parseInt(idStr));
+            movie.setTitle(title);
+            movie.setGenre(genre);
+            movie.setDirector(director);
+            movie.setCast(cast);
+            movie.setDescription(description);
+            movie.setDuration(durationStr != null && !durationStr.isEmpty() ? Integer.parseInt(durationStr) : 0);
+            movie.setLanguage(language);
+            movie.setReleaseDate(releaseDate);
+            movie.setPosterUrl(posterUrl);
+            movie.setTrailerUrl(trailerUrl);
+            movie.setStatus(status);
+
+            request.setAttribute("errors", errors);
+            request.setAttribute("movie", movie);
+            request.getRequestDispatcher("/admin/dashboard.jsp?page=movie-form.jsp")
+                    .forward(request, response);
+            return;
+        }
+
         Movie movie = new Movie();
-        movie.setTitle(request.getParameter("title"));
-        movie.setGenre(request.getParameter("genre"));
-        movie.setDirector(request.getParameter("director"));
-        movie.setCast(request.getParameter("cast"));
-        movie.setDescription(request.getParameter("description"));
-        movie.setDuration(Integer.parseInt(request.getParameter("duration")));
-        movie.setLanguage(request.getParameter("language"));
-        movie.setReleaseDate(request.getParameter("releaseDate"));
-        movie.setPosterUrl(request.getParameter("posterUrl"));
-        movie.setTrailerUrl(request.getParameter("trailerUrl"));
-        movie.setStatus(request.getParameter("status"));
+        if (idStr != null && !idStr.isEmpty())
+            movie.setMovieId(Integer.parseInt(idStr));
+
+        movie.setTitle(title);
+        movie.setGenre(genre);
+        movie.setDirector(director);
+        movie.setCast(cast);
+        movie.setDescription(description);
+        movie.setDuration(Integer.parseInt(durationStr));
+        movie.setLanguage(language);
+        movie.setReleaseDate(releaseDate);
+        movie.setPosterUrl(posterUrl);
+        movie.setTrailerUrl(trailerUrl);
+        movie.setStatus(status);
 
         if (idStr == null || idStr.isEmpty()) {
             movieDAO.addMovie(movie);
         } else {
-            movie.setMovieId(Integer.parseInt(idStr));
             movieDAO.updateMovie(movie);
         }
         response.sendRedirect(request.getContextPath() + "/movie?action=list");

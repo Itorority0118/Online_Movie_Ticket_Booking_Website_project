@@ -87,7 +87,7 @@ public class CinemaServlet extends HttpServlet {
 
 	            case "new":
 	                request.setAttribute("cinema", null);
-
+	                request.setAttribute("cityList", getCityList());
 	                if (isAjax)
 	                    request.getRequestDispatcher("/admin/cinema-form.jsp").forward(request, response);
 	                else
@@ -99,7 +99,7 @@ public class CinemaServlet extends HttpServlet {
 	                int id = Integer.parseInt(request.getParameter("id"));
 	                Cinema cinema = cinemaDAO.getCinemaById(id);
 	                request.setAttribute("cinema", cinema);
-
+	                request.setAttribute("cityList", getCityList());
 	                if (isAjax)
 	                    request.getRequestDispatcher("/admin/cinema-form.jsp").forward(request, response);
 	                else
@@ -170,11 +170,36 @@ public class CinemaServlet extends HttpServlet {
 	        String city = request.getParameter("city");
 	        String phone = request.getParameter("phone");
 
+	        java.util.Map<String, String> errors = new java.util.HashMap<>();
+
+	        if (name == null || name.trim().isEmpty()) {
+	            errors.put("name", "Cinema Name is required");
+	        }
+	        if (address == null || address.trim().isEmpty()) {
+	            errors.put("address", "Address is required");
+	        }
+	        if (city == null || city.trim().isEmpty()) {
+	            errors.put("city", "City is required");
+	        }
+	        if (phone != null && !phone.trim().isEmpty()) {
+	            if (!phone.matches("\\d{9,11}")) {
+	                errors.put("phone", "Phone must be 9–11 digits");
+	            }
+	        }
+
 	        Cinema cinema = new Cinema();
 	        cinema.setName(name);
 	        cinema.setAddress(address);
 	        cinema.setCity(city);
 	        cinema.setPhone(phone);
+
+	        if (!errors.isEmpty()) {
+	            request.setAttribute("errors", errors);
+	            request.setAttribute("cinema", cinema);
+	            request.setAttribute("cityList", getCityList());
+	            request.getRequestDispatcher("/admin/dashboard.jsp?page=cinema-form.jsp").forward(request, response);
+	            return;
+	        }
 
 	        if (idStr == null || idStr.isEmpty()) {
 	            cinemaDAO.addCinema(cinema);

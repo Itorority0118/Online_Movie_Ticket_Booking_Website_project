@@ -182,6 +182,37 @@ public class SeatServlet extends HttpServlet {
             char toRow = request.getParameter("toRow").toUpperCase().charAt(0);
             int seatPerRow = Integer.parseInt(request.getParameter("seatPerRow"));
             String seatType = request.getParameter("seatType");
+            
+            Map<String, String> errors = new HashMap<>();
+
+	         if (fromRow < 'A' || fromRow > 'Z') {
+	             errors.put("fromRow", "From Row must be a letter from A to Z");
+	         }
+	
+	         if (toRow < 'A' || toRow > 'Z') {
+	             errors.put("toRow", "To Row must be a letter from A to Z");
+	         }
+	
+	         if (fromRow > toRow) {
+	             errors.put("rowOrder", "From Row must come before To Row (e.g. A → H)");
+	         }
+	
+	         if (seatPerRow <= 0) {
+	             errors.put("seatPerRow", "Seats per row must be greater than 0");
+	         }
+	
+	         if (seatType == null || seatType.isEmpty()) {
+	             errors.put("seatType", "Seat Type is required");
+	         }
+	         
+	         if (!errors.isEmpty()) {
+	        	    request.setAttribute("errors", errors);
+	        	    request.setAttribute("roomId", roomId);
+	        	    request.setAttribute("showtimeId", showtimeIdStr);
+	        	    request.getRequestDispatcher("/admin/dashboard.jsp?page=seat-generate.jsp")
+	        	           .forward(request, response);
+	        	    return;
+	         }
 
             List<Seat> existingSeats = seatDAO.getSeatsByRoomId(roomId);
             Map<Character, Integer> lastColInRow = new HashMap<>();
@@ -218,15 +249,44 @@ public class SeatServlet extends HttpServlet {
         }
 
         String idStr = request.getParameter("id");
-        String roomIdStr2 = request.getParameter("roomId");
+        String roomIdStr = request.getParameter("roomId");
+        String seatRow = request.getParameter("seatRow");
+        String seatColStr = request.getParameter("seatCol");
+        String seatType = request.getParameter("seatType");
+        String status = request.getParameter("status");
+
+        Map<String, String> errors = new HashMap<>();
+
+        if (seatRow == null || seatRow.isEmpty()) errors.put("seatRow", "Seat Row is required");
+        if (seatColStr == null || seatColStr.isEmpty()) errors.put("seatCol", "Seat Column is required");
+        if (seatType == null || seatType.isEmpty()) errors.put("seatType", "Seat Type is required");
+        if (status == null || status.isEmpty()) errors.put("status", "Status is required");
+
+        int seatCol = 0;
+        try {
+            if (seatColStr != null && !seatColStr.isEmpty()) {
+                seatCol = Integer.parseInt(seatColStr);
+                if (seatCol <= 0) errors.put("seatCol", "Seat Column must be positive");
+            }
+        } catch (NumberFormatException e) {
+            errors.put("seatCol", "Seat Column must be a number");
+        }
 
         Seat seat = new Seat();
-        seat.setRoomId(Integer.parseInt(roomIdStr2));
-        seat.setSeatRow(request.getParameter("seatRow"));
-        seat.setSeatCol(Integer.parseInt(request.getParameter("seatCol")));
-        seat.setSeatNumber(seat.getSeatRow() + seat.getSeatCol());
-        seat.setSeatType(request.getParameter("seatType"));
-        seat.setStatus(request.getParameter("status"));
+        seat.setRoomId(Integer.parseInt(roomIdStr));
+        seat.setSeatRow(seatRow != null ? seatRow : "");
+        seat.setSeatCol(seatCol);
+        seat.setSeatNumber(seatRow + seatCol);
+        seat.setSeatType(seatType);
+        seat.setStatus(status);
+
+        if (!errors.isEmpty()) {
+            request.setAttribute("errors", errors);
+            request.setAttribute("seat", seat);
+            request.getRequestDispatcher("/admin/dashboard.jsp?page=seat-form.jsp")
+                   .forward(request, response);
+            return;
+        }
 
         if (idStr == null || idStr.isEmpty()) {
             seatDAO.addSeat(seat);
@@ -235,6 +295,6 @@ public class SeatServlet extends HttpServlet {
             seatDAO.updateSeat(seat);
         }
 
-        response.sendRedirect(request.getContextPath() + "/seat?action=list&roomId=" + roomIdStr2);
+        response.sendRedirect(request.getContextPath() + "/seat?action=list&roomId=" + roomIdStr);
     }
 }

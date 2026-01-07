@@ -82,17 +82,14 @@ public class TicketServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
 
-        // ===== BOOK TICKET (AJAX TỪ CLIENT) =====
         if ("book".equals(action)) {
 
-            // 1. CHECK LOGIN
             User user = (User) request.getSession().getAttribute("user");
             if (user == null) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
 
-            // 2. PARAM
             String showtimeIdStr = request.getParameter("showtimeId");
             String seatIdsStr = request.getParameter("seatIds");
 
@@ -104,13 +101,11 @@ public class TicketServlet extends HttpServlet {
             int showtimeId = Integer.parseInt(showtimeIdStr);
             String[] seatIds = seatIdsStr.split(",");
 
-            // 3. CHUYỂN seatIds sang List<Integer>
             List<Integer> seatIdList = new ArrayList<>();
             for (String seatIdStr : seatIds) {
                 seatIdList.add(Integer.parseInt(seatIdStr));
             }
 
-            // 4. HOLD GHẾ + TẠO VÉ TẠM
             List<Ticket> tickets = ticketDAO.holdTickets(
                 user.getUserId(),
                 showtimeId,
@@ -121,17 +116,14 @@ public class TicketServlet extends HttpServlet {
                 return;
             }
 
-            // 5. LƯU SESSION ĐỂ THANH TOÁN
             request.getSession().setAttribute("tickets", tickets);
 
-            // 6. RESPONSE
             response.setContentType("application/json");
             response.getWriter().print("{\"success\": true}");
             return;
 
         }
 
-        // ===== ADMIN DELETE =====
         if ("delete".equals(action)) {
             int id = Integer.parseInt(request.getParameter("id"));
 

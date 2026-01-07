@@ -138,9 +138,4 @@ public class OrderDAO {
 	        e.printStackTrace();
 	    }
 	}
-
-
-
 }
-
-

@@ -18,31 +18,36 @@
 
     <form method="post" action="${pageContext.request.contextPath}/room">
 
-        <!-- roomId (edit only) -->
         <c:if test="${room != null}">
             <input type="hidden" name="id" value="${room.roomId}">
         </c:if>
 
-        <!-- cinemaId (required) -->
         <input type="hidden" name="cinemaId"
                value="${room != null ? room.cinemaId : param.cinemaId}">
 
-        <div class="form-group">
-            <label>Room Name</label>
-            <input type="text" name="roomName"
-                   value="${room != null ? room.roomName : ''}"
-                   placeholder="Example: Room 1" required>
-        </div>
+		<div class="form-group">
+		    <label>Room Name <span class="required">*</span></label>
+		    <input type="text" name="roomName"
+		           class="${errors.roomName != null ? 'error-input' : ''}"
+		           value="${room != null ? room.roomName : ''}"
+		           placeholder="Example: Room 1">
+		    <c:if test="${errors.roomName != null}">
+		        <span class="error">${errors.roomName}</span>
+		    </c:if>
+		</div>
 
-        <div class="form-group">
-            <label>Room Type</label>
-            <select name="roomType" required>
-                <option value="">-- Select Type --</option>
-                <option value="2D" ${room != null && room.roomType == '2D' ? 'selected' : ''}>2D</option>
-                <option value="3D" ${room != null && room.roomType == '3D' ? 'selected' : ''}>3D</option>
-                <option value="IMAX" ${room != null && room.roomType == 'IMAX' ? 'selected' : ''}>IMAX</option>
-            </select>
-        </div>
+		<div class="form-group">
+		    <label>Room Type <span class="required">*</span></label>
+		    <select name="roomType" class="${errors.roomType != null ? 'error-input' : ''}">
+		        <option value="">-- Select Type --</option>
+		        <option value="2D" ${room != null && room.roomType == '2D' ? 'selected' : ''}>2D</option>
+		        <option value="3D" ${room != null && room.roomType == '3D' ? 'selected' : ''}>3D</option>
+		        <option value="IMAX" ${room != null && room.roomType == 'IMAX' ? 'selected' : ''}>IMAX</option>
+		    </select>
+		    <c:if test="${errors.roomType != null}">
+		        <span class="error">${errors.roomType}</span>
+		    </c:if>
+		</div>
 
         <button type="submit" class="submit-btn">
             <c:choose>

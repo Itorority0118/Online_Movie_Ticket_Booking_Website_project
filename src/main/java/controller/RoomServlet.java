@@ -105,17 +105,44 @@ public class RoomServlet extends HttpServlet {
         String roomName = request.getParameter("roomName");
         String roomType = request.getParameter("roomType");
 
+        java.util.Map<String, String> errors = new java.util.HashMap<>();
+
+        if (roomName == null || roomName.trim().isEmpty()) {
+            errors.put("roomName", "Room Name is required");
+        }
+
+        if (roomType == null || roomType.trim().isEmpty()) {
+            errors.put("roomType", "Room Type is required");
+        }
+
         Room room = new Room();
-        room.setCinemaId(Integer.parseInt(cinemaIdStr));
         room.setRoomName(roomName);
         room.setRoomType(roomType);
-        room.setSeatCount(0);
+        if (cinemaIdStr != null && !cinemaIdStr.isEmpty()) {
+            room.setCinemaId(Integer.parseInt(cinemaIdStr));
+        }
+
+        if (!errors.isEmpty()) {
+            request.setAttribute("errors", errors);
+            request.setAttribute("room", room);
+            request.setAttribute("cinemaId", cinemaIdStr);
+
+            CinemaDAO cinemaDAO = new CinemaDAO();
+            var cinema = cinemaDAO.getCinemaById(Integer.parseInt(cinemaIdStr));
+            request.setAttribute("cinemaName", cinema != null ? cinema.getName() : "Unknown Cinema");
+
+            request.getRequestDispatcher("/admin/dashboard.jsp?page=room-form.jsp")
+                   .forward(request, response);
+            return;
+        }
+
         if (idStr == null || idStr.isEmpty()) {
             roomDAO.addRoom(room);
         } else {
             room.setRoomId(Integer.parseInt(idStr));
             roomDAO.updateRoom(room);
         }
+
         response.sendRedirect(request.getContextPath() + "/room?action=list&cinemaId=" + cinemaIdStr);
     }
 }

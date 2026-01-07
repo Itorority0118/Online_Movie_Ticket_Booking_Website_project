@@ -4,16 +4,20 @@
 <html>
 <head>
     <title>Login</title>
-    <link rel="stylesheet" href="<c:url value='/css/login.css?v=1'/>">
+    <link rel="stylesheet" href="<c:url value='/css/login.css?v=2'/>">
 </head>
 <body>
+
+<c:if test="${not empty sessionScope.user and not empty param.redirect}">
+    <c:redirect url="${param.redirect}" />
+</c:if>
 
 <div class="login-container">
 
     <h2>Login</h2>
 
-    <c:if test="${not empty error}">
-        <div class="error">${error}</div>
+    <c:if test="${not empty errors.general}">
+        <div class="error">${errors.general}</div>
     </c:if>
 
     <form action="${pageContext.request.contextPath}/user" method="post">
@@ -21,12 +25,18 @@
 
         <div class="form-group">
             <label>Email:</label>
-            <input type="text" name="email" required value="${param.email}">
+            <input type="text" name="email" value="${param.email}">
+			<c:if test="${not empty errors.email}">
+			    <small class="error field-error">${errors.email}</small>
+			</c:if>
         </div>
 
         <div class="form-group">
             <label>Password:</label>
-            <input type="password" name="password" required>
+            <input type="password" name="password">
+			<c:if test="${not empty errors.password}">
+			    <small class="error field-error">${errors.password}</small>
+			</c:if>
         </div>
 
         <button type="submit" class="btn">Login</button>
@@ -36,17 +46,15 @@
             <a href="user?action=forgot">Forgot Password?</a>
         </div>
     </form>
-
 </div>
+<script>
+    setTimeout(() => {
+        document.querySelectorAll('.field-error').forEach(err => {
+            err.style.transition = 'opacity 0.4s ease';
+            err.style.opacity = '0';
+            setTimeout(() => err.remove(), 400);
+        });
+    }, 3000);
+</script>
 </body>
-<%
-    if (session.getAttribute("user") != null) {
-        String redirect = request.getParameter("redirect");
-        if (redirect != null && !redirect.isEmpty()) {
-            response.sendRedirect(redirect);
-            return;
-        }
-    }
-%>
-
 </html>

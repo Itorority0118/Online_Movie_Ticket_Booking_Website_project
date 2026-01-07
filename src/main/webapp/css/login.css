@@ -173,3 +173,39 @@ button:hover {
 @media (max-width: 480px) {
     .login-container { width: 100%; }
 }
+/* ===== Field error auto hide ===== */
+.field-error {
+    display: block;
+    margin-top: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    background: rgba(255, 0, 0, 0.08);
+    color: #ff9a9a;
+    border-left: 3px solid #ff3333;
+    border-radius: 4px;
+    padding: 6px 10px;
+
+    animation: fieldErrorFade 3.2s ease forwards;
+}
+
+@keyframes fieldErrorFade {
+    0% {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    15% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    80% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-4px);
+        height: 0;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+}

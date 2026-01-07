@@ -216,5 +216,4 @@ public class MovieDAO {
         return ratings;
 
     }
-
 }
