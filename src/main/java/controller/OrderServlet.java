@@ -2,14 +2,16 @@ package controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import com.google.gson.Gson;
 
 import dao.OrderDAO;
 import dao.TicketDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-import model.OrderDTO;
 import model.Ticket;
 import model.User;
 
@@ -25,27 +27,29 @@ public class OrderServlet extends HttpServlet {
 
         String action = req.getParameter("action");
 
-        if ("ajax".equals(action)) {
-            HttpSession session = req.getSession(false);
-            if (session == null) {
-                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
-            }
-
-            User user = (User) session.getAttribute("user");
-            if (user == null) {
-                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
-            }
-
-            List<OrderDTO> orderList =
-                    orderDAO.getOrdersByUser(user.getUserId());
-
-            req.setAttribute("orderList", orderList);
-            req.getRequestDispatcher("/order-modal.jsp")
-               .forward(req, resp);
+        if (!"ajax".equals(action)) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
         }
+
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+
+        HttpSession session = req.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            resp.getWriter().write("[]");
+            return;
+        }
+
+        User user = (User) session.getAttribute("user");
+
+        // ✅ LẤY HOLD TICKET + MOVIE + SEAT + HOLD TIME
+        List<HashMap<String, Object>> result =
+                ticketDAO.getHoldingTicketDetails(user.getUserId());
+
+        resp.getWriter().write(new Gson().toJson(result));
     }
+
 
     // ============================
     // ADD TO CART = HOLD GHẾ
@@ -70,7 +74,12 @@ public class OrderServlet extends HttpServlet {
                 return;
             }
 
-            int showtimeId = Integer.parseInt(req.getParameter("showtimeId"));
+            int showtimeId = parseIntSafe(req.getParameter("showtimeId"));
+            if (showtimeId <= 0) {
+                resp.sendError(400, "Missing showtimeId");
+                return;
+            }
+
             String seatIdsStr = req.getParameter("seatIds");
 
             List<Integer> seatIds = new ArrayList<>();
@@ -164,7 +173,11 @@ public class OrderServlet extends HttpServlet {
                 return;
             }
 
-            int ticketId = Integer.parseInt(req.getParameter("ticketId"));
+            int ticketId = parseIntSafe(req.getParameter("ticketId"));
+            if (ticketId <= 0) {
+                resp.sendError(400, "Missing ticketId");
+                return;
+            }
 
             boolean ok = orderDAO.deleteHoldTicket(
                 ticketId,
@@ -174,8 +187,10 @@ public class OrderServlet extends HttpServlet {
             resp.setContentType("application/json");
             resp.getWriter().write("{\"success\":" + ok + "}");
         }
-
-
+    }
+    private int parseIntSafe(String v) {
+        if (v == null || v.equals("undefined") || v.isEmpty()) return -1;
+        return Integer.parseInt(v);
     }
 
 }

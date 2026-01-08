@@ -15,8 +15,8 @@
         </c:choose>
     </title>
     
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/index.css?v=${System.currentTimeMillis()}">
-
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/index.css?v=100">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/modal.css?v=10">
     <c:if test="${movieList == null}">
         <meta http-equiv="refresh"
               content="0;url=${pageContext.request.contextPath}/movie?action=now_showing">
@@ -73,9 +73,11 @@
 							<div id="seatModal" class="seat-modal-overlay">
 							  <div class="seat-modal">
 							
-							    <div class="screen-label">MÀN HÌNH</div>
+								<div class="cinema-screen">MÀN HÌNH</div>
 							
-							    <div id="seatMap" class="seat-map"></div>
+							    <div class="seat-map-wrapper">
+							      <div id="seatMap" class="seat-map"></div>
+							    </div>
 							
 							    <div class="seat-legend">
 								  <div class="legend-item">
@@ -127,8 +129,6 @@
     </div>
 </div>
 
-
-<c:if test="${sessionScope.role == 'CUSTOMER'}">
 <div class="modal-overlay" id="profileModal" style="display:none;">
     <div class="profile-modal">
 
@@ -137,54 +137,71 @@
             <h3>Thông tin cá nhân</h3>
         </div>
 
-        <form action="${pageContext.request.contextPath}/user" method="post">
+        <form id="profileForm">
             <input type="hidden" name="action" value="updateProfile">
+
+            <div id="profileErrors" style="color:red; margin-bottom:10px;"></div>
 
             <div class="form-group">
                 <label>Họ và tên</label>
-                <input type="text" name="fullName"
-                       value="${sessionScope.user.fullName}" required>
+                <input type="text" name="fullName" value="${sessionScope.user.fullName}" required>
             </div>
 
             <div class="form-group">
                 <label>Email</label>
-                <input type="email"
-                       value="${sessionScope.user.email}" disabled>
+                <input type="email" value="${sessionScope.user.email}" disabled>
             </div>
 
             <div class="form-group">
                 <label>Số điện thoại</label>
-                <input type="text" name="phone"
-                       value="${sessionScope.user.phone}">
+                <input type="text" name="phone" value="${sessionScope.user.phone}">
             </div>
+
+            <div class="form-group">
+                <label>Mật khẩu mới</label>
+                <input type="password" name="password" placeholder="Để trống nếu không đổi">
+            </div>         
 
             <div class="profile-actions">
-                <button type="submit" class="btn-save">Lưu</button>
-                <button type="button" class="btn-cancel"
-                        onclick="closeProfileModal()">Hủy</button>
+                <button type="button" class="btn-save" onclick="saveProfile()">Lưu</button>
+                <button type="button" class="btn-cancel" onclick="closeProfileModal()">Hủy</button>
             </div>
         </form>
-
     </div>
 </div>
-</c:if>
+
+
 <div class="modal-overlay" id="orderModal" style="display:none;">
-    <div class="profile-modal order-modal">
-        <div class="profile-header">
+    <div class="order-modal">
+        <div class="order-header">
             <h3>Đơn hàng của tôi</h3>
+            <button class="order-close-btn" onclick="closeOrderModal()">✖</button>
         </div>
 
-        <div id="orderContent">
-        </div>
+        <div class="order-body">
+            <!-- Cột vé đã chọn -->
+            <div class="order-column order-tickets">
+                <h4>Vé đã chọn</h4>
+                <div id="orderTickets"> <!-- container riêng cho từng vé -->
+                    <p>Chưa có vé</p>
+                </div>
+            </div>
 
-        <div class="profile-actions">
-            <button type="button" class="btn-cancel"
-                    onclick="closeOrderModal()">Đóng</button>
+            <!-- Cột thanh toán -->
+            <div class="order-column order-summary">
+                <h4>Thanh toán</h4>
+                <div class="summary-item">
+                    <span>Tổng tiền:</span>
+                    <span id="orderTotalPrice">0₫</span> <!-- ID mới riêng cho tổng tiền -->
+                </div>
+                <div class="summary-actions">
+					<button class="btn-confirm" onclick="checkoutOrder()">Thanh toán</button>
+                    <button class="btn-cancel" onclick="closeOrderModal()">Đóng</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
-
 
 <header class="header">
     <div class="logo-container">
@@ -201,35 +218,32 @@
         </ul>
     </nav>
 
-    <div class="user-status">
-        <c:choose>
-            <c:when test="${not empty sessionScope.user}">
-                <div class="user-menu">
-                    <span>Xin chào, ${sessionScope.user.fullName}</span>
-                    <div class="user-icon" onclick="toggleUserDropdown()">👤</div>
+	<c:choose>
+		<c:when test="${not empty sessionScope.user}">
+		    <div class="user-status">
+		        <div class="user-menu" onclick="toggleUserDropdown()">
+		            <span class="greeting-text">Xin chào,</span>
+		            <span class="user-name">${fn:substring(sessionScope.user.fullName, 0, 12)}</span>
+		            <div class="user-icon">👤</div>
+		
+		            <div class="user-dropdown">
+		                <a href="javascript:void(0)" onclick="openProfileModal()">Thông tin cá nhân</a>
+		
+		                <a href="javascript:void(0)" id="orderBtn">Đơn hàng</a>
+		
+		                <a href="${pageContext.request.contextPath}/admin?action=dashboard">Trang quản trị</a>
+		
+		                <hr>
+		                <a href="${pageContext.request.contextPath}/user?action=logout">Đăng xuất</a>
+		            </div>
+		        </div>
+		    </div>
+		</c:when>
 
-                    <div class="user-dropdown" id="userDropdown">
-                        <c:if test="${sessionScope.role == 'CUSTOMER'}">
-                            <a href="javascript:void(0)" onclick="openProfileModal()">Thông tin cá nhân</a>
-                        </c:if>
-
-                        <a href="javascript:void(0)" onclick="openOrderModal()">Đơn hàng</a>
-
-                        <c:if test="${sessionScope.role == 'ADMIN'}">
-                            <a href="${pageContext.request.contextPath}/admin/dashboard">Trang quản trị</a>
-                        </c:if>
-
-                        <hr>
-                        <a href="${pageContext.request.contextPath}/user?action=logout">Đăng xuất</a>
-                    </div>
-                </div>
-            </c:when>
-
-            <c:otherwise>
-                <a href="${pageContext.request.contextPath}/login.jsp" class="login-btn">Đăng nhập</a>
-            </c:otherwise>
-        </c:choose>
-    </div>
+	    <c:otherwise>
+	        <a href="${pageContext.request.contextPath}/login.jsp" class="login-btn">Đăng nhập</a>
+	    </c:otherwise>
+	</c:choose>
 </header>
 
 <div class="movie-tabs-container">
@@ -304,8 +318,8 @@
 <script>
     window.APP_CONTEXT = "${pageContext.request.contextPath}";
 </script>
-<script src="<c:url value='/js/common.js'/>"></script>
+<script src="<c:url value='/js/common.js?v=7'/>"></script>
 <script src="<c:url value='/js/movie.js'/>"></script>
-<script src="<c:url value='/js/order-modal.js'/>"></script>
+<script src="<c:url value='/js/order-modal.js?v=6'/>"></script>
 </body>
 </html>

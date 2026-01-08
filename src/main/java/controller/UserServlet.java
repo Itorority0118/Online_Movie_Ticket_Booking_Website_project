@@ -262,27 +262,84 @@ public class UserServlet extends HttpServlet {
             request.getRequestDispatcher("/forgot-password.jsp").forward(request, response);
             return;
         }
-        // ---------------- UPDATE PROFILE (CUSTOMER) ----------------
+        
         if ("updateProfile".equals(action)) {
+            response.setContentType("application/json;charset=UTF-8");
+            Map<String, Object> jsonResponse = new HashMap<>();
 
             HttpSession session = request.getSession();
             User currentUser = (User) session.getAttribute("user");
 
-            if (currentUser != null) {
-                currentUser.setFullName(request.getParameter("fullName"));
-                currentUser.setPhone(request.getParameter("phone"));
+            if (currentUser == null) {
+                jsonResponse.put("success", false);
+                Map<String, String> err = new HashMap<>();
+                err.put("general", "Bạn cần đăng nhập trước khi cập nhật.");
+                jsonResponse.put("errors", err);
+            } else {
+                String fullName = request.getParameter("fullName");
+                String phone = request.getParameter("phone");
+                String newPassword = request.getParameter("password");
 
-                userDAO.updateUser(currentUser);
+                Map<String, String> errors = new HashMap<>();
 
-                // cập nhật lại session
-                session.setAttribute("user", currentUser);
+                // Validate fullName chỉ khi người dùng nhập
+                if (fullName != null && !fullName.trim().isEmpty()) {
+                    fullName = fullName.trim();
+                    if (fullName.length() < 3) {
+                        errors.put("fullName", "Họ và tên phải ít nhất 3 ký tự");
+                    }
+                } else {
+                    // Nếu không nhập, giữ nguyên fullName hiện tại
+                    fullName = currentUser.getFullName();
+                }
+
+                // Validate phone nếu nhập
+                if (phone != null && !phone.trim().isEmpty()) {
+                    if (!phone.matches("\\d{9,11}")) {
+                        errors.put("phone", "Số điện thoại phải từ 9-11 chữ số");
+                    }
+                } else {
+                    phone = currentUser.getPhone();
+                }
+
+                // Validate password nếu nhập
+                if (newPassword != null && !newPassword.trim().isEmpty() && newPassword.length() < 6) {
+                    errors.put("password", "Mật khẩu mới phải ít nhất 6 ký tự");
+                }
+
+                if (!errors.isEmpty()) {
+                    jsonResponse.put("success", false);
+                    jsonResponse.put("errors", errors);
+                } else {
+                    // Update thông tin
+                    currentUser.setFullName(fullName);
+                    currentUser.setPhone(phone);
+                    if (newPassword != null && !newPassword.trim().isEmpty()) {
+                        currentUser.setPassword(newPassword);
+                    }
+
+                    userDAO.updateUser(currentUser);
+                    session.setAttribute("user", currentUser);
+
+                    // Trả về JSON
+                    Map<String,Object> userMap = new HashMap<>();
+                    userMap.put("userId", currentUser.getUserId());
+                    userMap.put("fullName", currentUser.getFullName());
+                    userMap.put("email", currentUser.getEmail());
+                    userMap.put("phone", currentUser.getPhone());
+                    userMap.put("role", currentUser.getRole());
+                    userMap.put("status", currentUser.getStatus());
+                    userMap.put("createdAt", currentUser.getCreatedAt());
+
+                    jsonResponse.put("success", true);
+                    jsonResponse.put("user", userMap);
+                }
             }
 
-            response.sendRedirect(request.getContextPath() + "/movie?action=now_showing");
+            String json = new com.google.gson.Gson().toJson(jsonResponse);
+            response.getWriter().write(json);
             return;
         }
-
-
         // ---------------- ADD / EDIT ----------------
         String idStr = request.getParameter("id");
         boolean isAdd = (idStr == null || idStr.isEmpty());
