@@ -189,7 +189,7 @@ public class MovieDAO {
                 }
             }
             
-            System.out.println("DEBUG (MovieDAO): Found " + genres.size() + " distinct genres."); 
+           // System.out.println("DEBUG (MovieDAO): Found " + genres.size() + " distinct genres."); 
 
         } catch (SQLException e) {
             System.out.println("❌ ERROR fetching distinct genres: " + e.getMessage());
@@ -198,6 +198,7 @@ public class MovieDAO {
         return genres;
     }
 
+    /*
     public List<String> getAgeRatingList() {
 
         List<String> ratings = new ArrayList<>();
@@ -216,4 +217,5 @@ public class MovieDAO {
         return ratings;
 
     }
+    */
 }

@@ -1,14 +1,14 @@
-
+/* ===== RESET & BODY ===== */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Arial, sans-serif; 
+    font-family: 'Segoe UI', Arial, sans-serif;
 }
 
 body {
-    background-color: #0d1117; 
-    color: #f0f6f9; 
+    background-color: #0d1117;
+    color: #f0f6f9;
     line-height: 1.6;
 }
 
@@ -17,13 +17,14 @@ a {
     color: inherit;
 }
 
+/* ===== HEADER ===== */
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 15px 50px;
     background-color: #161b22;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -57,6 +58,7 @@ a {
     border-right: 2px solid #30363d;
 }
 
+/* ===== NAVIGATION ===== */
 .main-nav {
     flex-grow: 1;
 }
@@ -79,11 +81,12 @@ a {
 
 .main-nav ul li a:hover {
     color: #ff0000;
-    text-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+    text-shadow: 0 0 8px rgba(255,0,0,0.6);
 }
 
+/* ===== USER STATUS ===== */
 .user-status {
-    display: flex; 
+    display: flex;
     align-items: center;
 }
 
@@ -108,9 +111,10 @@ a {
 .login-btn:hover, .logout-btn:hover {
     background-color: #30363d;
     border-color: #ff0000;
-    box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
+    box-shadow: 0 0 10px rgba(255,0,0,0.4);
 }
 
+/* ===== MOVIE TABS ===== */
 .movie-tabs-container {
     background-color: #161b22;
     border-bottom: 2px solid #30363d;
@@ -140,11 +144,12 @@ a {
 }
 
 .tab-item.active {
-    color: #ffffff;
+    color: #fff;
     border-bottom: 3px solid #ff0000;
-    text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
+    text-shadow: 0 0 5px rgba(255,0,0,0.3);
 }
 
+/* ===== MAIN CONTENT ===== */
 .main-content {
     max-width: 1200px;
     margin: 40px auto;
@@ -164,11 +169,10 @@ a {
     overflow: hidden;
     width: calc(25% - 22.5px);
     min-width: 250px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.5);
     text-align: center;
     padding: 15px;
     transition: transform 0.3s, box-shadow 0.3s;
-
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -176,7 +180,7 @@ a {
 
 .movie-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(255, 0, 0, 0.3);
+    box-shadow: 0 15px 30px rgba(255,0,0,0.3);
 }
 
 .movie-image-wrapper {
@@ -201,6 +205,7 @@ a {
     transform: scale(1.05);
 }
 
+/* ===== BADGES ===== */
 .badge {
     position: absolute;
     z-index: 2;
@@ -225,11 +230,12 @@ a {
     color: #fff;
 }
 
+/* ===== MOVIE INFO ===== */
 .movie-title {
     font-size: 18px;
     font-weight: 700;
     margin-bottom: 8px;
-    color: #ffffff;
+    color: #fff;
     min-height: 44px;
 }
 
@@ -239,9 +245,10 @@ a {
     color: #8b949e;
 }
 
+/* ===== BUY TICKET BUTTON ===== */
 .buy-ticket-btn, .buy-ticket-btn-link {
     background-color: #ff0000;
-    color: white;
+    color: #fff;
     border: none;
     padding: 12px 0;
     margin-top: 15px;
@@ -251,134 +258,150 @@ a {
     font-size: 15px;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
-    display: block;
     text-align: center;
+    display: block;
 }
 
 .buy-ticket-btn:hover, .buy-ticket-btn-link:hover {
     background-color: #cc0000;
     transform: scale(1.02);
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+    box-shadow: 0 0 15px rgba(255,0,0,0.6);
 }
 
-@media (max-width: 1100px) {
-    .movie-card {
-        width: calc(33.33% - 20px);
-    }
-}
-
-@media (max-width: 850px) {
-    .movie-card {
-        width: calc(50% - 15px);
-    }
-}
-
-@media (max-width: 768px) {
-    .header {
-        flex-direction: column;
-        padding: 15px 20px;
-    }
-
-    .movie-card {
-        width: 90%;
-        max-width: 400px;
-        margin: 0 auto;
-    }
-
-    .movie-list {
-        justify-content: center;
-    }
-
-    .tab-item {
-        font-size: 14px;
-        padding: 10px 15px;
-    }
-}
-
-.user-menu {
+/* ===== USER STATUS ===== */
+.user-status {
     position: relative;
     display: flex;
     align-items: center;
-    gap: 12px;
+    font-family: 'Segoe UI', sans-serif;
 }
 
-.user-icon {
+/* User menu container */
+.user-menu {
+    display: flex;
+    align-items: center;
     cursor: pointer;
-    font-size: 22px;
-    background: #f1f1f1;
+    position: relative;
+    padding: 5px 12px;
+    border-radius: 10px;
+    background-color: rgba(255, 107, 107, 0.05);
+    transition: background 0.2s;
+}
+
+.user-menu:hover {
+    background-color: rgba(255, 107, 107, 0.1);
+}
+
+/* Avatar hình tròn */
+.user-icon {
+    width: 44px;
+    height: 44px;
+    background-color: #ff6b6b;
     border-radius: 50%;
-    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #fff;
+    margin-left: 10px;
+    flex-shrink: 0;
+    transition: background 0.3s;
 }
 
+.user-icon:hover {
+    background-color: #ff5252;
+}
+
+/* User name */
+.user-menu span {
+    font-weight: 500;
+    color: #f0f6f9;
+    margin-right: 6px;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dropdown-arrow {
+    margin-left: 4px;
+    font-size: 12px;
+    color: #f0f6f9;
+    transition: transform 0.3s;
+}
+
+/* Dropdown menu */
 .user-dropdown {
-    display: none;
     position: absolute;
-    top: 40px;
+    top: 58px;
     right: 0;
-    background: white;
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
     min-width: 180px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    border-radius: 6px;
-    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.5);
+    z-index: 999;
+    overflow: hidden;
 }
 
+/* Links trong dropdown */
 .user-dropdown a {
-    display: block;
-    padding: 10px 14px;
+    padding: 10px 16px;
+    font-size: 14px;
+    color: #f0f6f9;
     text-decoration: none;
-    color: #333;
+    transition: background 0.2s, color 0.2s;
 }
 
 .user-dropdown a:hover {
-    background: #f5f5f5;
+    background-color: #ff0000;
+    color: #fff;
 }
 
+/* Separator */
 .user-dropdown hr {
-    margin: 5px 0;
+    margin: 6px 0;
+    border: none;
+    border-top: 1px solid #30363d;
 }
 
-.logout-link {
-    color: red;
-    font-weight: bold;
-}
-
-.modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.75);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-
-.modal-overlay.show {
+/* Hiển thị dropdown khi active */
+.user-menu.active .user-dropdown {
     display: flex;
 }
 
-.profile-modal {
-    width: 380px;
-    background: #fff;
-    margin: 120px auto;
-    padding: 20px;
-    border-radius: 10px;
+.user-menu.active .dropdown-arrow {
+    transform: rotate(180deg);
 }
 
+/* Responsive */
+@media(max-width:768px){
+    .user-menu span { display: none; }
+    .user-icon { margin-left: 0; }
+}
 
+/* Nút đăng nhập */
+.login-btn {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-weight: 500;
+    background-color: #ff6b6b;
+    color: #fff;
+    transition: background 0.3s;
+}
+.login-btn:hover {
+    background-color: #ff5252;
+}
+
+/* ===== MOVIE MODAL ===== */
 .movie-modal {
     background: #fff;
     width: 750px;
     border-radius: 10px;
     padding: 20px;
     position: relative;
-}
-
-.close-btn {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    cursor: pointer;
-    font-size: 20px;
 }
 
 .movie-modal-content {
@@ -391,334 +414,33 @@ a {
     border-radius: 6px;
 }
 
-.trailer-btn {
-    display: inline-block;
-    margin-top: 15px;
-    background: #e50914;
-    color: white;
-    padding: 10px 14px;
-    border-radius: 5px;
-    text-decoration: none;
-}
-
-.modal-section {
-    margin-top: 15px;
-}
-
-.showtime-list button {
-    margin: 5px 5px 0 0;
-    padding: 6px 12px;
-    border: 1px solid #aaa;
-    cursor: pointer;
-}
-
-.showtime-list button.active {
-    background: #e50914;
-    color: white;
-}
-
-.modal-actions {
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
-}
-
-.btn-buy {
-    background: #e50914;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-}
-
-.btn-cart {
-    background: #333;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-}
-
-
-.movie-card:hover,
-.movie-card:active {
-    transform: none !important;
-}
-
-/* ===== MODAL ===== */
-.seat-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.7);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-.seat-modal {
-  background: #0b1320;
-  padding: 25px;
-  border-radius: 16px;
-  color: #fff;
-  width: 700px;
-}
-
-/* ===== SCREEN ===== */
-.screen-label {
-  text-align: center;
-  background: linear-gradient(#ccc, #999);
-  color: #000;
-  padding: 8px;
-  border-radius: 20px;
-  margin-bottom: 20px;
-  font-weight: bold;
-}
-
-/* ===== SEAT MAP ===== */
-/* ===== SEAT MAP ===== */
-.seat-map {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  align-items: center; /* TOÀN BỘ HÀNG Ở GIỮA */
-}
-
-/* ===== MỖI HÀNG GHẾ ===== */
-.seat-row {
-  display: flex;
-  align-items: center;
-  justify-content: center; /* CĂN GIỮA HÀNG */
-  gap: 8px;
-}
-
-/* KÝ TỰ HÀNG (A, B, C...) */
-.row-label {
-  width: 28px;
-  text-align: right;
-  margin-right: 8px;
-  font-weight: bold;
-  color: #9fb4ff;
-}
-
-/* ===== GHẾ ===== */
-.seat {
-  width: 38px;
-  height: 38px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 600;
-  color: #fff;
-}
-
-/* MÀU GHẾ */
-.seat.normal { background: #4b3cc4; }
-.seat.vip { background: #c0392b; }
-.seat.couple { background: #b1005a; }
-.seat.booked { background: #555; cursor: not-allowed; }
-.seat.selected { outline: 3px solid #00ff99; }
-
-/* ===== LỐI ĐI ===== */
-.walkway {
-  width: 28px;   /* khoảng trống như rạp thật */
-  height: 1px;
-}
-
-
-/* ===== SEAT ===== */
-.seat {
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.seat.normal { background: #6a5acd; }
-.seat.vip { background: #e74c3c; }
-.seat.couple { background: #ff69b4; }
-.seat.booked { background: #555; cursor: not-allowed; }
-.seat.selected { outline: 3px solid #00ff99; }
-
-/* CENTER ZONE */
-.seat.center {
-  box-shadow: 0 0 0 2px #00ff99 inset;
-}
-
-/* ===== LEGEND ===== */
-/* ===== LEGEND CONTAINER ===== */
-.seat-legend {
-  display: flex;
-  justify-content: center;     /* căn giữa toàn bộ */
-  align-items: center;
-  gap: 24px;                   /* khoảng cách giữa các chú thích */
-  margin-top: 20px;
-  flex-wrap: wrap;             /* không vỡ layout khi màn nhỏ */
-  font-size: 14px;
-}
-
-/* ===== TỪNG ITEM ===== */
-.legend-item {
-  display: flex;
-  align-items: center;         /* icon + chữ thẳng hàng */
-  gap: 8px;
-  white-space: nowrap;
-}
-
-/* ===== ICON GHẾ MẪU ===== */
-.seat-sample {
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
-  display: inline-block;
-}
-
-/* MÀU TƯƠNG ỨNG */
-.seat-sample.booked { background: #555; }
-.seat-sample.selected {
-  background: transparent;
-  box-shadow: 0 0 0 2px #00ff99 inset;
-}
-.seat-sample.normal { background: #4b3cc4; }
-.seat-sample.vip { background: #c0392b; }
-.seat-sample.couple { background: #b1005a; }
-
-
-/* ===== ACTION ===== */
-.seat-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.seat-actions button {
-  padding: 8px 16px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-}
-
-.seat-actions .cancel {
-  background: #555;
-  color: #fff;
-}
-
-.booking-success {
-    margin-top: 16px;
-    padding: 14px;
-    border-radius: 10px;
-    background: rgba(0, 255, 153, 0.1);
-    border: 1px solid #00ff99;
-    color: #dfffee;
-}
-
-.booking-success h3 {
-    margin-bottom: 8px;
-    color: #00ff99;
-}
-
-#showtimeList button.active {
-    background: #ff9800;
-    color: #000;
-    font-weight: bold;
-}
-
-#showtimeList button.booked-showtime {
-    background: #00c896;
-    color: #000;
-    font-weight: bold;
-    border: 2px solid #00ffd5;
-}
-
-/* MODAL CHA */
-.order-modal {
-    width: 90vw;
-    max-width: 1200px;
-    height: 80vh;              /* 🔥 CHIỀU CAO CỐ ĐỊNH */
-    background: #1c1c1c;
-    border-radius: 10px;
-    padding: 20px;
-    overflow: hidden;          /* ❗ KHÔNG auto */
-}
-
-/* LAYOUT NGANG */
-.order-layout {
-    display: flex;
-    height: 100%;              /* 🔥 RẤT QUAN TRỌNG */
-}
-
-/* DANH SÁCH VÉ (CUỘN Ở ĐÂY) */
-.order-list {
-    flex: 2;
-    height: 100%;              /* 🔥 DÒNG QUYẾT ĐỊNH */
-    overflow-y: auto;          /* 🔥 SCROLL */
-    padding-right: 16px;
-}
-
-/* BÊN THANH TOÁN */
-.order-side {
-    flex: 1;
-    border-left: 1px solid #444;
-    padding-left: 20px;
-}
-
-/* ITEM */
-.order-item {
-    border-bottom: 1px solid #333;
-    padding: 15px;
-}
-
-.order-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.hold { color: #ffcc00; }
-.done { color: #00ff7f; }
-
-.order-check {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 6px;
-}
-
-.pay-all-btn {
-    margin-top: 12px;
-    width: 100%;
-    padding: 10px;
-    background: #c00;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}thích thì copy code m qua lun
-
-.order-modal {
-    position: relative;
-}
-
-.order-close-btn {
+.close-btn {
     position: absolute;
-    top: 12px;
-    right: 14px;
-    background: transparent;
-    border: none;
-    color: #fff;
-    font-size: 22px;
+    top: 10px;
+    right: 15px;
     cursor: pointer;
-    z-index: 10;
-    opacity: 0.7;
+    font-size: 20px;
 }
 
-.order-close-btn:hover {
-    opacity: 1;
-    color: #ff4d4f;
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1100px) {
+    .movie-card { width: calc(33.33% - 20px); }
 }
 
-.modal-overlay.show {
-    background: red !important;
+@media (max-width: 850px) {
+    .movie-card { width: calc(50% - 15px); }
+}
+
+@media (max-width: 768px) {
+    .header { flex-direction: column; padding: 15px 20px; }
+    .movie-card { width: 90%; max-width: 400px; margin: 0 auto; }
+    .movie-list { justify-content: center; }
+    .tab-item { font-size: 14px; padding: 10px 15px; }
+}
+
+.profile-modal .form-group input[type="password"] {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
 }

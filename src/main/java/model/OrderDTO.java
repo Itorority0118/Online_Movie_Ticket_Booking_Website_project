@@ -1,6 +1,5 @@
 package model;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 
@@ -70,5 +69,4 @@ public class OrderDTO {
 	public void setSeatLabel(String seatLabel) {
 	    this.seatLabel = seatLabel;
 	}
-    
 }

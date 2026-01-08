@@ -1,116 +1,200 @@
 console.log("ORDER MODAL JS LOADED");
 
+const HOLD_TIME = 5 * 60 * 1000;
 window.selectedTickets = [];
+let countdownIntervals = [];
 
-// ===== CHECKBOX =====
-window.toggleTicket = function (cb) {
-    const ticket = {
-        id: cb.dataset.id,
-        movie: cb.dataset.movie,
-        seat: cb.dataset.seat,
-        price: Number(cb.dataset.price)
-    };
+document.addEventListener("DOMContentLoaded", () => {
+    const orderBtn = document.getElementById("orderBtn");
+    if (orderBtn) orderBtn.addEventListener("click", openOrderModal);
+});
 
-    if (cb.checked) {
-        // tránh trùng
-        if (!selectedTickets.find(t => t.id === ticket.id)) {
-            selectedTickets.push(ticket);
-        }
-    } else {
-        selectedTickets =
-            selectedTickets.filter(t => t.id !== ticket.id);
-    }
+window.openOrderModal = async function () {
+    const modal = document.getElementById("orderModal");
+    const ticketsBox = document.getElementById("orderTickets");
+    if (!modal || !ticketsBox) return;
 
-    renderPayment();
-};
-
-// ===== RENDER =====
-window.renderPayment = function () {
-    const box = document.getElementById("selectedTickets");
-    const totalEl = document.getElementById("orderTotalPrice");
-    const payBtn = document.querySelector(".pay-all-btn");
-
-    if (!box || !totalEl) return;
-
-    if (selectedTickets.length === 0) {
-        box.innerHTML = "<p>Chưa chọn vé</p>";
-        totalEl.innerText = "0 đ";
-        payBtn.disabled = true;
+    if (!window.IS_LOGGED_IN) {
+        alert("Vui lòng đăng nhập để xem đơn hàng");
         return;
     }
 
-    let html = "";
-    let total = 0;
+    modal.style.display = "flex";
+    setTimeout(() => modal.classList.add("show"), 10);
+    modal.onclick = e => { if (e.target === modal) closeOrderModal(); };
 
-    selectedTickets.forEach(t => {
-        total += t.price;
-        html += `<p>🎬 ${t.movie} – ${t.seat}</p>`;
-    });
+    ticketsBox.innerHTML = "<p>Đang tải...</p>";
 
-    box.innerHTML = html;
-    totalEl.innerText = total.toLocaleString("vi-VN") + " đ";
-    payBtn.disabled = false;
+    clearAllCountdowns();
+
+    try {
+        const res = await fetch(`${APP_CONTEXT}/order?action=ajax`, {
+            headers: { "X-Requested-With": "XMLHttpRequest" }
+        });
+
+        if (!res.ok) throw new Error("HTTP " + res.status);
+
+        const data = await res.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+            ticketsBox.innerHTML = "<p>Chưa có vé</p>";
+            selectedTickets = [];
+            renderPayment();
+            return;
+        }
+
+        selectedTickets = data.map(t => ({
+            id: String(t.id),
+            movie: t.movie || "",
+            seat: t.seat || "",
+            price: Number(t.price),
+            holdTime: Number(t.holdTime) 
+        }));
+
+        renderOrderTickets(selectedTickets);
+        renderPayment();
+
+    } catch (err) {
+        console.error(err);
+        ticketsBox.innerHTML = "<p>Lỗi tải vé</p>";
+    }
 };
 
-window.initOrderModal = function () {
+function renderOrderTickets(tickets) {
+    const box = document.getElementById("orderTickets");
+    if (!box) return;
 
-    console.log("🔄 INIT ORDER MODAL");
+    box.innerHTML = tickets.map(t => `
+        <div class="order-item hold-timer"
+             data-id="${t.id}"
+             data-booking-time="${t.holdTime}">
 
-    // reset state
-    selectedTickets = [];
+            <label>
+                <input type="checkbox"
+                       checked
+                       data-id="${t.id}"
+                       data-movie="${t.movie}"
+                       data-seat="${t.seat}"
+                       data-price="${t.price}"
+                       onchange="toggleTicket(this)">
+                🎬 ${t.movie} – ${t.seat}
+            </label>
 
-    document
-        .querySelectorAll(".order-check input[type='checkbox']:checked")
-        .forEach(cb => {
+            <span class="order-price">
+                ${t.price.toLocaleString("vi-VN")} đ
+            </span>
+
+            <span class="countdown"></span>
+
+            <button type="button"
+                    class="cancel-btn"
+                    onclick="cancelHold(this, '${t.id}')">❌</button>
+        </div>
+    `).join("");
+
+    initHoldCountdown();
+}
+
+function initHoldCountdown() {
+    document.querySelectorAll(".hold-timer").forEach(timer => {
+
+        const bookingTime = Number(timer.dataset.bookingTime);
+        const countdownEl = timer.querySelector(".countdown");
+        const ticketId = timer.dataset.id;
+
+        if (!bookingTime || !countdownEl) return;
+
+        const interval = setInterval(() => {
+            const diff = HOLD_TIME - (Date.now() - bookingTime);
+
+            if (diff <= 0) {
+                clearInterval(interval);
+                timer.innerHTML =
+                    "<span style='color:red'>❌ Hết thời gian giữ ghế</span>";
+
+                selectedTickets = selectedTickets.filter(t => t.id !== ticketId);
+                renderPayment();
+                return;
+            }
+
+            const m = Math.floor(diff / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+
+            countdownEl.innerText =
+                `⏳ ${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+        }, 1000);
+
+        countdownIntervals.push(interval);
+    });
+}
+
+function clearAllCountdowns() {
+    countdownIntervals.forEach(i => clearInterval(i));
+    countdownIntervals = [];
+}
+
+window.toggleTicket = function (cb) {
+    const id = cb.dataset.id;
+
+    if (cb.checked) {
+        if (!selectedTickets.find(t => t.id === id)) {
             selectedTickets.push({
-                id: cb.dataset.id,
+                id,
                 movie: cb.dataset.movie,
                 seat: cb.dataset.seat,
                 price: Number(cb.dataset.price)
             });
-        });
+        }
+    } else {
+        selectedTickets = selectedTickets.filter(t => t.id !== id);
+    }
 
     renderPayment();
 };
-function openPaymentModal() {
 
-    if (!window.selectedTickets || selectedTickets.length === 0) {
+window.renderPayment = function () {
+    const totalEl = document.getElementById("orderTotalPrice");
+    const payBtn = document.querySelector(".btn-confirm");
+    if (!totalEl) return;
+
+    const total = selectedTickets.reduce((s, t) => s + t.price, 0);
+    totalEl.innerText = total.toLocaleString("vi-VN") + " đ";
+
+    if (payBtn) payBtn.disabled = selectedTickets.length === 0;
+};
+
+window.cancelHold = function (btn, ticketId) {
+    if (!confirm("Bạn có chắc muốn bỏ vé này?")) return;
+
+    fetch(`${APP_CONTEXT}/order?action=cancelHold`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `ticketId=${ticketId}`
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.success) {
+            btn.closest(".order-item")?.remove();
+            selectedTickets = selectedTickets.filter(t => t.id !== ticketId);
+            renderPayment();
+        } else {
+            alert("Không thể hủy vé");
+        }
+    });
+};
+
+window.checkoutOrder = function () {
+    if (!selectedTickets.length) {
         alert("Vui lòng chọn vé trước khi thanh toán");
         return;
     }
 
-    fetch(APP_CONTEXT + "/payment?showtimeId=" + CURRENT_SHOWTIME_ID)
-        .then(res => {
-            if (!res.ok) throw new Error("Không mở được payment");
-            return res.text();
-        })
-        .then(html => {
-            document.body.insertAdjacentHTML("beforeend", html);
-        })
-        .catch(err => {
-            console.error(err);
-            alert("Không thể mở cửa sổ thanh toán");
-        });
-}
-
-function closePaymentModal() {
-    const modal = document.getElementById("paymentModal");
-    if (modal) modal.remove();
-}
-
-function confirmPayment() {
-
     lockPayBtn(true);
 
-    fetch(APP_CONTEXT + "/order", {
+    fetch(`${APP_CONTEXT}/order`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body:
-            "action=checkout" +
-            "&showtimeId=" + CURRENT_SHOWTIME_ID +
-            "&paymentMethod=ONLINE"
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `action=checkout&showtimeId=${CURRENT_SHOWTIME_ID}&paymentMethod=ONLINE`
     })
     .then(r => r.json())
     .then(res => {
@@ -126,12 +210,19 @@ function confirmPayment() {
         alert("❌ Lỗi hệ thống");
         lockPayBtn(false);
     });
-}
+};
 
-function lockPayBtn(lock) {
-    const btn = document.getElementById("confirmPayBtn");
+window.closeOrderModal = function () {
+    clearAllCountdowns();
+    const modal = document.getElementById("orderModal");
+    if (!modal) return;
+    modal.classList.remove("show");
+    setTimeout(() => modal.style.display = "none", 300);
+};
+
+window.lockPayBtn = function (lock) {
+    const btn = document.querySelector(".btn-confirm");
     if (!btn) return;
-
     btn.disabled = lock;
-    btn.innerText = lock ? "Đang xử lý..." : "Xác nhận thanh toán";
-}
+    btn.innerText = lock ? "Đang xử lý..." : "Thanh toán";
+};

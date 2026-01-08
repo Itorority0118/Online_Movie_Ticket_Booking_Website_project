@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import model.Ticket;
@@ -255,8 +256,6 @@ public class TicketDAO {
 	    }
 	    throw new Exception("Cannot calculate price");
 	}
-
-
 
 	public boolean bookTickets(
 	        int userId,
@@ -624,5 +623,54 @@ public class TicketDAO {
 
         return 0;
     }
+    
+    public List<HashMap<String, Object>> getHoldingTicketDetails(int userId) {
 
+        List<HashMap<String, Object>> list = new ArrayList<>();
+
+        String sql = """
+            SELECT 
+                t.TicketId,
+                t.Price,
+                t.BookingTime,
+                m.Title AS MovieTitle,
+                s.SeatNumber AS SeatLabel
+            FROM Ticket t
+            JOIN Showtime st ON t.ShowtimeId = st.ShowtimeId
+            JOIN Movie m ON st.MovieId = m.MovieId
+            JOIN Seat s ON t.SeatId = s.SeatId
+            WHERE t.UserId = ?
+              AND t.Status = 'HOLD'
+            ORDER BY t.BookingTime DESC
+        """;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                HashMap<String, Object> item = new HashMap<>();
+
+                item.put("id", rs.getInt("TicketId"));
+                item.put("movie", rs.getString("MovieTitle"));
+                item.put("seat", rs.getString("SeatLabel"));
+                item.put("price", rs.getDouble("Price"));
+
+                item.put(
+                	    "holdTime",
+                	    rs.getTimestamp("BookingTime").getTime()
+                	);
+
+                list.add(item);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
 }
