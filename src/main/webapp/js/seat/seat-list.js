@@ -35,7 +35,7 @@
                     const seatEl = document.querySelector(`.delete-seat[data-id="${id}"]`);
                     seatEl?.closest(".seat")?.remove();
                 } else {
-                    alert("Delete failed");
+                    alert("Không thể xóa vì có vé đang được thao tác trên ghế này");
                 }
                 if (modal) {
                     modal.style.display = "none";

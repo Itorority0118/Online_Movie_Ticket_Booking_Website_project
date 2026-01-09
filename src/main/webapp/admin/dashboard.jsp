@@ -5,7 +5,7 @@
 <html>
 <head>
 <title>Admin Dashboard</title>
-<link rel="stylesheet" href="<c:url value='/css/admin.css?v=13'/>">
+<link rel="stylesheet" href="<c:url value='/css/admin.css?v=14'/>">
 <link rel="stylesheet" href="<c:url value='/css/modal.css'/>">
 </head>
 <body>

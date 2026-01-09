@@ -1,6 +1,5 @@
 package model;
 
-import model.Ticket;
 public class Seat {
 
     private int seatId;

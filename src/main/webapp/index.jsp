@@ -15,8 +15,9 @@
         </c:choose>
     </title>
     
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/index.css?v=100">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/index.css?v=101">
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/modal.css?v=10">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/footer.css?v=1">
     <c:if test="${movieList == null}">
         <meta http-equiv="refresh"
               content="0;url=${pageContext.request.contextPath}/movie?action=now_showing">
@@ -311,7 +312,7 @@
 
     </div>
 </main>
-
+<jsp:include page="footer.jsp" />
 <script>
     window.IS_LOGGED_IN = ${sessionScope.user != null};
 </script>

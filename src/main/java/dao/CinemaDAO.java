@@ -10,7 +10,6 @@ import java.util.List;
 
 public class CinemaDAO {
 
-	
 	public List<String> getCitiesByMovie(int movieId) {
 	    List<String> list = new ArrayList<>();
 
@@ -280,4 +279,18 @@ public class CinemaDAO {
         return list;
     }
 
+    public boolean hasDependentData(int cinemaId) {
+        String sql = "SELECT COUNT(*) FROM Room WHERE CinemaId=?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, cinemaId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

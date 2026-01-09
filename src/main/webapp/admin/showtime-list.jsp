@@ -65,8 +65,8 @@
 </form>
 <div id="deleteModal" class="modal">
     <div class="modal-content">
-        <h3>Are you sure?</h3>
-        <p>This action cannot be undone.</p>
+		<h3>Bạn có chắc chắn?</h3>
+		<p>Hành động này không thể hoàn tác.</p>
         <div class="modal-buttons">
             <button class="btn cancel">Cancel</button>
             <button id="confirmDeleteBtn" class="btn delete">Delete</button>

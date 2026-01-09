@@ -128,18 +128,21 @@ public class UserDAO {
     }
 
 
-    public boolean deleteUser(int userId) {
+    public String deleteUser(int userId) {
         String sql = "DELETE FROM AppUser WHERE UserId=?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, userId);
-            return stmt.executeUpdate() > 0;
-
+            stmt.executeUpdate();
+            return null;
         } catch (SQLException e) {
+            if (e.getMessage().contains("FK_Ticket_User")) {
+                return "User này đang có liên quan đến vé, không thể xóa!";
+            }
             e.printStackTrace();
-            return false;
+            return "Lỗi khi xóa user: " + e.getMessage();
         }
     }
     
