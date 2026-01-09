@@ -49,9 +49,44 @@ public class UserServlet extends HttpServlet {
 
             case "delete":
                 int deleteId = Integer.parseInt(request.getParameter("id"));
-                userDAO.deleteUser(deleteId);
-                response.sendRedirect(request.getContextPath() + "/user?action=list");
-                break;
+                try {
+                    String errorMsg = userDAO.deleteUser(deleteId);
+
+                    if (isAjax) {
+                        response.setContentType("application/json;charset=UTF-8");
+                        Map<String, Object> json = new HashMap<>();
+                        if (errorMsg != null) {
+                            json.put("success", false);
+                            json.put("message", errorMsg);
+                        } else {
+                            json.put("success", true);
+                        }
+                        new com.google.gson.Gson().toJson(json, response.getWriter());
+                        return;
+                    } else {
+                        if (errorMsg != null) {
+                            request.setAttribute("error", errorMsg);
+                        }
+                        response.sendRedirect(request.getContextPath() + "/user?action=list");
+                        return;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (isAjax) {
+                        response.setContentType("application/json;charset=UTF-8");
+                        Map<String, Object> json = new HashMap<>();
+                        json.put("success", false);
+                        json.put("message", "Lỗi server: " + e.getMessage());
+                        new com.google.gson.Gson().toJson(json, response.getWriter());
+                        return;
+                    } else {
+                        request.setAttribute("error", "Lỗi server: " + e.getMessage());
+                        response.sendRedirect(request.getContextPath() + "/user?action=list");
+                        return;
+                    }
+                }
+
+
 
             case "logout":
                 request.getSession().invalidate();
@@ -127,13 +162,13 @@ public class UserServlet extends HttpServlet {
             Map<String, String> errors = new HashMap<>();
 
             if (email == null || email.trim().isEmpty()) {
-                errors.put("email", "Email is required");
+                errors.put("email", "Email chưa điền");
             } else if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-                errors.put("email", "Invalid email format");
+                errors.put("email", "Sai định dạng email");
             }
 
             if (password == null || password.trim().isEmpty()) {
-                errors.put("password", "Password is required");
+                errors.put("password", "Password chưa điền");
             }
 
             if (!errors.isEmpty()) {
@@ -145,7 +180,7 @@ public class UserServlet extends HttpServlet {
             User user = userDAO.login(email.trim(), password);
 
             if (user == null) {
-                errors.put("general", "Invalid email or password");
+                errors.put("general", "Sai email hoặc password");
                 request.setAttribute("errors", errors);
                 request.getRequestDispatcher("/login.jsp").forward(request, response);
                 return;
@@ -178,24 +213,24 @@ public class UserServlet extends HttpServlet {
             Map<String, String> errors = new HashMap<>();
 
             if (fullName == null || fullName.trim().length() < 3) {
-                errors.put("fullName", "Full name must be at least 3 characters");
+                errors.put("fullName", "Full name phải ít nhất 3 kí tự");
             }
 
             if (email == null || email.trim().isEmpty()) {
-                errors.put("email", "Email is required");
+                errors.put("email", "Email chưa điền");
             } else if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-                errors.put("email", "Invalid email format");
+                errors.put("email", "Sai định dạng email");
             } else if (userDAO.emailExists(email)) {
-                errors.put("email", "Email already exists");
+                errors.put("email", "Email đã tồn tại");
             }
 
             if (password == null || password.length() < 6) {
-                errors.put("password", "Password must be at least 6 characters");
+                errors.put("password", "Password phải ít nhất 6 kí tự");
             }
 
             if (phone != null && !phone.trim().isEmpty()) {
                 if (!phone.matches("\\d{9,11}")) {
-                    errors.put("phone", "Phone must be 9–11 digits");
+                    errors.put("phone", "Số điện thoại phải từ 9-11 số");
                 }
             }
 
@@ -224,13 +259,13 @@ public class UserServlet extends HttpServlet {
             String email = request.getParameter("email");
 
             if (email == null || email.trim().isEmpty()) {
-                request.setAttribute("error", "Email is required");
+                request.setAttribute("error", "Email chưa điền");
                 request.getRequestDispatcher("/forgot-password.jsp").forward(request, response);
                 return;
             }
 
             if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-                request.setAttribute("error", "Invalid email format");
+                request.setAttribute("error", "Sai định dạng email");
                 request.getRequestDispatcher("/forgot-password.jsp").forward(request, response);
                 return;
             }
@@ -238,7 +273,7 @@ public class UserServlet extends HttpServlet {
             User user = userDAO.getUserByEmail(email);
 
             if (user == null) {
-                request.setAttribute("error", "Email not found!");
+                request.setAttribute("error", "Email không tìm thấy!");
                 request.getRequestDispatcher("/forgot-password.jsp").forward(request, response);
                 return;
             }
@@ -249,13 +284,13 @@ public class UserServlet extends HttpServlet {
                 EmailUtil.sendResetPassword(email, newPass);
                 request.setAttribute(
                     "message",
-                    "A new password has been sent to your email."
+                    "Mật khẩu reset đã được gửi tới email của bạn."
                 );
             } catch (javax.mail.MessagingException e) {
                 e.printStackTrace();
                 request.setAttribute(
                     "error",
-                    "Failed to send reset email. Please try again later."
+                    "Gửi mật khẩu reset thất bại. Vui lòng thử lại sau"
                 );
             }
 
@@ -354,39 +389,39 @@ public class UserServlet extends HttpServlet {
         Map<String, String> errors = new HashMap<>();
 
         if (fullName == null || fullName.trim().length() < 3) {
-            errors.put("fullName", "Full name must be at least 3 characters");
+            errors.put("fullName", "Họ và tên phải ít nhất 3 kí tự");
         }
 
         if (email == null || email.trim().isEmpty()) {
-            errors.put("email", "Email is required");
+            errors.put("email", "Email chưa điền");
         } else if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-            errors.put("email", "Invalid email format");
+            errors.put("email", "Sai định dạng email");
         } else {
             if (isAdd) {
                 if (userDAO.emailExists(email)) {
-                    errors.put("email", "Email already exists");
+                    errors.put("email", "Email đã tồn tại");
                 }
             } else {
                 User existingUser = userDAO.getUserByEmail(email);
                 if (existingUser != null && existingUser.getUserId() != Integer.parseInt(idStr)) {
-                    errors.put("email", "Email already exists");
+                    errors.put("email", "Email đã tồn tại");
                 }
             }
         }
 
         if (phone != null && !phone.trim().isEmpty()) {
             if (!phone.matches("\\d{9,11}")) {
-                errors.put("phone", "Phone must be 9–11 digits");
+                errors.put("phone", "Số điện thoại phải từ 9-11 chữ số");
             }
         }
         
         if (isAdd) {
             if (password == null || password.length() < 6) {
-                errors.put("password", "Password must be at least 6 characters");
+                errors.put("password", "Password phải ít nhất 6 kí tự");
             }
         } else {
             if (password != null && !password.isEmpty() && password.length() < 6) {
-                errors.put("password", "New password must be at least 6 characters");
+                errors.put("password", "New password phải ít nhất 6 kí tự");
             }
         }
 

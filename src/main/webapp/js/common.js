@@ -283,59 +283,45 @@ function loadSeats() {
   fetch(`${APP_CONTEXT}/seat?action=byShowtime&showtimeId=${modalShowtimeId}`)
     .then(r => r.json())
     .then(data => {
+        const map = document.getElementById("seatMap");
+        map.innerHTML = "";
+        let currentRow = "";
+        let rowDiv = null;
 
-      const map = document.getElementById("seatMap");
-      map.innerHTML = "";
+        data.forEach(seat => {
+            if (seat.seatRow !== currentRow) {
+                currentRow = seat.seatRow;
+                rowDiv = document.createElement("div");
+                rowDiv.className = "seat-row";
+                rowDiv.innerHTML = `<div class="row-label">${currentRow}</div>`;
+                map.appendChild(rowDiv);
+            }
 
-      let currentRow = "";
-      let rowDiv = null;
+            if (seat.seatCol === 6) {
+                const walk = document.createElement("div");
+                walk.className = "walkway";
+                rowDiv.appendChild(walk);
+            }
 
-      data.forEach(seat => {
+            let cls = "seat normal";
+            if (seat.status === "Booked" || seat.status === "HOLD") cls = "seat booked";
+            else if (seat.seatType === "VIP") cls = "seat vip";
+            else if (seat.seatType === "Double" || seat.seatType === "COUPLE") cls = "seat couple";
 
-        // tạo hàng mới
-        if (seat.seatRow !== currentRow) {
-          currentRow = seat.seatRow;
+            const btn = document.createElement("button");
+            btn.className = cls;
+            btn.innerText = seat.seatRow + seat.seatCol;
+            btn.dataset.seatLabel = seat.seatRow + seat.seatCol;
+            btn.dataset.seatId = seat.seatId;
+            btn.dataset.seatType = seat.seatType;
 
-          rowDiv = document.createElement("div");
-          rowDiv.className = "seat-row";
+            if (seat.status === "Booked" || seat.status === "HOLD") btn.disabled = true;
 
-          rowDiv.innerHTML = `
-            <div class="row-label">${currentRow}</div>
-          `;
-
-          map.appendChild(rowDiv);
-        }
-
-        if (seat.seatCol === 6) {
-          const walk = document.createElement("div");
-          walk.className = "walkway";
-          rowDiv.appendChild(walk);
-        }
-
-		let cls = "seat normal";
-
-		if (seat.status === "Booked" || seat.status === "HOLD") cls = "seat booked";
-		else if (seat.seatType === "VIP") cls = "seat vip";
-		else if (seat.seatType === "Double" || seat.seatType == "COUPLE") cls = "seat couple";
-
-        const btn = document.createElement("button");
-        btn.className = cls;
-        btn.innerText = seat.seatRow + seat.seatCol;
-		btn.dataset.seatLabel = seat.seatRow + seat.seatCol;
-        btn.dataset.seatId = seat.seatId;
-        btn.dataset.seatType = seat.seatType;
-
-		if (seat.status === "Booked" || seat.status === "HOLD") {
-		    btn.disabled = true;
-		}
-        btn.onclick = () => toggleSeat(btn);
-
-        rowDiv.appendChild(btn);
-      });
+            btn.onclick = () => toggleSeat(btn);
+            rowDiv.appendChild(btn);
+        });
     });
 }
-
-
 
 function toggleSeat(btn) {
     if (btn.classList.contains("booked")) return;

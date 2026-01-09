@@ -42,7 +42,7 @@ public class ShowtimeServlet extends HttpServlet {
 
         request.setAttribute("cityList", cinemaDAO.getDistinctCities());
         request.setAttribute("genreList", movieDAO.getDistinctGenres());
-        request.setAttribute("ageRatingList", movieDAO.getAgeRatingList());
+        //request.setAttribute("ageRatingList", movieDAO.getAgeRatingList());
 
         String cityParam = request.getParameter("city");
         String cinemaIdStr = request.getParameter("cinemaId");
@@ -310,19 +310,19 @@ public class ShowtimeServlet extends HttpServlet {
         Map<String, String> errors = new HashMap<>();
 
         if (movieIdStr == null || movieIdStr.isEmpty()) {
-            errors.put("movieId", "Movie is required");
+            errors.put("movieId", "Movie chưa điền");
         }
         if (roomIdStr == null || roomIdStr.isEmpty()) {
-            errors.put("roomId", "Room is required");
+            errors.put("roomId", "Room chưa điền");
         }
         if (startTime == null || startTime.isEmpty()) {
-            errors.put("startTime", "Start Time is required");
+            errors.put("startTime", "Start Time chưa chọn");
         }
         if (endTime == null || endTime.isEmpty()) {
-            errors.put("endTime", "End Time is required");
+            errors.put("endTime", "End Time chưa chọn");
         }
         if (ticketPriceStr == null || ticketPriceStr.isEmpty()) {
-            errors.put("ticketPrice", "Ticket Price is required");
+            errors.put("ticketPrice", "Ticket Price chưa điền");
         }
 
         Showtime showtime = new Showtime();
@@ -336,9 +336,9 @@ public class ShowtimeServlet extends HttpServlet {
                     int price = Integer.parseInt(ticketPriceStr);
 
                     if (price < 1000) {
-                        errors.put("ticketPrice", "Ticket price must be at least 1,000 VND");
+                        errors.put("ticketPrice", "Ticket price phải ít nhất 1,000 VND");
                     } else if (price % 1000 != 0) {
-                        errors.put("ticketPrice", "Ticket price must be a multiple of 1,000 VND");
+                        errors.put("ticketPrice", "Ticket price phải là bội số của 1,000 VND");
                     } else {
                         showtime.setTicketPrice(price);
                     }
@@ -349,11 +349,11 @@ public class ShowtimeServlet extends HttpServlet {
             }
             if (startTime != null && endTime != null && !startTime.isEmpty() && !endTime.isEmpty()) {
                 if (startTime.compareTo(endTime) >= 0) {
-                    errors.put("endTime", "End Time must be after Start Time");
+                    errors.put("endTime", "End Time phải sau Start Time");
                 }
             }
         } catch (NumberFormatException e) {
-            errors.put("ticketPrice", "Invalid number format");
+            errors.put("ticketPrice", "Sai định dạng");
         }
 
         if (!errors.isEmpty()) {

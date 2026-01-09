@@ -32,7 +32,7 @@
                         <td>${u.status}</td>
                         <td>
                             <a class="action edit" href="${pageContext.request.contextPath}/user?action=edit&id=${u.userId}">Edit</a> |
-                            <a class="action delete" href="#" data-id="${u.userId}" data-type="user">Delete</a>
+							<a class="action delete" href="javascript:void(0)" data-id="${u.userId}" data-type="user">Delete</a>
                         </td>
                     </tr>
                 </c:forEach>
@@ -73,11 +73,66 @@
 
 <div id="deleteModal" class="modal">
     <div class="modal-content">
-        <h3>Are you sure?</h3>
-        <p>This action cannot be undone.</p>
+		<h3>Bạn có chắc chắn?</h3>
+		<p>Hành động này không thể hoàn tác.</p>
         <div class="modal-buttons">
             <button class="btn cancel" onclick="closeModal()">Cancel</button>
             <button id="confirmDeleteBtn" class="btn delete">Delete</button>
         </div>
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteButtons = document.querySelectorAll('.action.delete');
+    const modal = document.getElementById('deleteModal');
+    const confirmBtn = document.getElementById('confirmDeleteBtn');
+    const cancelBtn = modal.querySelector('.btn.cancel');
+    const deleteMessage = document.getElementById('deleteMessage');
+
+    const deleteUrl = "${pageContext.request.contextPath}/user?action=delete&id=";
+    let currentUserId = null;
+
+    // Mở modal khi click nút delete
+    deleteButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            currentUserId = this.dataset.id;
+            deleteMessage.innerText = "Bạn có chắc muốn xóa user này?";
+            modal.style.display = 'flex';
+        });
+    });
+
+    confirmBtn.addEventListener('click', function() {
+        if (!currentUserId) return;
+
+        fetch(deleteUrl + currentUserId, {
+            method: 'GET',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            credentials: 'same-origin'
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const row = document.querySelector(`tr[data-id="${currentUserId}"]`);
+                if (row) row.remove();
+                alert("Xóa user thành công!");
+            } else {
+                alert(data.message || "Không thể xóa user này do ràng buộc dữ liệu!");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Có lỗi xảy ra. Vui lòng thử lại!");
+        })
+        .finally(() => {
+            modal.style.display = 'none';
+            currentUserId = null;
+        });
+    });
+
+    cancelBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+        currentUserId = null;
+    });
+});
+</script>

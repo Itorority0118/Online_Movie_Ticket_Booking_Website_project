@@ -92,11 +92,18 @@ public class RoomServlet extends HttpServlet {
         String action = request.getParameter("action");
         if ("delete".equals(action)) {
             int id = Integer.parseInt(request.getParameter("id"));
-            boolean success = roomDAO.deleteRoom(id);
+            boolean success = false;
+            String message = "";
+
+            try {
+                success = roomDAO.deleteRoomSafe(id);
+            } catch (Exception e) {
+                message = e.getMessage();
+            }
 
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-            response.getWriter().print("{\"success\": " + success + "}");
+            response.getWriter().print("{\"success\": " + success + ", \"message\": \"" + message + "\"}");
             return;
         }
         
@@ -108,11 +115,11 @@ public class RoomServlet extends HttpServlet {
         java.util.Map<String, String> errors = new java.util.HashMap<>();
 
         if (roomName == null || roomName.trim().isEmpty()) {
-            errors.put("roomName", "Room Name is required");
+            errors.put("roomName", "Room Name chưa điền");
         }
 
         if (roomType == null || roomType.trim().isEmpty()) {
-            errors.put("roomType", "Room Type is required");
+            errors.put("roomType", "Room Type chưa chọn");
         }
 
         Room room = new Room();
