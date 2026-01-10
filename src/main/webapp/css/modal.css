@@ -19,36 +19,59 @@
     display: flex;
     opacity: 1;
 }
+
 /* ===== PROFILE MODAL ===== */
-.profile-modal {
-    width: 400px;
-    max-width: 90vw;
-    background: #161b22;
-    color: #f0f6f9;
-    border-radius: 14px;
-    padding: 25px 20px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-    display: flex;
-    flex-direction: column;
-    transform: translateY(-20px);
+.modal-overlay#profileModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    overflow: auto;
     opacity: 0;
-    transition: transform 0.35s ease, opacity 0.35s ease;
+    transition: opacity 0.3s ease;
+    padding: 20px;
 }
 
-.modal-overlay.show .profile-modal {
-    transform: translateY(0);
+.modal-overlay#profileModal.show {
+    display: flex;
     opacity: 1;
 }
 
+.profile-modal {
+    width: 85%;
+    max-width: 920px;
+    max-height: 90vh;
+    background: #0d1117;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.profile-modal.show {
+    transform: scale(1);
+    opacity: 1;
+}
+
+/* ===== HEADER ===== */
 .profile-header {
     display: flex;
     align-items: center;
     gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    flex-shrink: 0;
 }
 
 .avatar {
-    width: 50px;
-    height: 50px;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
     font-size: 28px;
     display: flex;
@@ -56,20 +79,50 @@
     align-items: center;
     color: #fff;
     background-color: #ff6b6b;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
 }
 
-/* ===== FORM ===== */
-.profile-form {
+/* ===== BODY ===== */
+.profile-body {
+    display: flex;
+    gap: 22px;
+    padding: 20px;
+    flex: 1;
+    overflow-y: hidden; /* scroll bên trong form/tickets */
+}
+
+/* Form */
+.profile-body form#profileForm {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 12px; /* gap đồng đều giữa các input */
+    gap: 14px;
+    overflow-y: auto;
+    padding-right: 6px; /* để scrollbar không che nội dung */
 }
 
+/* Tickets */
+.profile-body .profile-tickets {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    max-height: 70vh;
+}
+
+/* Ticket grid */
+.ticket-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+}
+
+/* ===== FORM INPUTS ===== */
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 4px; /* khoảng cách giữa label và input */
+    gap: 4px;
 }
 
 .form-group label {
@@ -93,22 +146,12 @@
     outline: none;
 }
 
-/* ===== ERROR/SUCCESS MESSAGE ===== */
-#profileErrors {
-    font-size: 13px;
-    min-height: 18px;
-    transition: all 0.3s ease;
-}
-
-#profileErrors.success { color: #00ff99; }
-#profileErrors.error { color: #ff4d4f; }
-
 /* ===== ACTION BUTTONS ===== */
 .profile-actions {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
-    margin-top: 12px; /* tạo khoảng cách so với form */
+    margin-top: 12px;
 }
 
 .btn-save {
@@ -142,6 +185,32 @@
 .btn-cancel:hover {
     background: #333;
     transform: translateY(-1px);
+}
+
+.profile-body form::-webkit-scrollbar,
+.profile-body .profile-tickets::-webkit-scrollbar {
+    width: 6px;
+}
+
+.profile-body form::-webkit-scrollbar-thumb,
+.profile-body .profile-tickets::-webkit-scrollbar-thumb {
+    background: rgba(0,255,153,0.3);
+    border-radius: 6px;
+}
+
+.profile-body form::-webkit-scrollbar-thumb:hover,
+.profile-body .profile-tickets::-webkit-scrollbar-thumb:hover {
+    background: rgba(0,255,153,0.5);
+}
+
+@media (max-width: 768px) {
+    .profile-body {
+        flex-direction: column;
+    }
+
+    .profile-body .profile-tickets {
+        max-height: 40vh;
+    }
 }
 
 .movie-modal {
@@ -947,4 +1016,123 @@
     margin-right: 8px;
     font-weight: bold;
     color: #9fb4ff;
+}
+/* ===== ORDER SUCCESS MODAL ===== */
+.success-modal {
+    width: 380px;
+    max-width: 90vw;
+    background: #161b22;
+    color: #f0f6f9;
+    border-radius: 16px;
+    padding: 28px 24px;
+    text-align: center;
+
+    box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+    border: 1px solid rgba(255,255,255,0.08);
+
+    transform: scale(0.92) translateY(-10px);
+    opacity: 0;
+    transition: transform 0.35s ease, opacity 0.35s ease;
+}
+
+/* Khi overlay show */
+.modal-overlay.show .success-modal {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+/* ===== ICON ===== */
+.success-icon {
+    font-size: 56px;
+    margin-bottom: 10px;
+    line-height: 1;
+    filter: drop-shadow(0 0 12px rgba(0,255,153,0.5));
+}
+
+
+/* ===== TITLE ===== */
+.success-modal h3 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 6px 0 8px;
+    color: #00ff99;
+}
+
+/* ===== TEXT ===== */
+.success-modal p {
+    font-size: 14px;
+    color: #c9d1d9;
+    line-height: 1.5;
+    margin-bottom: 18px;
+}
+
+/* ===== ACTIONS ===== */
+.success-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+/* Primary */
+.success-actions .btn-primary {
+    background: #00ff99;
+    color: #0b1320;
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0,255,153,0.35);
+    transition: all 0.2s ease;
+}
+
+.success-actions .btn-primary:hover {
+    background: #00cc77;
+    transform: translateY(-1px);
+}
+
+/* Secondary */
+.success-actions .btn-secondary {
+    background: rgba(255,255,255,0.06);
+    color: #f0f6f9;
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.12);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.success-actions .btn-secondary:hover {
+    background: rgba(255,255,255,0.12);
+}
+
+.ticket-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+}
+
+.ticket-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 4px;
+    font-weight: 600;
+}
+
+.ticket-detail-btn {
+    color: #00ff99;
+}
+
+.ticket-cancel-btn {
+    color: #ff6b6b;
+}
+
+.ticket-actions button:hover {
+    opacity: 0.75;
+}
+
+.ticket-actions .divider {
+    color: rgba(255,255,255,0.4);
 }

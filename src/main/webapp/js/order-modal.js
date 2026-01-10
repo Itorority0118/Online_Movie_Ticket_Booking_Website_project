@@ -43,13 +43,17 @@ window.openOrderModal = async function () {
             return;
         }
 
-        selectedTickets = data.map(t => ({
-            id: String(t.id),
-            movie: t.movie || "",
-            seat: t.seat || "",
-            price: Number(t.price),
-            holdTime: Number(t.holdTime) 
-        }));
+		selectedTickets = data.map(t => ({
+		    id: String(t.id),
+		    movie: t.movie || "",
+		    seat: t.seat || "",
+		    price: Number(t.price),
+		    startTime: t.startTime || "",
+		    showDate: t.showDate || "",
+		    room: t.room || "",
+		    cinema: t.cinema || "",
+		    holdTime: Number(t.holdTime)
+		}));
 
         renderOrderTickets(selectedTickets);
         renderPayment();
@@ -64,33 +68,57 @@ function renderOrderTickets(tickets) {
     const box = document.getElementById("orderTickets");
     if (!box) return;
 
-    box.innerHTML = tickets.map(t => `
-        <div class="order-item hold-timer"
-             data-id="${t.id}"
-             data-booking-time="${t.holdTime}">
+    box.innerHTML = tickets.map(t => {
+        let showtimeStr = '';
+        if (t.startTime) {
+            const dt = new Date(t.startTime.replace(" ", "T"));
+            if (!isNaN(dt)) {
+                showtimeStr = dt.toLocaleString('vi-VN', {
+                    dateStyle: 'short',
+                    timeStyle: 'short'
+                });
+            }
+        }
 
-            <label>
-                <input type="checkbox"
-                       checked
-                       data-id="${t.id}"
-                       data-movie="${t.movie}"
-                       data-seat="${t.seat}"
-                       data-price="${t.price}"
-                       onchange="toggleTicket(this)">
-                🎬 ${t.movie} – ${t.seat}
-            </label>
+        return `
+            <div class="order-item hold-timer"
+                 data-id="${t.id}"
+                 data-booking-time="${t.holdTime}">
 
-            <span class="order-price">
-                ${t.price.toLocaleString("vi-VN")} đ
-            </span>
+                <label>
+                    <input type="checkbox"
+                           checked
+                           data-id="${t.id}"
+                           data-movie="${t.movie}"
+                           data-seat="${t.seat}"
+                           data-price="${t.price}"
+                           data-room="${t.room}"
+                           data-cinema="${t.cinema}"
+                           data-showtime="${showtimeStr}"
+                           onchange="toggleTicket(this)">
+                    🎬 ${t.movie} – ${t.seat}
+                </label>
 
-            <span class="countdown"></span>
+                <span class="order-price">
+                    ${t.price.toLocaleString("vi-VN")} đ
+                </span>
 
-            <button type="button"
-                    class="cancel-btn"
-                    onclick="cancelHold(this, '${t.id}')">❌</button>
-        </div>
-    `).join("");
+                <span class="countdown"></span>
+
+                <div class="ticket-actions">
+                    <button class="ticket-detail-btn"
+                            onclick="viewTicketDetail('${t.id}')">
+                        Chi tiết
+                    </button>
+                    <span class="divider">|</span>
+                    <button class="ticket-cancel-btn"
+                            onclick="cancelHold(this, '${t.id}')">
+                        Hủy
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join("");
 
     initHoldCountdown();
 }
@@ -194,13 +222,13 @@ window.checkoutOrder = function () {
     fetch(`${APP_CONTEXT}/order`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `action=checkout&showtimeId=${CURRENT_SHOWTIME_ID}&paymentMethod=ONLINE`
+		body: `action=checkout&paymentMethod=Online`
     })
     .then(r => r.json())
     .then(res => {
         if (res.success) {
-            alert("🎉 Thanh toán thành công!");
-            location.reload();
+			closeOrderModal();      
+			openOrderSuccessModal(); 
         } else {
             alert("❌ Thanh toán thất bại");
             lockPayBtn(false);
@@ -225,4 +253,69 @@ window.lockPayBtn = function (lock) {
     if (!btn) return;
     btn.disabled = lock;
     btn.innerText = lock ? "Đang xử lý..." : "Thanh toán";
+};
+
+//
+window.openOrderSuccessModal = function () {
+    const modal = document.getElementById("orderSuccessModal");
+    if (!modal) return;
+
+    modal.style.display = "flex";
+    setTimeout(() => modal.classList.add("show"), 10);
+
+    modal.onclick = e => {
+        if (e.target === modal) closeOrderSuccessModal();
+    };
+};
+
+window.closeOrderSuccessModal = function () {
+    const modal = document.getElementById("orderSuccessModal");
+    if (!modal) return;
+
+    modal.classList.remove("show");
+    setTimeout(() => modal.style.display = "none", 300);
+};
+
+window.goToMyTickets = function () {
+    window.location.href = `${APP_CONTEXT}/user/tickets`;
+};
+
+window.viewTicketDetail = function(ticketId) {
+    const t = selectedTickets.find(x => x.id === ticketId);
+    if (!t) return;
+
+    let showtimeStr = '';
+    if (t.startTime) {
+        const dt = new Date(t.startTime.replace(" ", "T"));
+        if (!isNaN(dt)) {
+            showtimeStr = dt.toLocaleString('vi-VN', {
+                dateStyle: 'short',
+                timeStyle: 'short'
+            });
+        }
+    }
+
+    const content = `
+        <p>🎬 <b>Phim:</b> ${t.movie}</p>
+        <p>🎟 <b>Ghế:</b> ${t.seat}</p>
+        <p>🏢 <b>Rạp:</b> ${t.cinema}</p>
+        <p>🎥 <b>Phòng:</b> ${t.room}</p>
+        <p>📅 <b>Ngày giờ:</b> ${showtimeStr}</p>
+        <p>💰 <b>Giá:</b> ${t.price.toLocaleString("vi-VN")} đ</p>
+    `;
+
+    const modal = document.getElementById("ticketDetailModal");
+    const contentBox = document.getElementById("ticketDetailContent");
+    contentBox.innerHTML = content;
+
+    modal.classList.add("show");
+
+    modal.onclick = e => {
+        if (e.target === modal) closeTicketDetailModal();
+    };
+};
+
+window.closeTicketDetailModal = function() {
+    const modal = document.getElementById("ticketDetailModal");
+    modal.classList.remove("show");
 };

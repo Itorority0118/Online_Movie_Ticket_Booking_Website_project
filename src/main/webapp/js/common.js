@@ -28,12 +28,55 @@ function openProfileModal() {
 
     if (dropdown) dropdown.style.display = "none";
 
-    modal.style.display = "flex"; 
+    modal.style.display = "flex";
     setTimeout(() => modal.classList.add("show"), 10);
 
     modal.onclick = (e) => {
         if (e.target === modal) closeProfileModal();
     };
+
+    const ticketsBox = document.getElementById("profileTickets");
+    if (!ticketsBox) return;
+
+    ticketsBox.innerHTML = "<p>Đang tải vé...</p>";
+
+    fetch(`${APP_CONTEXT}/order?action=myTickets`, {
+        headers: { "X-Requested-With": "XMLHttpRequest" }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (!Array.isArray(data) || data.length === 0) {
+            ticketsBox.innerHTML = "<p>Chưa có vé</p>";
+            return;
+        }
+
+        const ticketHTML = data.map(t => {
+            let showtimeStr = '';
+            if (t.startTime) {
+                const dt = new Date(t.startTime.replace(" ", "T"));
+                if (!isNaN(dt)) showtimeStr = dt.toLocaleString('vi-VN', {
+                    dateStyle: 'short',
+                    timeStyle: 'short'
+                });
+            }
+
+            return `
+                <div class="ticket-item">
+                    <div>🎬 <b>${t.movie}</b></div>
+                    <div>Ghế: <b>${t.seat}</b></div>
+                    <div>Ngày giờ: <b>${showtimeStr}</b></div>
+                    <div>Rạp: <b>${t.cinema} - ${t.room}</b></div>
+                    <div>Giá: <b>${Number(t.price).toLocaleString('vi-VN')} đ</b></div>
+                </div>
+            `;
+        }).join('');
+
+        ticketsBox.innerHTML = `<div class="ticket-grid scrollable">${ticketHTML}</div>`;
+    })
+    .catch(err => {
+        console.error("Lỗi tải vé:", err);
+        ticketsBox.innerHTML = "<p>Không thể tải vé. Vui lòng thử lại.</p>";
+    });
 }
 
 function closeProfileModal() {
@@ -421,7 +464,6 @@ function resetBookingState() {
     document.getElementById("seatMap").innerHTML = "";
     document.getElementById("totalPrice").innerText = "0 đ";
 
-    // ✅ Ẩn vé đã chọn
     document.getElementById("selectedTicketInfo").style.display = "none";
 }
 
