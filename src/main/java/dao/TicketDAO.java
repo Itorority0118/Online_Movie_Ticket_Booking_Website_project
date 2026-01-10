@@ -3,6 +3,7 @@ package dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,28 +13,107 @@ import utils.DBConnection;
 
 public class TicketDAO {
 	
-	public int sumTicketPrice(int userId, int showtimeId) {
+	public List<HashMap<String, Object>> getBookedTicketsByUser(int userId) {
+
+	    List<HashMap<String, Object>> list = new ArrayList<>();
+
 	    String sql = """
-	        SELECT COALESCE(SUM(Price), 0)
-	        FROM Ticket
-	        WHERE UserId = ?
-	          AND ShowtimeId = ?
-	          AND Status = 'HOLD'
+	        SELECT 
+	            t.TicketId,
+	            t.Price,
+	            t.BookingTime,
+	            m.Title AS MovieTitle,
+	            s.SeatNumber AS SeatLabel,
+	            st.StartTime AS StartTime,
+	            r.RoomName AS Room,
+	            c.Name AS Cinema
+	        FROM Ticket t
+	        JOIN Showtime st ON t.ShowtimeId = st.ShowtimeId
+	        JOIN Movie m ON st.MovieId = m.MovieId
+	        JOIN Room r ON st.RoomId = r.RoomId
+	        JOIN Cinema c ON r.CinemaId = c.CinemaId
+	        JOIN Seat s ON t.SeatId = s.SeatId
+	        WHERE t.UserId = ?
+	          AND t.Status = 'Booked'
+	        ORDER BY t.BookingTime DESC
 	    """;
 
-	    try (Connection c = DBConnection.getConnection();
-	         PreparedStatement ps = c.prepareStatement(sql)) {
+	    try (Connection conn = DBConnection.getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql)) {
 
 	        ps.setInt(1, userId);
-	        ps.setInt(2, showtimeId);
-
 	        ResultSet rs = ps.executeQuery();
-	        if (rs.next()) return rs.getInt(1);
+
+	        while (rs.next()) {
+
+	            HashMap<String, Object> item = new HashMap<>();
+
+	            item.put("id", rs.getInt("TicketId"));
+	            item.put("movie", rs.getString("MovieTitle"));
+	            item.put("seat", rs.getString("SeatLabel"));
+	            item.put("price", rs.getDouble("Price"));
+	            item.put("room", rs.getString("Room"));
+	            item.put("cinema", rs.getString("Cinema"));
+	            java.sql.Timestamp ts = rs.getTimestamp("StartTime");
+	            if (ts != null) {
+	                String iso = ts.toLocalDateTime().toString();
+	                item.put("startTime", iso);
+	                item.put("showDate", iso);
+	            } else {
+	                item.put("startTime", null);
+	                item.put("showDate", null);
+	            }
+
+	            list.add(item);
+	        }
 
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
-	    return 0;
+
+	    return list;
+	}
+	
+	public List<Ticket> getTicketsByOrderId(
+	        int orderId,
+	        Connection conn
+	) throws SQLException {
+
+	    List<Ticket> list = new ArrayList<>();
+
+	    String sql = "SELECT TicketId, Price FROM Ticket WHERE OrderId = ?";
+
+	    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+	        ps.setInt(1, orderId);
+	        ResultSet rs = ps.executeQuery();
+
+	        while (rs.next()) {
+	            Ticket t = new Ticket();
+	            t.setTicketId(rs.getInt("TicketId"));
+	            t.setPrice(rs.getDouble("Price"));
+	            list.add(t);
+	        }
+	    }
+	    return list;
+	}
+	
+	public int sumHoldTicketPrice(
+	        int userId,
+	        Connection conn
+	) throws SQLException {
+
+	    String sql = """
+	        SELECT COALESCE(SUM(Price), 0)
+	        FROM Ticket
+	        WHERE UserId = ?
+	          AND Status = 'HOLD'
+	    """;
+
+	    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+	        ps.setInt(1, userId);
+	        ResultSet rs = ps.executeQuery();
+	        return rs.next() ? rs.getInt(1) : 0;
+	    }
 	}
 
 	
@@ -88,50 +168,30 @@ public class TicketDAO {
 
 	public boolean confirmHoldTickets(
 	        int userId,
-	        int showtimeId,
-	        int orderId
-	) {
+	        int orderId,
+	        Connection conn
+	) throws SQLException {
 
 	    String sql = """
 	        UPDATE Ticket
-	        SET 
+	        SET
 	            Status = 'Booked',
-	            Price = (
-	                SELECT 
-	                    st.TicketPrice +
-	                    CASE s.SeatType
-	                        WHEN 'VIP' THEN 30000
-	                        WHEN 'DOUBLE' THEN 50000
-	                        ELSE 0
-	                    END
-	                FROM Showtime st
-	                JOIN Seat s ON s.SeatId = Ticket.SeatId
-	                WHERE st.ShowtimeId = Ticket.ShowtimeId
-	            ),
-	            BookingTime = GETDATE(),
-	            OrderId = ?
-	        WHERE 
+	            OrderId = ?,
+	            BookingTime = GETDATE()
+	        WHERE
 	            UserId = ?
-	            AND ShowtimeId = ?
 	            AND Status = 'HOLD'
 	    """;
 
-	    try (Connection conn = DBConnection.getConnection();
-	         PreparedStatement ps = conn.prepareStatement(sql)) {
-
+	    try (PreparedStatement ps = conn.prepareStatement(sql)) {
 	        ps.setInt(1, orderId);
 	        ps.setInt(2, userId);
-	        ps.setInt(3, showtimeId);
 
 	        int updated = ps.executeUpdate();
+	        System.out.println("DEBUG confirmHoldTickets updated=" + updated);
 	        return updated > 0;
-
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return false;
 	    }
 	}
-
 	
 	public void deleteExpiredHoldTickets() {
 
@@ -150,53 +210,6 @@ public class TicketDAO {
 	        e.printStackTrace();
 	    }
 	}
-	
-	public boolean confirmHoldToBooked(
-	        int userId,
-	        int showtimeId,
-	        int orderId
-	) {
-
-	    String sql = """
-	        UPDATE Ticket
-	        SET 
-	            Status = 'Booked',
-	            BookingTime = GETDATE(),
-	            Price = (
-	                SELECT 
-	                    st.TicketPrice +
-	                    CASE s.SeatType
-	                        WHEN 'VIP' THEN 30000
-	                        WHEN 'DOUBLE' THEN 50000
-	                        ELSE 0
-	                    END
-	                FROM Showtime st
-	                JOIN Seat s ON s.SeatId = Ticket.SeatId
-	                WHERE st.ShowtimeId = ?
-	            ),
-	            OrderId = ?
-	        WHERE 
-	            UserId = ?
-	            AND ShowtimeId = ?
-	            AND Status = 'HOLD'
-	    """;
-
-	    try (Connection conn = DBConnection.getConnection();
-	         PreparedStatement ps = conn.prepareStatement(sql)) {
-
-	        ps.setInt(1, showtimeId);
-	        ps.setInt(2, orderId);
-	        ps.setInt(3, userId);
-	        ps.setInt(4, showtimeId);
-
-	        return ps.executeUpdate() > 0;
-
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return false;
-	    }
-	}
-
 	
 //	public boolean holdSeats(int userId, int showtimeId, List<Integer> seatIds) {
 //
@@ -634,10 +647,15 @@ public class TicketDAO {
                 t.Price,
                 t.BookingTime,
                 m.Title AS MovieTitle,
-                s.SeatNumber AS SeatLabel
+                s.SeatNumber AS SeatLabel,
+                st.StartTime AS StartTime,
+                r.RoomName AS Room,
+                c.Name AS Cinema
             FROM Ticket t
             JOIN Showtime st ON t.ShowtimeId = st.ShowtimeId
             JOIN Movie m ON st.MovieId = m.MovieId
+            JOIN Room r ON st.RoomId = r.RoomId
+            JOIN Cinema c ON r.CinemaId = c.CinemaId
             JOIN Seat s ON t.SeatId = s.SeatId
             WHERE t.UserId = ?
               AND t.Status = 'HOLD'
@@ -658,11 +676,11 @@ public class TicketDAO {
                 item.put("movie", rs.getString("MovieTitle"));
                 item.put("seat", rs.getString("SeatLabel"));
                 item.put("price", rs.getDouble("Price"));
-
-                item.put(
-                	    "holdTime",
-                	    rs.getTimestamp("BookingTime").getTime()
-                	);
+                item.put("room", rs.getString("Room"));
+                item.put("cinema", rs.getString("Cinema"));
+                item.put("startTime", rs.getTimestamp("StartTime"));
+                item.put("showDate", rs.getTimestamp("StartTime"));
+                item.put("holdTime", rs.getTimestamp("BookingTime").getTime());
 
                 list.add(item);
             }

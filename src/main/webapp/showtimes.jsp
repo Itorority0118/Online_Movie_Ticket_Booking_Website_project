@@ -12,65 +12,17 @@
 
     <link rel="stylesheet" href="css/index.css"> 
     <link rel="stylesheet" href="css/showtimes.css"> 
-    
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/modal.css?v=13">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footer.css?v=1">
     <script>
-        // HÀM JS ĐƯỢC ĐƠN GIẢN HÓA: Khi chọn Thành phố, tự động submit form để load Rạp
-        // và giữ lại các tham số lọc khác.
         function autoSubmitCity() {
-            // Khi người dùng thay đổi thành phố, form được submit để cập nhật danh sách rạp.
-            // Action mặc định vẫn là /showtime?action=search
             document.getElementById('showtime-form').submit();
         }
     </script>
 </head>
+
 <body>
-
-<header class="header">
-    <div class="logo-container">
-        <img src="${pageContext.request.contextPath}/images/movies/action_blast.jpg" class="logo">
-        <span class="cinema-location">Beta Thái Nguyên</span>
-    </div>
-
-    <nav class="main-nav">
-        <ul>
-            <li><a href="${pageContext.request.contextPath}/showtime">PHIM</a></li>
-            <li><a href="#">TIN MỚI VÀ ƯU ĐÃI</a></li>
-            <li><a href="#">NHƯỢNG QUYỀN</a></li>
-            <li><a href="#">THÀNH VIÊN</a></li>
-        </ul>
-    </nav>
-
-    <div class="user-status">
-        <c:choose>
-            <c:when test="${not empty sessionScope.user}">
-                <div class="user-menu">
-                    <span>Xin chào, ${sessionScope.user.fullName}</span>
-                    <div class="user-icon" onclick="toggleUserDropdown()">👤</div>
-
-                    <div class="user-dropdown" id="userDropdown">
-                        <c:if test="${sessionScope.role == 'CUSTOMER'}">
-                            <a href="javascript:void(0)" onclick="openProfileModal()">Thông tin cá nhân</a>
-                        </c:if>
-
-                        <a href="javascript:void(0)" onclick="openOrderModal()">Đơn hàng</a>
-
-                        <c:if test="${sessionScope.role == 'ADMIN'}">
-                            <a href="${pageContext.request.contextPath}/admin/dashboard">Trang quản trị</a>
-                        </c:if>
-
-                        <hr>
-                        <a href="${pageContext.request.contextPath}/user?action=logout">Đăng xuất</a>
-                    </div>
-                </div>
-            </c:when>
-
-            <c:otherwise>
-                <a href="${pageContext.request.contextPath}/login.jsp" class="login-btn">Đăng nhập</a>
-            </c:otherwise>
-        </c:choose>
-    </div>
-</header>
-
+<jsp:include page="header.jsp"/>
 <div class="movie-tabs-container">
     <div class="movie-tabs">
          <a href="${pageContext.request.contextPath}/movie?action=coming_soon" 
@@ -186,9 +138,19 @@
                             </div>
                         </c:if>
 
-                        <c:if test="${not empty defaultMessage}">
-                            <a href="${pageContext.request.contextPath}/movie?id=${movie.movieId}" class="buy-ticket-btn">MUA VÉ</a>
-                        </c:if>
+			    <button class="buy-ticket-btn"
+				    onclick="openMovieModal(
+				        '${fn:escapeXml(movie.title)}',
+				        '${movie.genre}',
+				        '${movie.duration}',
+				        '${fn:escapeXml(movie.description)}',
+				        '${pageContext.request.contextPath}/images/movies/${fn:replace(movie.posterUrl,'/images/','')}',
+				        '${movie.trailerUrl}',
+				        '${movie.movieId}',
+				        true
+				    )">
+				    MUA VÉ
+				</button>
                         
                     </div> 
                 </c:forEach>
@@ -209,7 +171,19 @@
     </c:choose>
 
 </div>
-<script src="<c:url value='/js/common.js'/>"></script>
-<script src="<c:url value='/js/movie/movie.js'/>"></script>
+<jsp:include page="order-success-modal.jsp"/>
+<jsp:include page="profile-modal.jsp"/>
+<jsp:include page="order-modal.jsp"/>
+<jsp:include page="movie-modal.jsp"/>
+<jsp:include page="footer.jsp" />
+<script>
+    window.IS_LOGGED_IN = ${sessionScope.user != null};
+</script>
+<script>
+    window.APP_CONTEXT = "${pageContext.request.contextPath}";
+</script>
+<script src="<c:url value='/js/common.js?v=8'/>"></script>
+<script src="<c:url value='/js/movie.js'/>"></script>
+<script src="<c:url value='/js/order-modal.js?v=10'/>"></script>
 </body>
 </html>
