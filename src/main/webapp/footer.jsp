@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <footer class="site-footer">
     <div class="footer-top">
@@ -42,13 +43,23 @@
 			
 			    <li>
 			        <a href="${pageContext.request.contextPath}/movie?action=coming_soon"
-			           class="${param.action != 'now_showing' && param.action != 'special_show' ? 'active' : ''}">
+			           class="${param.action == 'coming_soon' ? 'active' : ''}">
 			            Phim sắp chiếu
 			        </a>
 			    </li>
-                <li><a href="#">Lịch chiếu</a></li>
-                <li><a href="#">Khuyến mãi</a></li>
-                <li><a href="#">Thành viên</a></li>
+				<li>
+				    <a href="${pageContext.request.contextPath}/news.jsp"
+				       class="${fn:endsWith(pageContext.request.requestURI, '/news.jsp') ? 'active' : ''}">
+				        Khuyến mãi
+				    </a>
+				</li>
+				<li>
+				    <a href="${pageContext.request.contextPath}/member.jsp"
+				       class="${fn:endsWith(pageContext.request.requestURI, '/member.jsp') ? 'active' : ''}">
+				        Thành viên
+				    </a>
+				</li>
+
             </ul>
         </div>
 

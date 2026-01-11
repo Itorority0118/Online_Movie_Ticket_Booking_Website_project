@@ -6,7 +6,7 @@
 <head>
 <title>Admin Dashboard</title>
 <link rel="stylesheet" href="<c:url value='/css/admin.css?v=14'/>">
-<link rel="stylesheet" href="<c:url value='/css/modal.css'/>">
+<link rel="stylesheet" href="<c:url value='/css/modal.css?v=1'/>">
 </head>
 <body>
 
@@ -67,41 +67,62 @@
         </c:choose>
            
     </div>
-	<div class="modal-overlay" id="profileModal" style="display:none;">
-	    <div class="profile-modal">
-	
-	        <div class="profile-header">
-	            <div class="avatar">👤</div>
-	            <h3>Thông tin cá nhân</h3>
-	        </div>
-	
-	        <form id="profileForm">
-	            <input type="hidden" name="action" value="updateProfile">
-	
-	            <div id="profileErrors" style="color:red; margin-bottom:10px;"></div>
-	
-	            <div class="form-group">
-	                <label>Họ và tên</label>
-	                <input type="text" name="fullName" value="${sessionScope.user.fullName}" readonly>
-	            </div>
-	
-	            <div class="form-group">
-	                <label>Email</label>
-	                <input type="email" value="${sessionScope.user.email}" readonly>
-	            </div>
-	
-	            <div class="form-group">
-	                <label>Số điện thoại</label>
-	                <input type="text" name="phone" value="${sessionScope.user.phone}" readonly>
-	            </div>       
-	        </form>
-	    </div>
-	</div>
+<div class="admin-profile-overlay" id="adminProfileModal">
+    <div class="admin-profile-modal">
+
+        <div class="admin-profile-header">
+            <div class="admin-profile-avatar">👤</div>
+
+            <div class="admin-profile-title">
+                <h3>Thông tin cá nhân</h3>
+                <span>Administrator</span>
+            </div>
+
+            <button class="admin-profile-close" onclick="closeProfileModal()">✕</button>
+        </div>
+
+        <form id="adminProfileForm">
+            <div class="form-group">
+                <label>Họ và tên</label>
+                <input type="text" value="${sessionScope.user.fullName}" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" value="${sessionScope.user.email}" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Số điện thoại</label>
+                <input type="text" value="${sessionScope.user.phone}" readonly>
+            </div>
+        </form>
+
+    </div>
+</div>
+
     
     <script>
         const contextPath = "${pageContext.request.contextPath}";
     </script>
     <script src="<c:url value='/js/admin.js?v=6'/>"></script>
-	<script src="<c:url value='/js/common.js'/>"></script>
+	<script>
+		function openProfileModal() {
+		    const modal = document.getElementById("adminProfileModal");
+		    modal.style.display = "flex";
+		    requestAnimationFrame(() => modal.classList.add("show"));
+		}
+	
+		function closeProfileModal() {
+		    const modal = document.getElementById("adminProfileModal");
+		    modal.classList.remove("show");
+		    setTimeout(() => modal.style.display = "none", 300);
+		}
+		document.getElementById("adminProfileModal").addEventListener("click", function (e) {
+		    if (e.target.id === "adminProfileModal") {
+		        closeProfileModal();
+		    }
+		});
+	</script>
 </body>
 </html>

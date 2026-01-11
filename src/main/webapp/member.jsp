@@ -17,7 +17,7 @@
 <body>
 
 <!-- HEADER -->
-<jsp:include page="/header.jsp"/>
+<jsp:include page="header.jsp"/>
 
 <div class="movie-tabs-container">
     <div class="movie-tabs">

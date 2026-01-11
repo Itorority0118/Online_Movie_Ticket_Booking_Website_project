@@ -144,8 +144,6 @@ public class CinemaDAO {
                 }
             }
             
-            // Debug: Giúp bạn kiểm tra Console xem DAO có lấy được dữ liệu không
-            System.out.println("DEBUG (CinemaDAO): Found " + cities.size() + " distinct cities."); 
 
         } catch (SQLException e) {
             System.out.println("❌ ERROR fetching distinct cities (Check DB connection and TRIM function): " + e.getMessage());

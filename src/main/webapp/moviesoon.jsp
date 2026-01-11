@@ -19,7 +19,7 @@
         <meta http-equiv="refresh" content="0; url=${pageContext.request.contextPath}/movie?action=coming_soon">
     </c:if>
 
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/index.css"> 
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/index.css?v=1"> 
 </head>
 <body>
 
