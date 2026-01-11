@@ -115,60 +115,68 @@ public class OrderServlet extends HttpServlet {
         if ("checkout".equals(action)) {
 
             HttpSession session = req.getSession(false);
-            if (session == null) {
+            if (session == null || session.getAttribute("user") == null) {
                 resp.sendError(401);
                 return;
             }
 
             User user = (User) session.getAttribute("user");
-            if (user == null) {
-                resp.sendError(401);
+            String paymentMethod = req.getParameter("paymentMethod");
+
+            String ticketIdsStr = req.getParameter("ticketIds");
+            if (ticketIdsStr == null || ticketIdsStr.isEmpty()) {
+                resp.sendError(400, "Missing ticketIds");
                 return;
             }
-            
-            String paymentMethod = req.getParameter("paymentMethod");
+
+            List<Integer> ticketIds = new ArrayList<>();
+            for (String s : ticketIdsStr.split(",")) {
+                ticketIds.add(Integer.parseInt(s));
+            }
+
+            int orderId = -1;
 
             try (Connection conn = DBConnection.getConnection()) {
                 conn.setAutoCommit(false);
 
-                int total;
-                try {
-                    total = ticketDAO.sumHoldTicketPrice(user.getUserId(), conn);
-                } catch (SQLException e) {
+                int total = ticketDAO.sumHoldTicketPriceByIds(
+                        user.getUserId(),
+                        ticketIds,
+                        conn
+                );
+
+                if (total <= 0) {
                     conn.rollback();
-                    e.printStackTrace();
-                    resp.sendError(500, "Cannot calculate total");
+                    resp.sendError(400, "Invalid total");
                     return;
                 }
 
-                int orderId = orderDAO.createOrder(user.getUserId(), conn);
-
+                orderId = orderDAO.createOrder(user.getUserId(), conn);
                 if (orderId <= 0) {
                     conn.rollback();
-                    resp.sendError(500);
+                    resp.sendError(500, "Create order failed");
                     return;
                 }
 
-                boolean ok = ticketDAO.confirmHoldTickets(user.getUserId(), orderId, conn);
+                boolean ok = ticketDAO.confirmHoldTicketsByIds(
+                        user.getUserId(),
+                        ticketIds,
+                        orderId,
+                        conn
+                );
 
                 if (!ok) {
                     conn.rollback();
-                    resp.sendError(409);
+                    resp.sendError(409, "Ticket confirm failed");
                     return;
                 }
 
                 orderDAO.updateTotalAmount(orderId, total, conn);
                 orderDAO.updatePaymentMethod(orderId, paymentMethod, conn);
 
-                List<Ticket> bookedTickets = ticketDAO.getTicketsByOrderId(orderId, conn);
+                List<Ticket> bookedTickets =
+                        ticketDAO.getTicketsByOrderId(orderId, conn);
 
-                if (bookedTickets == null || bookedTickets.isEmpty()) {
-                    conn.rollback();
-                    resp.sendError(500, "No tickets after booking");
-                    return;
-                }
-
-                // Tạo các payment record
                 for (Ticket t : bookedTickets) {
                     Payment p = new Payment();
                     p.setTicketId(t.getTicketId());
@@ -177,9 +185,7 @@ public class OrderServlet extends HttpServlet {
                     p.setPaymentDate(new Date());
                     p.setStatus("Success");
 
-                    int paymentId = paymentDAO.createPayment(p, conn);
-
-                    if (paymentId <= 0) {
+                    if (paymentDAO.createPayment(p, conn) <= 0) {
                         conn.rollback();
                         resp.sendError(500, "Create payment failed");
                         return;
@@ -188,24 +194,27 @@ public class OrderServlet extends HttpServlet {
 
                 conn.commit();
 
-                // ================= Gửi email xác nhận vé =================
-                try {
-                    // Lấy danh sách OrderDTO cho email
-                    List<OrderDTO> orderDTOs = orderDAO.getOrderDTOByOrderId(orderId, conn);
-                    utils.EmailUtil.sendTicketConfirmation(user.getEmail(), orderDTOs);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    // Email thất bại không block checkout, chỉ log
-                }
-                // ==========================================================
-
-                resp.setContentType("application/json");
-                resp.getWriter().write("{\"success\":true}");
-
             } catch (Exception e) {
                 e.printStackTrace();
-                resp.sendError(500);
+                resp.sendError(500, "Checkout failed");
+                return;
             }
+
+            // ✅ GỬI MAIL = CONNECTION MỚI (SAU COMMIT)
+            try (Connection mailConn = DBConnection.getConnection()) {
+                List<OrderDTO> orderDTOs =
+                        orderDAO.getOrderDTOByOrderId(orderId, mailConn);
+
+                utils.EmailUtil.sendTicketConfirmation(
+                        user.getEmail(),
+                        orderDTOs
+                );
+            } catch (Exception e) {
+                e.printStackTrace(); // log thôi, không ảnh hưởng checkout
+            }
+
+            resp.setContentType("application/json");
+            resp.getWriter().write("{\"success\":true}");
         }
         
         if ("cancelHold".equals(action)) {

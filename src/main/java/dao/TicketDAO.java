@@ -12,6 +12,77 @@ import model.Ticket;
 import utils.DBConnection;
 
 public class TicketDAO {
+	public boolean confirmHoldTicketsByIds(
+	        int userId,
+	        List<Integer> ticketIds,
+	        int orderId,
+	        Connection conn
+	) throws SQLException {
+
+	    if (ticketIds == null || ticketIds.isEmpty()) return false;
+
+	    String placeholders = ticketIds.stream()
+	            .map(id -> "?")
+	            .reduce((a, b) -> a + "," + b)
+	            .orElse("?");
+
+	    String sql = """
+	        UPDATE Ticket
+	        SET Status = 'Booked',
+	            OrderId = ?,
+	            BookingTime = GETDATE()
+	        WHERE UserId = ?
+	          AND Status = 'HOLD'
+	          AND TicketId IN (""" + placeholders + ")";
+
+	    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+	        int index = 1;
+	        ps.setInt(index++, orderId);
+	        ps.setInt(index++, userId);
+
+	        for (int id : ticketIds) {
+	            ps.setInt(index++, id);
+	        }
+
+	        int updated = ps.executeUpdate();
+	        System.out.println("DEBUG confirmHoldTicketsByIds updated=" + updated);
+	        return updated == ticketIds.size();
+	    }
+	}
+
+	
+	public int sumHoldTicketPriceByIds(
+	        int userId,
+	        List<Integer> ticketIds,
+	        Connection conn
+	) throws SQLException {
+
+	    if (ticketIds == null || ticketIds.isEmpty()) return 0;
+
+	    String placeholders = ticketIds.stream()
+	            .map(id -> "?")
+	            .reduce((a, b) -> a + "," + b)
+	            .orElse("?");
+
+	    String sql = """
+	        SELECT COALESCE(SUM(Price), 0)
+	        FROM Ticket
+	        WHERE UserId = ?
+	          AND Status = 'HOLD'
+	          AND TicketId IN (""" + placeholders + ")";
+
+	    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+	        ps.setInt(1, userId);
+	        int index = 2;
+	        for (int id : ticketIds) {
+	            ps.setInt(index++, id);
+	        }
+
+	        ResultSet rs = ps.executeQuery();
+	        return rs.next() ? rs.getInt(1) : 0;
+	    }
+	}
+
 	
 	public List<HashMap<String, Object>> getBookedTicketsByUser(int userId) {
 
