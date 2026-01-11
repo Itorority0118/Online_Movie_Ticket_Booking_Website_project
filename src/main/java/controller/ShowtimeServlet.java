@@ -121,27 +121,30 @@ public class ShowtimeServlet extends HttpServlet {
             request.setAttribute("cinemaList", cinemaList);
 
             switch (action) {
-                case "search":
-                    boolean isFiltered = (cinemaIdStr != null && !cinemaIdStr.isEmpty() && dateParam != null && !dateParam.isEmpty());
-                    List<Movie> showtimeMovies = null;
-                    if (isFiltered) {
-                        try {
-                            int cinemaId = Integer.parseInt(cinemaIdStr);
-                            showtimeMovies = showtimeDAO.getShowtimesByFilter(cinemaId, dateParam, genreParam, ageRatingParam);
-                        } catch (NumberFormatException e) {
-                            request.setAttribute("errorMessage", "ID rạp không hợp lệ.");
-                        }
-                    } else {
-                        showtimeMovies = movieDAO.getAllMovies();
-                        if (showtimeMovies != null && !showtimeMovies.isEmpty()) {
-                            request.setAttribute("defaultMessage", "Dưới đây là tất cả phim đang chiếu. Chọn rạp và ngày để xem lịch chiếu cụ thể.");
-                        } else {
-                            request.setAttribute("errorMessage", "Hiện tại không có phim nào đang chiếu.");
-                        }
-                    }
-                    request.setAttribute("showtimeMovies", showtimeMovies);
-                    request.getRequestDispatcher("/showtimes.jsp").forward(request, response);
-                    break;
+	            case "search": {
+	                List<Movie> movies;
+	
+	                boolean hasFilter =
+	                    (cinemaIdStr != null && !cinemaIdStr.isEmpty())
+	                 || (genreParam != null && !genreParam.isEmpty())
+	                 || (ageRatingParam != null && !ageRatingParam.isEmpty());
+	
+	                if (hasFilter && cinemaIdStr != null && !cinemaIdStr.isEmpty()
+	                    && dateParam != null && !dateParam.isEmpty()) {
+	
+	                    int cinemaId = Integer.parseInt(cinemaIdStr);
+	                    movies = showtimeDAO.getShowtimesByFilter(
+	                        cinemaId, dateParam, genreParam, ageRatingParam
+	                    );
+	
+	                } else {
+	                    movies = movieDAO.getAllMovies();
+	                }
+	
+	                request.setAttribute("movieList", movies);
+	                request.getRequestDispatcher("/showtimes.jsp").forward(request, response);
+	                break;
+	            }
 
                 case "listByRoom":
                     String roomIdStr = request.getParameter("roomId");

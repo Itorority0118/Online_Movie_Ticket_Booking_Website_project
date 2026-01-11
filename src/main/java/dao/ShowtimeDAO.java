@@ -123,36 +123,34 @@ public class ShowtimeDAO {
 
     public List<Movie> getShowtimesByFilter(
             int cinemaId, String date, String genre, String ageRating) {
-            
+
         List<Movie> results = new ArrayList<>();
-        
-        StringBuilder query = new StringBuilder("SELECT s.*, m.* FROM Showtime s ");
-        query.append("JOIN Movie m ON s.movie_id = m.MovieId ");
-        query.append("JOIN Room r ON s.room_id = r.RoomId "); 
-        
-        query.append("WHERE r.CinemaId = ? AND CAST(s.StartTim AS DATE) = ?");
+
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT s.*, m.* ");
+        query.append("FROM Showtime s ");
+        query.append("JOIN Movie m ON s.MovieId = m.MovieId ");
+        query.append("JOIN Room r ON s.RoomId = r.RoomId ");
+        query.append("WHERE r.CinemaId = ? ");
+        query.append("AND CAST(s.StartTime AS DATE) = ? ");
 
         if (genre != null && !genre.isEmpty()) {
-            query.append(" AND m.Genre = ?");
-        }
-        if (ageRating != null && !ageRating.isEmpty()) {
-            query.append(" AND m.AgeRating = ?");
+            query.append("AND m.Genre = ? ");
         }
 
-        query.append(" ORDER BY m.Title, s.StartTime");
+        query.append("ORDER BY m.Title, s.StartTime");
+
+        System.out.println("DEBUG SQL = " + query); // 👈 GIỮ DÒNG NÀY
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(query.toString())) {
 
             int index = 1;
             ps.setInt(index++, cinemaId);
-            ps.setString(index++, date); 
+            ps.setString(index++, date);
 
             if (genre != null && !genre.isEmpty()) {
                 ps.setString(index++, genre);
-            }
-            if (ageRating != null && !ageRating.isEmpty()) {
-                ps.setString(index++, ageRating);
             }
 
             Map<Integer, Movie> movieMap = new LinkedHashMap<>();
@@ -160,19 +158,19 @@ public class ShowtimeDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Showtime showtime = new Showtime(
-                        rs.getInt("ShowtimeId"),
-                        rs.getInt("MovieId"),
-                        rs.getInt("RoomId"),
-                        rs.getString("StartTime"),
-                        rs.getString("EndTime"),
-                        rs.getDouble("TicketPrice")
+                            rs.getInt("ShowtimeId"),
+                            rs.getInt("MovieId"),
+                            rs.getInt("RoomId"),
+                            rs.getString("StartTime"),
+                            rs.getString("EndTime"),
+                            rs.getDouble("TicketPrice")
                     );
 
                     int movieId = showtime.getMovieId();
 
                     if (!movieMap.containsKey(movieId)) {
                         Movie movie = MovieMapper.mapMovie(rs);
-                        movie.setShowtimes(new ArrayList<>()); 
+                        movie.setShowtimes(new ArrayList<>());
                         movieMap.put(movieId, movie);
                     }
 
@@ -183,11 +181,12 @@ public class ShowtimeDAO {
             results.addAll(movieMap.values());
 
         } catch (SQLException e) {
-            System.out.println("Error fetching showtimes by filter: " + e.getMessage());
             e.printStackTrace();
         }
+
         return results;
     }
+
     
     public List<Showtime> getShowtimesByRoom(int roomId) {
         List<Showtime> showtimes = new ArrayList<>();
