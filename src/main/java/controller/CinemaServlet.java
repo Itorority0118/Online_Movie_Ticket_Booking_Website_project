@@ -154,12 +154,17 @@ public class CinemaServlet extends HttpServlet {
 
 	        if ("delete".equals(action)) {
 	            int id = Integer.parseInt(request.getParameter("id"));
-	            boolean success = cinemaDAO.deleteCinema(id);
-
 	            response.setContentType("application/json");
 	            response.setCharacterEncoding("UTF-8");
 	            PrintWriter out = response.getWriter();
-	            out.print("{\"success\": " + success + "}");
+
+	            if (cinemaDAO.hasDependentData(id)) {
+	                out.print("{\"success\": false, \"message\": \"Không thể xóa rạp vì còn phòng chiếu.\"}");
+	            } else {
+	                boolean success = cinemaDAO.deleteCinema(id);
+	                out.print("{\"success\": " + success + "}");
+	            }
+
 	            out.flush();
 	            return;
 	        }
@@ -173,17 +178,17 @@ public class CinemaServlet extends HttpServlet {
 	        java.util.Map<String, String> errors = new java.util.HashMap<>();
 
 	        if (name == null || name.trim().isEmpty()) {
-	            errors.put("name", "Cinema Name is required");
+	            errors.put("name", "Cinema Name chưa điền");
 	        }
 	        if (address == null || address.trim().isEmpty()) {
-	            errors.put("address", "Address is required");
+	            errors.put("address", "Address chưa điền");
 	        }
 	        if (city == null || city.trim().isEmpty()) {
-	            errors.put("city", "City is required");
+	            errors.put("city", "City chưa điền");
 	        }
 	        if (phone != null && !phone.trim().isEmpty()) {
 	            if (!phone.matches("\\d{9,11}")) {
-	                errors.put("phone", "Phone must be 9–11 digits");
+	                errors.put("phone", "Số điện thoại sai định dạng (9-11 số)");
 	            }
 	        }
 

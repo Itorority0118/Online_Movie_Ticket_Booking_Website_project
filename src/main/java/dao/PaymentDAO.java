@@ -7,6 +7,37 @@ import model.Payment;
 import utils.DBConnection;
 
 public class PaymentDAO {
+	
+	public int createPayment(
+	        Payment p,
+	        Connection conn
+	) throws SQLException {
+
+	    String sql = """
+	        INSERT INTO Payment
+	        (TicketId, PaymentMethod, Amount, PaymentDate, Status)
+	        VALUES (?, ?, ?, ?, ?)
+	    """;
+
+	    try (PreparedStatement ps =
+	             conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+	        ps.setInt(1, p.getTicketId());
+	        ps.setString(2, p.getPaymentMethod());
+	        ps.setBigDecimal(3, p.getAmount());
+	        ps.setTimestamp(4,
+	            new Timestamp(p.getPaymentDate().getTime()));
+	        ps.setString(5, p.getStatus());
+
+	        ps.executeUpdate();
+
+	        ResultSet rs = ps.getGeneratedKeys();
+	        if (rs.next()) return rs.getInt(1);
+	    }
+
+	    return -1;
+	}
+
 
     public Payment getPaymentById(int id) {
 

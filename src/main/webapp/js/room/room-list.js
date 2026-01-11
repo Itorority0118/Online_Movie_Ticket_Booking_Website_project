@@ -37,7 +37,7 @@
                     const row = document.querySelector(`tr[data-id='${id}']`);
                     if (row) row.remove();
                 } else {
-                    alert("Delete failed");
+                    alert("Không thể xóa phòng chiếu này vì còn lịch chiếu.");
                 }
 
                 modal.style.display = "none";

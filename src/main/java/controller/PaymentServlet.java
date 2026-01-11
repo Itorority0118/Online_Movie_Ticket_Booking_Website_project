@@ -37,7 +37,6 @@ public class PaymentServlet extends HttpServlet {
 
         User user = (User) session.getAttribute("user");
 
-        // ========================= ADMIN PAYMENT =========================
         if (action != null) {
 
             request.setAttribute("activeSidebar", "payment");
@@ -97,13 +96,6 @@ public class PaymentServlet extends HttpServlet {
         }
 
         // ========================= USER PAYMENT PAGE =========================
-        String showtimeIdStr = request.getParameter("showtimeId");
-        if (showtimeIdStr == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }
-
-        int showtimeId = Integer.parseInt(showtimeIdStr);
 
         List<OrderDTO> tickets =
             new OrderDAO().getOrdersByUser(user.getUserId())
@@ -114,10 +106,19 @@ public class PaymentServlet extends HttpServlet {
                 )
                 .toList();
 
-        int total = ticketDAO.sumTicketPrice(
-            user.getUserId(),
-            showtimeId
-        );
+        int total = 0;
+
+        try (var conn = utils.DBConnection.getConnection()) {
+
+            total = ticketDAO.sumHoldTicketPrice(
+                user.getUserId(),
+                conn
+            );
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            total = 0;
+        }
 
         request.setAttribute("user", user);
         request.setAttribute("tickets", tickets);

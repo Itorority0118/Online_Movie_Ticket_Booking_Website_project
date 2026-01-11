@@ -1,16 +1,15 @@
 package model;
 
-import java.math.BigDecimal;
 
 public class Ticket {
     
     private int ticketId;
-    private int userId;          // Foreign key to User
-    private int showtimeId;      // Foreign key to Showtime
-    private int seatId;          // Foreign key to Seat
-    private double price;	// Final ticket price
-    private String bookingTime;  // Example: "2025-10-20 18:45"
-    private String status;       // "Booked", "Cancelled", "Used"
+    private int userId;          
+    private int showtimeId;      
+    private int seatId;         
+    private double price;	
+    private String bookingTime;  
+    private String status;
 
     // Empty constructor
     public Ticket() {}

@@ -109,7 +109,7 @@ public class MovieServlet extends HttpServlet {
             int movieId = Integer.parseInt(request.getParameter("id"));
 
             if (showtimeDAO.existsByMovieId(movieId)) {
-                out.print("{\"success\":false,\"message\":\"Cannot delete movie because it has showtimes or tickets.\"}");
+                out.print("{\"success\":false,\"message\":\"Không thể xóa phim này vì còn lịch chiếu hoặc vé.\"}");
             } else {
                 boolean deleted = movieDAO.deleteMovie(movieId);
                 out.print("{\"success\":" + deleted + "}");
@@ -136,19 +136,19 @@ public class MovieServlet extends HttpServlet {
         Map<String, String> errors = new HashMap<>();
 
         if (title == null || title.trim().length() < 2)
-            errors.put("title", "Title must be at least 2 characters");
+            errors.put("title", "Title phải ít nhất 2 kí tự");
         if (genre == null || genre.trim().length() < 2)
-            errors.put("genre", "Genre must be at least 2 characters");
+            errors.put("genre", "Genre phải ít nhất 2 kí tự");
         if (director == null || director.trim().length() < 2)
-            errors.put("director", "Director must be at least 2 characters");
+            errors.put("director", "Director phải ít nhất 2 kí tự");
         if (cast == null || cast.trim().length() < 2)
-            errors.put("cast", "Cast must be at least 2 characters");
+            errors.put("cast", "Cast phải ít nhất 2 kí tự");
         if (language == null || language.trim().length() < 2)
-            errors.put("language", "Language must be at least 2 characters");
+            errors.put("language", "Language phải ít nhất 2 kí tự");
         if (durationStr == null || !durationStr.matches("\\d+") || Integer.parseInt(durationStr) <= 0)
-            errors.put("duration", "Duration must be a positive number");
+            errors.put("duration", "Duration phải là số nguyên");
         if (releaseDate == null || releaseDate.trim().isEmpty())
-            errors.put("releaseDate", "Release Date is required");
+            errors.put("releaseDate", "Release Date chưa chọn");
         if (status == null || !(status.equals("Now Showing") || status.equals("Coming Soon") || status.equals("Archived")))
             errors.put("status", "Invalid status");
 

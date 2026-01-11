@@ -40,8 +40,8 @@
 
 <div id="deleteModal" class="modal">
     <div class="modal-content">
-        <h3>Are you sure?</h3>
-        <p>This action cannot be undone.</p>
+		<h3>Bạn có chắc chắn?</h3>
+		<p>Hành động này không thể hoàn tác.</p>
         <div class="modal-buttons">
             <button class="btn cancel" type="button">Cancel</button>
             <button id="confirmDeleteBtn" class="btn delete" type="button">Delete</button>
@@ -52,4 +52,4 @@
 <script>
     window.cinemaContext = '${pageContext.request.contextPath}';
 </script>
-<script src="${pageContext.request.contextPath}/js/cinema/cinema-list.js?v=13"></script>
+<script src="${pageContext.request.contextPath}/js/cinema/cinema-list.js?v=14"></script>

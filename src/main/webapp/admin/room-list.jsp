@@ -58,8 +58,8 @@
 
 <div id="deleteModal" class="modal">
     <div class="modal-content">
-        <h3>Are you sure?</h3>
-        <p>This action cannot be undone.</p>
+		<h3>Bạn có chắc chắn?</h3>
+		<p>Hành động này không thể hoàn tác.</p>
         <div class="modal-buttons">
             <button class="btn cancel">Cancel</button>
             <button id="confirmDeleteBtn" class="btn delete">Delete</button>
@@ -70,4 +70,4 @@
 <script>
     window.roomContext = '${pageContext.request.contextPath}';
 </script>
-<script src="${pageContext.request.contextPath}/js/room/room-list.js?v=4"></script>
+<script src="${pageContext.request.contextPath}/js/room/room-list.js?v=5"></script>

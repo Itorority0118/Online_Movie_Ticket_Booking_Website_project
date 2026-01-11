@@ -178,4 +178,42 @@ public class RoomDAO {
         }
         return 0;
     }
+    
+    public boolean hasShowtime(int roomId) {
+        String sql = "SELECT COUNT(*) AS count FROM Showtime WHERE RoomId = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, roomId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("count") > 0;
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Lỗi kiểm tra showtime: " + e.getMessage());
+        }
+        return false;
+    }
+
+    
+    public boolean deleteRoomSafe(int roomId) throws Exception {
+        if (hasShowtime(roomId)) {
+            throw new Exception("Không thể xóa phòng chiếu này vì còn showtime.");
+        }
+
+        String sql = "DELETE FROM Room WHERE RoomId=?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, roomId);
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Error deleting room: " + e.getMessage());
+            return false;
+        }
+    }
+
 }

@@ -49,9 +49,44 @@ public class UserServlet extends HttpServlet {
 
             case "delete":
                 int deleteId = Integer.parseInt(request.getParameter("id"));
-                userDAO.deleteUser(deleteId);
-                response.sendRedirect(request.getContextPath() + "/user?action=list");
-                break;
+                try {
+                    String errorMsg = userDAO.deleteUser(deleteId);
+
+                    if (isAjax) {
+                        response.setContentType("application/json;charset=UTF-8");
+                        Map<String, Object> json = new HashMap<>();
+                        if (errorMsg != null) {
+                            json.put("success", false);
+                            json.put("message", errorMsg);
+                        } else {
+                            json.put("success", true);
+                        }
+                        new com.google.gson.Gson().toJson(json, response.getWriter());
+                        return;
+                    } else {
+                        if (errorMsg != null) {
+                            request.setAttribute("error", errorMsg);
+                        }
+                        response.sendRedirect(request.getContextPath() + "/user?action=list");
+                        return;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (isAjax) {
+                        response.setContentType("application/json;charset=UTF-8");
+                        Map<String, Object> json = new HashMap<>();
+                        json.put("success", false);
+                        json.put("message", "Lỗi server: " + e.getMessage());
+                        new com.google.gson.Gson().toJson(json, response.getWriter());
+                        return;
+                    } else {
+                        request.setAttribute("error", "Lỗi server: " + e.getMessage());
+                        response.sendRedirect(request.getContextPath() + "/user?action=list");
+                        return;
+                    }
+                }
+
+
 
             case "logout":
                 request.getSession().invalidate();
@@ -127,13 +162,13 @@ public class UserServlet extends HttpServlet {
             Map<String, String> errors = new HashMap<>();
 
             if (email == null || email.trim().isEmpty()) {
-                errors.put("email", "Email is required");
+                errors.put("email", "Email chưa điền");
             } else if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-                errors.put("email", "Invalid email format");
+                errors.put("email", "Sai định dạng email");
             }
 
             if (password == null || password.trim().isEmpty()) {
-                errors.put("password", "Password is required");
+                errors.put("password", "Password chưa điền");
             }
 
             if (!errors.isEmpty()) {
@@ -145,7 +180,7 @@ public class UserServlet extends HttpServlet {
             User user = userDAO.login(email.trim(), password);
 
             if (user == null) {
-                errors.put("general", "Invalid email or password");
+                errors.put("general", "Sai email hoặc password");
                 request.setAttribute("errors", errors);
                 request.getRequestDispatcher("/login.jsp").forward(request, response);
                 return;
@@ -178,24 +213,24 @@ public class UserServlet extends HttpServlet {
             Map<String, String> errors = new HashMap<>();
 
             if (fullName == null || fullName.trim().length() < 3) {
-                errors.put("fullName", "Full name must be at least 3 characters");
+                errors.put("fullName", "Full name phải ít nhất 3 kí tự");
             }
 
             if (email == null || email.trim().isEmpty()) {
-                errors.put("email", "Email is required");
+                errors.put("email", "Email chưa điền");
             } else if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-                errors.put("email", "Invalid email format");
+                errors.put("email", "Sai định dạng email");
             } else if (userDAO.emailExists(email)) {
-                errors.put("email", "Email already exists");
+                errors.put("email", "Email đã tồn tại");
             }
 
             if (password == null || password.length() < 6) {
-                errors.put("password", "Password must be at least 6 characters");
+                errors.put("password", "Password phải ít nhất 6 kí tự");
             }
 
             if (phone != null && !phone.trim().isEmpty()) {
                 if (!phone.matches("\\d{9,11}")) {
-                    errors.put("phone", "Phone must be 9–11 digits");
+                    errors.put("phone", "Số điện thoại phải từ 9-11 số");
                 }
             }
 
@@ -224,13 +259,13 @@ public class UserServlet extends HttpServlet {
             String email = request.getParameter("email");
 
             if (email == null || email.trim().isEmpty()) {
-                request.setAttribute("error", "Email is required");
+                request.setAttribute("error", "Email chưa điền");
                 request.getRequestDispatcher("/forgot-password.jsp").forward(request, response);
                 return;
             }
 
             if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-                request.setAttribute("error", "Invalid email format");
+                request.setAttribute("error", "Sai định dạng email");
                 request.getRequestDispatcher("/forgot-password.jsp").forward(request, response);
                 return;
             }
@@ -238,7 +273,7 @@ public class UserServlet extends HttpServlet {
             User user = userDAO.getUserByEmail(email);
 
             if (user == null) {
-                request.setAttribute("error", "Email not found!");
+                request.setAttribute("error", "Email không tìm thấy!");
                 request.getRequestDispatcher("/forgot-password.jsp").forward(request, response);
                 return;
             }
@@ -249,40 +284,97 @@ public class UserServlet extends HttpServlet {
                 EmailUtil.sendResetPassword(email, newPass);
                 request.setAttribute(
                     "message",
-                    "A new password has been sent to your email."
+                    "Mật khẩu reset đã được gửi tới email của bạn."
                 );
             } catch (javax.mail.MessagingException e) {
                 e.printStackTrace();
                 request.setAttribute(
                     "error",
-                    "Failed to send reset email. Please try again later."
+                    "Gửi mật khẩu reset thất bại. Vui lòng thử lại sau"
                 );
             }
 
             request.getRequestDispatcher("/forgot-password.jsp").forward(request, response);
             return;
         }
-        // ---------------- UPDATE PROFILE (CUSTOMER) ----------------
+        
         if ("updateProfile".equals(action)) {
+            response.setContentType("application/json;charset=UTF-8");
+            Map<String, Object> jsonResponse = new HashMap<>();
 
             HttpSession session = request.getSession();
             User currentUser = (User) session.getAttribute("user");
 
-            if (currentUser != null) {
-                currentUser.setFullName(request.getParameter("fullName"));
-                currentUser.setPhone(request.getParameter("phone"));
+            if (currentUser == null) {
+                jsonResponse.put("success", false);
+                Map<String, String> err = new HashMap<>();
+                err.put("general", "Bạn cần đăng nhập trước khi cập nhật.");
+                jsonResponse.put("errors", err);
+            } else {
+                String fullName = request.getParameter("fullName");
+                String phone = request.getParameter("phone");
+                String newPassword = request.getParameter("password");
 
-                userDAO.updateUser(currentUser);
+                Map<String, String> errors = new HashMap<>();
 
-                // cập nhật lại session
-                session.setAttribute("user", currentUser);
+                // Validate fullName chỉ khi người dùng nhập
+                if (fullName != null && !fullName.trim().isEmpty()) {
+                    fullName = fullName.trim();
+                    if (fullName.length() < 3) {
+                        errors.put("fullName", "Họ và tên phải ít nhất 3 ký tự");
+                    }
+                } else {
+                    // Nếu không nhập, giữ nguyên fullName hiện tại
+                    fullName = currentUser.getFullName();
+                }
+
+                // Validate phone nếu nhập
+                if (phone != null && !phone.trim().isEmpty()) {
+                    if (!phone.matches("\\d{9,11}")) {
+                        errors.put("phone", "Số điện thoại phải từ 9-11 chữ số");
+                    }
+                } else {
+                    phone = currentUser.getPhone();
+                }
+
+                // Validate password nếu nhập
+                if (newPassword != null && !newPassword.trim().isEmpty() && newPassword.length() < 6) {
+                    errors.put("password", "Mật khẩu mới phải ít nhất 6 ký tự");
+                }
+
+                if (!errors.isEmpty()) {
+                    jsonResponse.put("success", false);
+                    jsonResponse.put("errors", errors);
+                } else {
+                    // Update thông tin
+                    currentUser.setFullName(fullName);
+                    currentUser.setPhone(phone);
+                    if (newPassword != null && !newPassword.trim().isEmpty()) {
+                        currentUser.setPassword(newPassword);
+                    }
+
+                    userDAO.updateUser(currentUser);
+                    session.setAttribute("user", currentUser);
+
+                    // Trả về JSON
+                    Map<String,Object> userMap = new HashMap<>();
+                    userMap.put("userId", currentUser.getUserId());
+                    userMap.put("fullName", currentUser.getFullName());
+                    userMap.put("email", currentUser.getEmail());
+                    userMap.put("phone", currentUser.getPhone());
+                    userMap.put("role", currentUser.getRole());
+                    userMap.put("status", currentUser.getStatus());
+                    userMap.put("createdAt", currentUser.getCreatedAt());
+
+                    jsonResponse.put("success", true);
+                    jsonResponse.put("user", userMap);
+                }
             }
 
-            response.sendRedirect(request.getContextPath() + "/movie?action=now_showing");
+            String json = new com.google.gson.Gson().toJson(jsonResponse);
+            response.getWriter().write(json);
             return;
         }
-
-
         // ---------------- ADD / EDIT ----------------
         String idStr = request.getParameter("id");
         boolean isAdd = (idStr == null || idStr.isEmpty());
@@ -297,39 +389,39 @@ public class UserServlet extends HttpServlet {
         Map<String, String> errors = new HashMap<>();
 
         if (fullName == null || fullName.trim().length() < 3) {
-            errors.put("fullName", "Full name must be at least 3 characters");
+            errors.put("fullName", "Họ và tên phải ít nhất 3 kí tự");
         }
 
         if (email == null || email.trim().isEmpty()) {
-            errors.put("email", "Email is required");
+            errors.put("email", "Email chưa điền");
         } else if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-            errors.put("email", "Invalid email format");
+            errors.put("email", "Sai định dạng email");
         } else {
             if (isAdd) {
                 if (userDAO.emailExists(email)) {
-                    errors.put("email", "Email already exists");
+                    errors.put("email", "Email đã tồn tại");
                 }
             } else {
                 User existingUser = userDAO.getUserByEmail(email);
                 if (existingUser != null && existingUser.getUserId() != Integer.parseInt(idStr)) {
-                    errors.put("email", "Email already exists");
+                    errors.put("email", "Email đã tồn tại");
                 }
             }
         }
 
         if (phone != null && !phone.trim().isEmpty()) {
             if (!phone.matches("\\d{9,11}")) {
-                errors.put("phone", "Phone must be 9–11 digits");
+                errors.put("phone", "Số điện thoại phải từ 9-11 chữ số");
             }
         }
         
         if (isAdd) {
             if (password == null || password.length() < 6) {
-                errors.put("password", "Password must be at least 6 characters");
+                errors.put("password", "Password phải ít nhất 6 kí tự");
             }
         } else {
             if (password != null && !password.isEmpty() && password.length() < 6) {
-                errors.put("password", "New password must be at least 6 characters");
+                errors.put("password", "New password phải ít nhất 6 kí tự");
             }
         }
 

@@ -10,73 +10,88 @@ document.addEventListener("click", e => {
 });
 
 function toggleUserDropdown() {
-    const dropdown = document.getElementById("userDropdown");
-    dropdown.style.display =
-        dropdown.style.display === "block" ? "none" : "block";
+    const menu = document.querySelector(".user-menu");
+    menu.classList.toggle("active");
+
+    document.addEventListener("click", function handler(e) {
+        if (!menu.contains(e.target)) {
+            menu.classList.remove("active");
+            document.removeEventListener("click", handler);
+        }
+    });
 }
 
 function openProfileModal() {
-    document.getElementById("profileModal").style.display = "block";
-    document.getElementById("userDropdown").style.display = "none";
+    const modal = document.getElementById("profileModal");
+    const dropdown = document.getElementById("userDropdown");
+    if (!modal) return;
+
+    if (dropdown) dropdown.style.display = "none";
+
+    modal.style.display = "flex";
+    setTimeout(() => modal.classList.add("show"), 10);
+
+    modal.onclick = (e) => {
+        if (e.target === modal) closeProfileModal();
+    };
+
+    const ticketsBox = document.getElementById("profileTickets");
+    if (!ticketsBox) return;
+
+    ticketsBox.innerHTML = "<p>Đang tải vé...</p>";
+
+    fetch(`${APP_CONTEXT}/order?action=myTickets`, {
+        headers: { "X-Requested-With": "XMLHttpRequest" }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (!Array.isArray(data) || data.length === 0) {
+            ticketsBox.innerHTML = "<p>Chưa có vé</p>";
+            return;
+        }
+
+        const ticketHTML = data.map(t => {
+            let showtimeStr = '';
+            if (t.startTime) {
+                const dt = new Date(t.startTime.replace(" ", "T"));
+                if (!isNaN(dt)) showtimeStr = dt.toLocaleString('vi-VN', {
+                    dateStyle: 'short',
+                    timeStyle: 'short'
+                });
+            }
+
+            return `
+                <div class="ticket-item">
+                    <div>🎬 <b>${t.movie}</b></div>
+                    <div>Ghế: <b>${t.seat}</b></div>
+                    <div>Ngày giờ: <b>${showtimeStr}</b></div>
+                    <div>Rạp: <b>${t.cinema} - ${t.room}</b></div>
+                    <div>Giá: <b>${Number(t.price).toLocaleString('vi-VN')} đ</b></div>
+                </div>
+            `;
+        }).join('');
+
+        ticketsBox.innerHTML = `<div class="ticket-grid scrollable">${ticketHTML}</div>`;
+    })
+    .catch(err => {
+        console.error("Lỗi tải vé:", err);
+        ticketsBox.innerHTML = "<p>Không thể tải vé. Vui lòng thử lại.</p>";
+    });
 }
 
 function closeProfileModal() {
-    document.getElementById("profileModal").style.display = "none";
-}
+    const modal = document.getElementById("profileModal");
+    if (!modal) return;
 
-function openOrderModal() {
-    const modal = document.getElementById("orderModal");
-    const content = document.getElementById("orderContent");
-
-    modal.style.display = "flex";
-    content.innerHTML = "Đang tải...";
-
-    fetch(window.APP_CONTEXT + "/order?action=ajax")
-        .then(res => {
-            if (res.status === 401) {
-                content.innerHTML = "Vui lòng đăng nhập";
-                return;
-            }
-            return res.text();
-        })
-		.then(html => {
-		    if (html) {
-		        content.innerHTML = html;
-
-		        // 🔥 BẮT BUỘC PHẢI CÓ
-		        if (window.initOrderModal) {
-		            initOrderModal();
-		        }
-
-		        // nếu bạn có countdown giữ ghế
-		        if (window.initHoldCountdown) {
-		            initHoldCountdown();
-		        }
-		    }
-		})
-        .catch(err => {
-            content.innerHTML = "Lỗi tải đơn hàng";
-            console.error(err);
-        });
-}
-
-
-function closeOrderModal() {
-    document.getElementById("orderModal").style.display = "none";
+    modal.classList.remove("show");
+    setTimeout(() => modal.style.display = "none", 300);
 }
 
 function openMovieModal(
-    title,
-    genre,
-    duration,
-    description,
-    poster,
-    trailer,
-    movieId,
-    autoOpenBooking = false
+    title, genre, duration, description,
+    poster, trailer, movieId, autoOpenBooking = false
 ) {
     resetBookingState();
-
     modalMovieId = movieId;
 
     document.getElementById("modalTitle").innerText = title;
@@ -86,24 +101,28 @@ function openMovieModal(
     document.getElementById("modalPoster").src = poster;
     document.getElementById("modalTrailer").href = trailer;
 
-    document.getElementById("movieModal").style.display = "flex";
+    const modal = document.getElementById("movieModal");
+    modal.style.display = "flex";
+    setTimeout(() => modal.classList.add("show"), 10);
 
-    // 🔥 LOAD THÀNH PHỐ (THAY VÌ LOAD RẠP)
+    modal.onclick = (e) => {
+        if (e.target === modal) closeMovieModal();
+    };
+
     loadCitiesInModal();
 
     if (autoOpenBooking) {
         setTimeout(() => {
-            document
-                .querySelector(".booking-section")
-                .scrollIntoView({ behavior: "smooth" });
+            document.querySelector(".booking-section").scrollIntoView({ behavior: "smooth" });
         }, 200);
     }
 }
 
-
 function closeMovieModal() {
     resetBookingState();
-    document.getElementById("movieModal").style.display = "none";
+    const modal = document.getElementById("movieModal");
+    modal.classList.remove("show");
+    setTimeout(() => modal.style.display = "none", 300);
 }
 
 function loadCitiesInModal() {
@@ -191,7 +210,6 @@ function formatTimeOnly(datetimeStr) {
     });
 }
 
-
 function loadShowtimesInModal() {
     const cinemaId = document.getElementById("cinemaSelect").value;
     if (!cinemaId) return;
@@ -202,42 +220,44 @@ function loadShowtimesInModal() {
             const box = document.getElementById("showtimeList");
             box.innerHTML = "";
 
-			data.forEach(s => {
-			    box.innerHTML += `
-			        <button 
-			            data-showtime-id="${s.showtimeId}"
-			            data-ticket-price="${s.ticketPrice}"
-			            onclick="selectShowtimeInModal(${s.showtimeId}, this)">
-			            ${formatTimeOnly(s.startTime)}
-			        </button>
-			    `;
-			});
+            modalShowtimeId = null;
+
+            data.forEach(s => {
+                const btn = document.createElement("button");
+                btn.dataset.showtimeId = s.showtimeId;
+                btn.dataset.ticketPrice = s.ticketPrice;
+                btn.innerText = formatTimeOnly(s.startTime);
+                btn.onclick = () => selectShowtimeInModal(s.showtimeId, btn);
+                box.appendChild(btn);
+            });
         });
 }
 
 function selectShowtimeInModal(id, btn) {
-
     if (!window.IS_LOGGED_IN) {
         window.location.href =
           `${APP_CONTEXT}/login.jsp?redirect=${encodeURIComponent(location.href)}`;
         return;
     }
 
-    // 🔥 NẾU CHỌN KHUNG GIỜ KHÁC → RESET VÉ CŨ
     if (modalShowtimeId && modalShowtimeId !== id) {
         resetSeatForNewShowtime();
     }
 
     modalShowtimeId = id;
-	showtimeBasePrice = Number(btn.dataset.ticketPrice);
-	updateTotal(); // tính lại tiền ngay khi đổi gi
+    showtimeBasePrice = Number(btn.dataset.ticketPrice);
+    updateTotal();
 
     document.querySelectorAll("#showtimeList button")
         .forEach(b => b.classList.remove("active"));
-
     btn.classList.add("active");
 
-    document.getElementById("seatModal").style.display = "flex";
+    const seatModal = document.getElementById("seatModal");
+    seatModal.style.display = "flex";
+    setTimeout(() => seatModal.classList.add("show"), 10);
+	seatModal.querySelector(".seat-modal").onclick = (e) => {
+	    e.stopPropagation();
+	};
     loadSeats();
 }
 
@@ -264,6 +284,7 @@ function buyTicketInModal() {
     .then(data => {
         if (!data.success) throw new Error();
         alert("🎉 Mua vé thành công");
+		resetBookingState();
         closeMovieModal();
     })
     .catch(() => {
@@ -289,77 +310,61 @@ function addToCartInModal() {
             + `&seatIds=${seatIds}`
     })
 	.then(() => {
-	    alert("🛒 Ghế đã được giữ trong đơn hàng");
-
-	    // reload ghế → ghế xám ngay
-	    loadSeats();
-
-	    // ẩn modal ghế
 	    document.getElementById("seatModal").style.display = "none";
-	});
 
+	    const tickets = selectedSeats.map(s => ({
+	        id: s.seatId,
+	        movie: document.getElementById("modalTitle").innerText,
+	        seat: s.seatLabel
+	    }));
+	    openOrderModal(tickets);
+		resetBookingState();
+	});
 }
 
 function loadSeats() {
   fetch(`${APP_CONTEXT}/seat?action=byShowtime&showtimeId=${modalShowtimeId}`)
     .then(r => r.json())
     .then(data => {
+        const map = document.getElementById("seatMap");
+        map.innerHTML = "";
+        let currentRow = "";
+        let rowDiv = null;
 
-      const map = document.getElementById("seatMap");
-      map.innerHTML = "";
+        data.forEach(seat => {
+            if (seat.seatRow !== currentRow) {
+                currentRow = seat.seatRow;
+                rowDiv = document.createElement("div");
+                rowDiv.className = "seat-row";
+                rowDiv.innerHTML = `<div class="row-label">${currentRow}</div>`;
+                map.appendChild(rowDiv);
+            }
 
-      let currentRow = "";
-      let rowDiv = null;
+            if (seat.seatCol === 6) {
+                const walk = document.createElement("div");
+                walk.className = "walkway";
+                rowDiv.appendChild(walk);
+            }
 
-      data.forEach(seat => {
+            let cls = "seat normal";
+            if (seat.status === "Booked" || seat.status === "HOLD") cls = "seat booked";
+            else if (seat.seatType === "VIP") cls = "seat vip";
+            else if (seat.seatType === "Double" || seat.seatType === "COUPLE") cls = "seat couple";
 
-        // tạo hàng mới
-        if (seat.seatRow !== currentRow) {
-          currentRow = seat.seatRow;
+            const btn = document.createElement("button");
+            btn.className = cls;
+            btn.innerText = seat.seatRow + seat.seatCol;
+            btn.dataset.seatLabel = seat.seatRow + seat.seatCol;
+            btn.dataset.seatId = seat.seatId;
+            btn.dataset.seatType = seat.seatType;
 
-          rowDiv = document.createElement("div");
-          rowDiv.className = "seat-row";
+            if (seat.status === "Booked" || seat.status === "HOLD") btn.disabled = true;
 
-          rowDiv.innerHTML = `
-            <div class="row-label">${currentRow}</div>
-          `;
-
-          map.appendChild(rowDiv);
-        }
-
-        /* ===== LỐI ĐI GIỮA (nếu rạp bạn có) =====
-           ví dụ sau ghế số 5 */
-        if (seat.seatCol === 6) {
-          const walk = document.createElement("div");
-          walk.className = "walkway";
-          rowDiv.appendChild(walk);
-        }
-
-		let cls = "seat normal";
-
-		if (seat.status === "Booked") cls = "seat booked";
-		else if (seat.status === "HOLD") cls = "seat hold";
-		else if (seat.seatType === "VIP") cls = "seat vip";
-		else if (seat.seatType === "DOUBLE") cls = "seat couple";
-
-        const btn = document.createElement("button");
-        btn.className = cls;
-        btn.innerText = seat.seatRow + seat.seatCol;
-		btn.dataset.seatLabel = seat.seatRow + seat.seatCol;
-        btn.dataset.seatId = seat.seatId;
-        btn.dataset.seatType = seat.seatType;
-
-		if (seat.status === "Booked" || seat.status === "HOLD") {
-		    btn.disabled = true;
-		}
-        btn.onclick = () => toggleSeat(btn);
-
-        rowDiv.appendChild(btn);
-      });
+            btn.onclick = () => toggleSeat(btn);
+            rowDiv.appendChild(btn);
+        });
     });
 }
-
-
 
 function toggleSeat(btn) {
     if (btn.classList.contains("booked")) return;
@@ -428,7 +433,6 @@ function confirmSeat() {
         return;
     }
 
-    // CHỈ HIỂN THỊ THÔNG TIN – CHƯA ĐẶT GHẾ
     const seatText = selectedSeats.map(s => s.seatLabel).join(", ");
     const totalText = document.getElementById("totalPrice").innerText;
 
@@ -436,7 +440,6 @@ function confirmSeat() {
     document.getElementById("selectedTotalText").innerText = totalText;
     document.getElementById("selectedTicketInfo").style.display = "block";
 
-    // Đóng modal ghế
     document.getElementById("seatModal").style.display = "none";
 }
 
@@ -461,7 +464,6 @@ function resetBookingState() {
     document.getElementById("seatMap").innerHTML = "";
     document.getElementById("totalPrice").innerText = "0 đ";
 
-    // ✅ Ẩn vé đã chọn
     document.getElementById("selectedTicketInfo").style.display = "none";
 }
 
@@ -479,18 +481,15 @@ function showBookingSuccess() {
 
 
 function resetSeatForNewShowtime() {
-    // reset ghế đã chọn
     selectedSeats = [];
 
     // reset UI
     document.getElementById("seatMap").innerHTML = "";
     document.getElementById("totalPrice").innerText = "0 đ";
 
-    // Ẩn vé đã chọn
     const info = document.getElementById("selectedTicketInfo");
     if (info) info.style.display = "none";
 
-    // HIỆN LẠI NÚT XÁC NHẬN
     const btn = document.querySelector(".confirm-btn");
     if (btn) btn.style.display = "inline-block";
 }
@@ -503,8 +502,7 @@ function openAddSeat(showtimeId) {
 
 function initHoldCountdown() {
 
-    const HOLD_TIME = 5 * 60 * 1000; // 5 phút
-
+    const HOLD_TIME = 5 * 60 * 1000;
     document.querySelectorAll(".hold-timer").forEach(timer => {
 
         const bookingTimeMs = Number(timer.dataset.bookingTime);
@@ -529,40 +527,10 @@ function initHoldCountdown() {
                 String(s).padStart(2, "0");
         }
 
-        update();                 // chạy ngay
+        update();                
         setInterval(update, 1000);
     });
 }
-
-function cancelHold(btn, ticketId) {
-    if (!confirm("Bạn có chắc muốn bỏ vé này?")) return;
-
-    fetch(APP_CONTEXT + "/order?action=cancelHold", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: "ticketId=" + ticketId
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) {
-            // ❌ XÓA NGAY KHỎI GIAO DIỆN
-            btn.closest(".order-item").remove();
-        } else {
-            alert("Không thể xóa vé");
-        }
-    });
-}
-
-
-window.closeOrderModal = function () {
-    const modal = document.getElementById("orderModal");
-    if (modal) {
-        modal.style.display = "none";
-    }
-};
-
 
 let selectedMovieId = null;
 let selectedShowtimeId = null;
@@ -573,3 +541,44 @@ let modalShowtimeId = null;
 let selectedSeats = [];
 
 let showtimeBasePrice = 0;
+
+function saveProfile() {
+    const form = document.getElementById('profileForm');
+    const fullName = form.fullName.value.trim();
+    const phone = form.phone.value.trim();
+    const password = form.password.value.trim();
+
+    const body = `action=updateProfile&fullName=${encodeURIComponent(fullName)}&phone=${encodeURIComponent(phone)}&password=${encodeURIComponent(password)}`;
+
+    fetch(`${window.APP_CONTEXT}/user`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: body
+    })
+    .then(res => res.json())
+    .then(data => {
+        const errorsDiv = document.getElementById('profileErrors');
+        errorsDiv.innerHTML = '';
+
+        if (data.success) {
+            errorsDiv.style.color = 'green';
+            errorsDiv.innerText = 'Cập nhật thành công!';
+            document.querySelector('.user-name').innerText = data.user.fullName;
+        } else {
+            errorsDiv.style.color = 'red';
+            if (data.errors) {
+                for (const key in data.errors) {
+                    errorsDiv.innerHTML += data.errors[key] + '<br>';
+                }
+            } else {
+                errorsDiv.innerText = 'Có lỗi xảy ra. Vui lòng thử lại.';
+            }
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Có lỗi xảy ra. Vui lòng thử lại.');
+    });
+}
