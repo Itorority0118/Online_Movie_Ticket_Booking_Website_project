@@ -30,6 +30,8 @@ a {
     z-index: 1000;
 }
 
+
+
 .logo-container {
     display: flex;
     align-items: center;
@@ -84,7 +86,25 @@ a {
     text-shadow: 0 0 8px rgba(255,0,0,0.6);
 }
 
-/* ===== USER STATUS ===== */
+.main-nav ul li a.active {
+    color: #ff0000;
+    font-weight: 700;
+    position: relative;
+}
+
+.main-nav ul li a.active::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -8px;
+    transform: translateX(-50%);
+    width: 40%;
+    height: 3px;
+    background-color: #ff0000;
+    border-radius: 2px;
+    box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+}
+
 .user-status {
     display: flex;
     align-items: center;

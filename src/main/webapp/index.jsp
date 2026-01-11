@@ -15,7 +15,7 @@
         </c:choose>
     </title>
     
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/index.css?v=101">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/index.css?v=102">
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/modal.css?v=13">
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/footer.css?v=1">
     <c:if test="${movieList == null}">

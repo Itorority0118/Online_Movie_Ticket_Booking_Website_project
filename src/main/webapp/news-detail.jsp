@@ -62,8 +62,22 @@
 </main>
 
 
-<!-- FOOTER -->
-<jsp:include page="/footer.jsp"/>
+<!-- FOOTER & MODAL -->
+<jsp:include page="order-success-modal.jsp"/>
+<jsp:include page="profile-modal.jsp"/>
+<jsp:include page="order-modal.jsp"/>
+<jsp:include page="movie-modal.jsp"/>
+<jsp:include page="member-payment-modal.jsp"/>
+<jsp:include page="footer.jsp"/>
+<script>
+    window.IS_LOGGED_IN = ${sessionScope.user != null};
+</script>
+<script>
+    window.APP_CONTEXT = "${pageContext.request.contextPath}";
+</script>
 
+<script src="<c:url value='/js/common.js?v=8'/>"></script>
+<script src="<c:url value='/js/member.js'/>"></script>
+<script src="<c:url value='/js/order-modal.js?v=10'/>"></script>
 </body>
 </html>

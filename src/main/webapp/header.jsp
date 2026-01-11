@@ -6,20 +6,37 @@
     <div class="logo-container">
         <img src="${pageContext.request.contextPath}/images/movies/action_blast.jpg" class="logo">
 		<a class="cinema-location" href="index.jsp">
-		    Beta Thái Nguyên
+		    T131GENG
 		</a>
 
     </div>
 
-    <nav class="main-nav">
-        <ul>
-            <li><a href="${pageContext.request.contextPath}/showtime">PHIM</a></li>
-            <li><a href="${pageContext.request.contextPath}/news">TIN MỚI VÀ ƯU ĐÃI</a></li>
-            <li><a href="${pageContext.request.contextPath}/member">THÀNH VIÊN</a></li>
-
-        </ul>
-    </nav>
-
+	<nav class="main-nav">
+	    <ul>
+	        <li>
+	            <a href="${pageContext.request.contextPath}/showtime"
+	               class="${pageContext.request.servletPath == '/showtime' ? 'active' : ''}">
+	                PHIM
+	            </a>
+	        </li>
+	
+	        <li>
+	            <a href="${pageContext.request.contextPath}/news"
+	               class="${pageContext.request.servletPath == '/news' ? 'active' : ''}">
+	                TIN MỚI VÀ ƯU ĐÃI
+	            </a>
+	        </li>
+	
+	        <li>
+	            <a href="${pageContext.request.contextPath}/member"
+	               class="${pageContext.request.servletPath == '/member' ? 'active' : ''}">
+	                THÀNH VIÊN
+	            </a>
+	        </li>
+	    </ul>
+	    
+	</nav>
+		
     <c:choose>
         <c:when test="${not empty sessionScope.user}">
             <div class="user-status">

@@ -1136,3 +1136,131 @@
 .ticket-actions .divider {
     color: rgba(255,255,255,0.4);
 }
+
+/* ================= ADMIN PROFILE MODAL ================= */
+.admin-profile-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(6px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 12000;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+
+.admin-profile-overlay.show {
+    display: flex;
+    opacity: 1;
+}
+
+/* ===== MODAL BOX ===== */
+.admin-profile-modal {
+    width: 420px;
+    max-width: 92vw;
+    background: linear-gradient(180deg, #0d1117, #0b1320);
+    border-radius: 18px;
+    padding: 24px 26px;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 30px 70px rgba(0,0,0,0.75);
+
+    transform: translateY(-10px) scale(0.95);
+    opacity: 0;
+    transition: transform 0.35s ease, opacity 0.35s ease;
+}
+
+.admin-profile-overlay.show .admin-profile-modal {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+/* ===== HEADER ===== */
+.admin-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.admin-profile-title {
+    flex: 1;
+}
+
+.admin-profile-title h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #00ff99;
+    margin: 0;
+}
+
+.admin-profile-title span {
+    font-size: 13px;
+    color: #ff6b6b;;
+}
+
+/* ===== AVATAR ===== */
+.admin-profile-avatar {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background-color: #ff6b6b;
+    color: #0b1320;
+    font-size: 26px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ===== CLOSE BUTTON ===== */
+.admin-profile-close {
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: #aaa;
+    padding: 4px;
+    transition: all 0.2s ease;
+}
+
+.admin-profile-close:hover {
+    color: #ff4d4f;
+    transform: scale(1.15);
+}
+
+/* ===== FORM ===== */
+#adminProfileForm {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+#adminProfileForm .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+#adminProfileForm label {
+    font-size: 13px;
+    color: #8b949e;
+}
+
+#adminProfileForm input {
+    background: #0b1320;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 11px 12px;
+    color: #f0f6f9;
+    font-size: 14px;
+    transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+#adminProfileForm input:focus {
+    outline: none;
+    border-color: #00ff99;
+    box-shadow: 0 0 10px rgba(0,255,153,0.35);
+}
