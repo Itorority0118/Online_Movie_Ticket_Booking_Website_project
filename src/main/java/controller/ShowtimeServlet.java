@@ -42,7 +42,7 @@ public class ShowtimeServlet extends HttpServlet {
 
         request.setAttribute("cityList", cinemaDAO.getDistinctCities());
         request.setAttribute("genreList", movieDAO.getDistinctGenres());
-        request.setAttribute("ageRatingList", movieDAO.getAgeRatingList());
+        //request.setAttribute("ageRatingList", movieDAO.getAgeRatingList());
 
         String cityParam = request.getParameter("city");
         String cinemaIdStr = request.getParameter("cinemaId");
