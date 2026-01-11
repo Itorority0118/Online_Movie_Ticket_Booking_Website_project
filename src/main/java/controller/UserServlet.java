@@ -212,8 +212,13 @@ public class UserServlet extends HttpServlet {
 
             Map<String, String> errors = new HashMap<>();
 
-            if (fullName == null || fullName.trim().length() < 3) {
-                errors.put("fullName", "Full name phải ít nhất 3 kí tự");
+            if (fullName == null || fullName.trim().isEmpty()) {
+                errors.put("fullName", "Họ và tên không được để trống");
+            } else {
+                fullName = fullName.trim();
+                if (fullName.length() < 3) {
+                    errors.put("fullName", "Họ và tên phải ít nhất 3 ký tự");
+                }
             }
 
             if (email == null || email.trim().isEmpty()) {

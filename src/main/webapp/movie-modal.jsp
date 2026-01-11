@@ -105,3 +105,19 @@
         </div>
     </div>
 </div>
+<jsp:include page="order-success-modal.jsp" />
+<script>
+window.buyTicketInModal = function () {
+    if (!selectedTickets || selectedTickets.length === 0) {
+        alert("Vui lòng chọn vé trước khi mua");
+        return;
+    }
+
+    closeSeatModal?.();
+    closeMovieModal?.();
+
+    setTimeout(() => {
+        checkoutOrder();
+    }, 300);
+};
+</script>

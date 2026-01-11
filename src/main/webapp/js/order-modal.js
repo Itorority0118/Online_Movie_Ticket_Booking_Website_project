@@ -219,22 +219,38 @@ window.checkoutOrder = function () {
 
     lockPayBtn(true);
 
+    const ticketIds = selectedTickets.map(t => t.id).join(",");
+
     fetch(`${APP_CONTEXT}/order`, {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-		body: `action=checkout&paymentMethod=Online`
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body:
+            `action=checkout` +
+            `&paymentMethod=Online` +
+            `&ticketIds=${encodeURIComponent(ticketIds)}`
     })
-    .then(r => r.json())
+    .then(async r => {
+        if (!r.ok) {
+            const text = await r.text();
+            throw new Error(text);
+        }
+        return r.json();
+    })
     .then(res => {
         if (res.success) {
-			closeOrderModal();      
-			openOrderSuccessModal(); 
+			lockPayBtn(false);
+			selectedTickets = [];
+            closeOrderModal();
+            openOrderSuccessModal();
         } else {
             alert("❌ Thanh toán thất bại");
             lockPayBtn(false);
         }
     })
-    .catch(() => {
+    .catch(err => {
+        console.error("CHECKOUT ERROR:", err);
         alert("❌ Lỗi hệ thống");
         lockPayBtn(false);
     });
