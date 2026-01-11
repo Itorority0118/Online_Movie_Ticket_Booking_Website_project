@@ -309,9 +309,11 @@ function addToCartInModal() {
             `showtimeId=${modalShowtimeId}`
             + `&seatIds=${seatIds}`
     })
+	.then(res => res.json())   
 	.then(() => {
+		
 	    document.getElementById("seatModal").style.display = "none";
-
+		closeMovieModal(); 
 	    const tickets = selectedSeats.map(s => ({
 	        id: s.seatId,
 	        movie: document.getElementById("modalTitle").innerText,

@@ -14,9 +14,9 @@
     <nav class="main-nav">
         <ul>
             <li><a href="${pageContext.request.contextPath}/showtime">PHIM</a></li>
-            <li><a href="#">TIN MỚI VÀ ƯU ĐÃI</a></li>
-            <li><a href="#">NHƯỢNG QUYỀN</a></li>
-            <li><a href="#">THÀNH VIÊN</a></li>
+            <li><a href="${pageContext.request.contextPath}/news">TIN MỚI VÀ ƯU ĐÃI</a></li>
+            <li><a href="${pageContext.request.contextPath}/member">THÀNH VIÊN</a></li>
+
         </ul>
     </nav>
 
