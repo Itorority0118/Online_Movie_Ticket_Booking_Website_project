@@ -3,7 +3,7 @@ package controller;
 import dao.RoomDAO;
 import dao.SeatDAO;
 import dao.ShowtimeDAO;
-
+import dao.TicketDAO;
 import model.Room;
 import model.Seat;
 import model.Showtime;
@@ -70,14 +70,33 @@ public class SeatServlet extends HttpServlet {
 			forward(request, response, isAjax, "seat-form.jsp");
 			break;
 
-		case "byShowtime":
-			int showtimeId = Integer.parseInt(request.getParameter("showtimeId"));
+		case "byShowtime": {
+		    int showtimeId = Integer.parseInt(request.getParameter("showtimeId"));
 
-			List<Seat> seats = seatDAO.getSeatsByShowtime(showtimeId);
+		    List<Seat> seats = seatDAO.getSeatsByShowtime(showtimeId);
+		    List<Map<String, Object>> result = new ArrayList<>();
 
-			response.setContentType("application/json;charset=UTF-8");
-			new Gson().toJson(seats, response.getWriter());
-			break;
+		    TicketDAO ticketDAO = new TicketDAO();
+
+		    for (Seat s : seats) {
+		        Map<String, Object> item = new HashMap<>();
+
+		        double price = ticketDAO.calculateTicketPrice(showtimeId, s.getSeatId());
+
+		        item.put("seatId", s.getSeatId());
+		        item.put("seatRow", s.getSeatRow());
+		        item.put("seatCol", s.getSeatCol());
+		        item.put("seatType", s.getSeatType());
+		        item.put("status", s.getStatus());
+		        item.put("price", price);
+
+		        result.add(item);
+		    }
+
+		    response.setContentType("application/json;charset=UTF-8");
+		    new Gson().toJson(result, response.getWriter());
+		    break;
+		}
 
 		case "list":
 		default:

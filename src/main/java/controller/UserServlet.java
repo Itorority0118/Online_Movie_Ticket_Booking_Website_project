@@ -86,8 +86,6 @@ public class UserServlet extends HttpServlet {
                     }
                 }
 
-
-
             case "logout":
                 request.getSession().invalidate();
                 response.sendRedirect(request.getContextPath() + "/login.jsp");

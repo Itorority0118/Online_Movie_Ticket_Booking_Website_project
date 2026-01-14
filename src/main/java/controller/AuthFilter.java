@@ -28,8 +28,8 @@ public class AuthFilter implements Filter {
         if (action != null && (
                 action.equals("login") ||
                 action.equals("register") ||
-                action.equals("forgot") ||
-                action.equals("updateProfile")
+                action.equals("forgot")
+                //|| action.equals("updateProfile")
         )) {
             chain.doFilter(request, response);
             return;
