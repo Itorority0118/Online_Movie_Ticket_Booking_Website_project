@@ -224,6 +224,7 @@ function loadShowtimesInModal() {
 
             data.forEach(s => {
                 const btn = document.createElement("button");
+				btn.classList.add("showtime-btn");
                 btn.dataset.showtimeId = s.showtimeId;
                 btn.dataset.ticketPrice = s.ticketPrice;
                 btn.innerText = formatTimeOnly(s.startTime);
@@ -247,19 +248,19 @@ function selectShowtimeInModal(id, btn) {
     modalShowtimeId = id;
     updateTotal();
 
-    document.querySelectorAll("#showtimeList button")
+    document.querySelectorAll("#showtimeList .showtime-btn")
         .forEach(b => b.classList.remove("active"));
+
     btn.classList.add("active");
 
     const seatModal = document.getElementById("seatModal");
     seatModal.style.display = "flex";
     setTimeout(() => seatModal.classList.add("show"), 10);
-	seatModal.querySelector(".seat-modal").onclick = (e) => {
-	    e.stopPropagation();
-	};
+
+    seatModal.querySelector(".seat-modal").onclick = e => e.stopPropagation();
+
     loadSeats();
 }
-
 
 function buyTicketInModal() {
     if (!modalShowtimeId || selectedSeats.length === 0) {

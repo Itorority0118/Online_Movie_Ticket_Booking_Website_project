@@ -95,7 +95,7 @@
 						    <p><b>Tổng tiền:</b> <span id="totalPrice">0</span> </p>
 						    
 						
-						    <div style="margin-top:15px">
+						    <div style="margin-top:15px" class="booking-actions">
 						        <button onclick="buyTicketInModal()">MUA VÉ</button>
 						        <button onclick="addToCartInModal()">THÊM VÀO ĐƠN HÀNG</button>
 						    </div>

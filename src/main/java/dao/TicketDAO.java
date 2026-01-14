@@ -10,6 +10,7 @@ import java.util.List;
 
 import model.Ticket;
 import utils.DBConnection;
+import utils.TicketMapper;
 
 public class TicketDAO {
 	public boolean confirmHoldTicketsByIds(
@@ -159,10 +160,7 @@ public class TicketDAO {
 	        ResultSet rs = ps.executeQuery();
 
 	        while (rs.next()) {
-	            Ticket t = new Ticket();
-	            t.setTicketId(rs.getInt("TicketId"));
-	            t.setPrice(rs.getDouble("Price"));
-	            list.add(t);
+	            list.add(TicketMapper.mapIdAndPrice(rs));
 	        }
 	    }
 	    return list;
@@ -451,15 +449,7 @@ public class TicketDAO {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                return new Ticket(
-                    rs.getInt("TicketId"),
-                    rs.getInt("UserID"),
-                    rs.getInt("ShowtimeId"),
-                    rs.getInt("SeatId"),
-                    rs.getDouble("Price"),
-                    rs.getString("BookingTime"),
-                    rs.getString("Status")
-                );
+                return TicketMapper.mapFull(rs);
             }
 
         } catch (Exception e) {
@@ -476,19 +466,9 @@ public class TicketDAO {
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
-            while (rs.next()) {
-                Ticket ticket = new Ticket(
-                    rs.getInt("TicketId"),
-                    rs.getInt("UserID"),
-                    rs.getInt("ShowtimeId"),
-                    rs.getInt("SeatId"),
-                    rs.getDouble("Price"),
-                    rs.getString("BookingTime"),
-                    rs.getString("Status")
-                );
-                list.add(ticket);
-            }
-
+        	while (rs.next()) {
+        	    list.add(TicketMapper.mapFull(rs));
+        	}
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -545,15 +525,7 @@ public class TicketDAO {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                list.add(new Ticket(
-                    rs.getInt("TicketId"),
-                    rs.getInt("UserID"),
-                    rs.getInt("ShowtimeId"),
-                    rs.getInt("SeatId"),
-                    rs.getDouble("Price"),
-                    rs.getString("BookingTime"),
-                    rs.getString("Status")
-                ));
+                list.add(TicketMapper.mapFull(rs));
             }
 
         } catch (Exception e) {
@@ -561,50 +533,6 @@ public class TicketDAO {
         }
 
         return list;
-    }
-
-    private double getShowtimeBasePrice(int showtimeId) {
-        String sql = "SELECT Price FROM Showtime WHERE ShowtimeId = ?";
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, showtimeId);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                return rs.getDouble("Price");
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-    
-    private double getSeatExtraPrice(int seatId) {
-        String sql = "SELECT SeatType FROM Seat WHERE SeatId = ?";
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, seatId);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                String type = rs.getString("SeatType");
-
-                return switch (type) {
-                    case "VIP" -> 20000;
-                    case "DOUBLE" -> 50000;
-                    default -> 0;
-                };
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
     }
     
     public int countSoldTickets() {

@@ -13,6 +13,7 @@ import model.Showtime;
 import model.Movie; // Phải import Movie
 import utils.DBConnection;
 import utils.MovieMapper; // Phải import MovieMapper
+import utils.ShowtimeMapper;
 
 public class ShowtimeDAO {
 
@@ -140,7 +141,7 @@ public class ShowtimeDAO {
 
         query.append("ORDER BY m.Title, s.StartTime");
 
-        System.out.println("DEBUG SQL = " + query); // 👈 GIỮ DÒNG NÀY
+        System.out.println("DEBUG SQL = " + query);
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(query.toString())) {
@@ -157,15 +158,7 @@ public class ShowtimeDAO {
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    Showtime showtime = new Showtime(
-                            rs.getInt("ShowtimeId"),
-                            rs.getInt("MovieId"),
-                            rs.getInt("RoomId"),
-                            rs.getString("StartTime"),
-                            rs.getString("EndTime"),
-                            rs.getDouble("TicketPrice")
-                    );
-
+                	Showtime showtime = ShowtimeMapper.mapFullShowtime(rs);
                     int movieId = showtime.getMovieId();
 
                     if (!movieMap.containsKey(movieId)) {
@@ -198,17 +191,9 @@ public class ShowtimeDAO {
             ps.setInt(1, roomId);
 
             try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    Showtime showtime = new Showtime(
-                        rs.getInt("ShowtimeId"),
-                        rs.getInt("MovieId"),
-                        rs.getInt("RoomId"),
-                        rs.getString("StartTime"),
-                        rs.getString("EndTime"),
-                        rs.getDouble("TicketPrice")
-                    );
-                    showtimes.add(showtime);
-                }
+            	while (rs.next()) {
+            	    showtimes.add(ShowtimeMapper.mapFullShowtime(rs));
+            	}
             }
 
         } catch (SQLException e) {
@@ -226,16 +211,9 @@ public class ShowtimeDAO {
             ps.setInt(1, showtimeId);
 
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return new Showtime(
-                        rs.getInt("ShowtimeId"),
-                        rs.getInt("MovieId"),
-                        rs.getInt("RoomId"),
-                        rs.getString("StartTime"),
-                        rs.getString("EndTime"),
-                        rs.getDouble("TicketPrice")
-                    );
-                }
+            	if (rs.next()) {
+            	    return ShowtimeMapper.mapFullShowtime(rs);
+            	}
             }
 
         } catch (SQLException e) {
@@ -285,14 +263,7 @@ public class ShowtimeDAO {
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                list.add(new Showtime(
-                    rs.getInt("ShowtimeId"),
-                    rs.getInt("MovieId"),
-                    rs.getInt("RoomId"),
-                    rs.getString("StartTime"),
-                    rs.getString("EndTime"),
-                    rs.getDouble("TicketPrice")
-                ));
+                list.add(ShowtimeMapper.mapFullShowtime(rs));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -345,14 +316,7 @@ public class ShowtimeDAO {
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                list.add(new Showtime(
-                    rs.getInt("ShowtimeId"),
-                    rs.getInt("MovieId"),
-                    rs.getInt("RoomId"),
-                    rs.getString("StartTime"),
-                    rs.getString("EndTime"),
-                    rs.getDouble("TicketPrice")
-                ));
+                list.add(ShowtimeMapper.mapFullShowtime(rs));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -380,14 +344,7 @@ public class ShowtimeDAO {
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                list.add(new Showtime(
-                    rs.getInt("ShowtimeId"),
-                    movieId,
-                    rs.getInt("RoomId"),
-                    rs.getString("StartTime"),
-                    rs.getString("EndTime"),
-                    rs.getDouble("TicketPrice")
-                ));
+                list.add(ShowtimeMapper.mapShowtimeWithMovieId(rs, movieId));
             }
         } catch (Exception e) {
             e.printStackTrace();
