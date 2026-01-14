@@ -173,7 +173,7 @@
     window.APP_CONTEXT = "${pageContext.request.contextPath}";
 </script>
 
-<script src="<c:url value='/js/common.js?v=8'/>"></script>
+<script src="<c:url value='/js/common.js?v=11'/>"></script>
 <script src="<c:url value='/js/member.js'/>"></script>
 <script src="<c:url value='/js/order-modal.js?v=11'/>"></script>
 

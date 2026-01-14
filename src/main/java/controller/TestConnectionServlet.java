@@ -34,7 +34,7 @@ public class TestConnectionServlet extends HttpServlet {
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery("SELECT TOP 5 * FROM Movie")) {
 
-            out.println("<p style='color:green;'>✅ Connection Successful!</p>");
+            out.println("<p style='color:green;'>Connection Successful!</p>");
             out.println("<table border='1' cellpadding='5'>");
             out.println("<tr><th>ID</th><th>Title</th><th>Genre</th></tr>");
             while (rs.next()) {

@@ -245,7 +245,6 @@ function selectShowtimeInModal(id, btn) {
     }
 
     modalShowtimeId = id;
-    showtimeBasePrice = Number(btn.dataset.ticketPrice);
     updateTotal();
 
     document.querySelectorAll("#showtimeList button")
@@ -358,7 +357,7 @@ function loadSeats() {
             btn.innerText = seat.seatRow + seat.seatCol;
             btn.dataset.seatLabel = seat.seatRow + seat.seatCol;
             btn.dataset.seatId = seat.seatId;
-            btn.dataset.seatType = seat.seatType;
+			btn.dataset.price = seat.price;
 
             if (seat.status === "Booked" || seat.status === "HOLD") btn.disabled = true;
 
@@ -372,8 +371,8 @@ function toggleSeat(btn) {
     if (btn.classList.contains("booked")) return;
 
     const seatId = btn.dataset.seatId;
-    const seatType = btn.dataset.seatType;
-    const seatLabel = btn.innerText; // A1, B5...
+    const seatLabel = btn.dataset.seatLabel;
+    const price = Number(btn.dataset.price);
 
     if (btn.classList.contains("selected")) {
         btn.classList.remove("selected");
@@ -382,8 +381,8 @@ function toggleSeat(btn) {
         btn.classList.add("selected");
         selectedSeats.push({
             seatId,
-            seatType,
-            seatLabel
+            seatLabel,
+            price
         });
     }
 
@@ -391,43 +390,13 @@ function toggleSeat(btn) {
 }
 
 function updateTotal() {
-    if (!showtimeBasePrice || selectedSeats.length === 0) {
-        document.getElementById("totalPrice").innerText = "0 đ";
-        return;
-    }
-
-    let total = 0;
-
-    selectedSeats.forEach(s => {
-        switch (s.seatType) {
-            case "VIP":
-                total += showtimeBasePrice + 30000;
-                break;
-            case "DOUBLE":
-                total += showtimeBasePrice + 50000;
-                break;
-            default:
-                total += showtimeBasePrice;
-        }
-    });
+    const total = selectedSeats.reduce(
+        (sum, s) => sum + s.price, 0
+    );
 
     document.getElementById("totalPrice").innerText =
         total.toLocaleString("vi-VN") + " đ";
 }
-
-
-
-function calculateTotal(basePrice) {
-    let total = 0;
-
-    selectedSeats.forEach(s => {
-        if (s.seatType === "VIP") total += basePrice * 1.5;
-        else total += basePrice;
-    });
-
-    return total;
-}
-
 
 function confirmSeat() {
     if (selectedSeats.length === 0) {
@@ -447,14 +416,22 @@ function confirmSeat() {
 
 
 function closeSeatModal() {
+    resetSeatSelection();
     document.getElementById("seatModal").style.display = "none";
 }
 
 function resetSeatSelection() {
     selectedSeats = [];
-    modalShowtimeId = null;
 
-    document.getElementById("seatMap").innerHTML = "";
+    document.querySelectorAll(".seat.selected").forEach(seat => {
+        seat.classList.remove("selected");
+    });
+
+    document.getElementById("totalPrice").innerText = "0 đ";
+
+    document.getElementById("selectedSeatsText").innerText = "";
+    document.getElementById("selectedTotalText").innerText = "";
+    document.getElementById("selectedTicketInfo").style.display = "none";
 }
 
 function resetBookingState() {
@@ -485,15 +462,15 @@ function showBookingSuccess() {
 function resetSeatForNewShowtime() {
     selectedSeats = [];
 
-    // reset UI
+    document.querySelectorAll(".seat.selected").forEach(seat => {
+        seat.classList.remove("selected");
+    });
+
     document.getElementById("seatMap").innerHTML = "";
     document.getElementById("totalPrice").innerText = "0 đ";
 
     const info = document.getElementById("selectedTicketInfo");
     if (info) info.style.display = "none";
-
-    const btn = document.querySelector(".confirm-btn");
-    if (btn) btn.style.display = "inline-block";
 }
 
 function openAddSeat(showtimeId) {
@@ -541,8 +518,6 @@ let modalMovieId = null;
 let modalShowtimeId = null;
 
 let selectedSeats = [];
-
-let showtimeBasePrice = 0;
 
 function saveProfile() {
     const form = document.getElementById('profileForm');
