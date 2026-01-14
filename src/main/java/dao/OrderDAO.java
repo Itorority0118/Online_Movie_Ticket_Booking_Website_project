@@ -9,6 +9,7 @@ import java.util.List;
 
 import model.OrderDTO;
 import utils.DBConnection;
+import utils.OrderMapper;
 
 public class OrderDAO {
 	
@@ -40,18 +41,7 @@ public class OrderDAO {
 	        ResultSet rs = ps.executeQuery();
 
 	        while (rs.next()) {
-	            OrderDTO o = new OrderDTO();
-	            o.setTicketId(rs.getInt("TicketId"));
-	            o.setMovieTitle(rs.getString("MovieTitle"));
-	            o.setShowtime(rs.getTimestamp("ShowTime"));
-	            o.setRoomName(rs.getString("RoomName"));
-	            o.setCinemaName(rs.getString("Name"));
-	            o.setPrice(rs.getInt("Price"));
-	            o.setBookingTime(rs.getTimestamp("BookingTime"));
-	            o.setStatus(rs.getString("Status"));
-	            String seat = rs.getString("SeatLabel");
-	            o.setSeatLabel(seat != null ? seat : "Chưa chọn ghế");
-	            list.add(o);
+	            list.add(OrderMapper.mapOrderDTO(rs));
 	        }
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -114,18 +104,7 @@ public class OrderDAO {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                OrderDTO o = new OrderDTO();
-                o.setTicketId(rs.getInt("TicketId"));
-                o.setMovieTitle(rs.getString("MovieTitle"));
-                o.setShowtime(rs.getTimestamp("ShowTime"));
-                o.setRoomName(rs.getString("RoomName"));
-                o.setCinemaName(rs.getString("CinemaName"));
-                o.setPrice(rs.getInt("Price"));
-                o.setBookingTime(rs.getTimestamp("BookingTime"));
-                o.setStatus(rs.getString("Status"));
-                String seat = rs.getString("SeatLabel");
-                o.setSeatLabel(seat != null ? seat : "Chưa chọn ghế");
-                list.add(o);
+                list.add(OrderMapper.mapOrderDTO(rs));
             }
         } catch (Exception e) {
             e.printStackTrace();

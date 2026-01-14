@@ -383,11 +383,12 @@
     transition: all 0.2s ease;
 }
 
-.booking-section button:first-child {
+.booking-actions button:first-child {
     background: #00ff99;
     color: #0b1320;
 }
-.booking-section button:first-child:hover {
+
+.booking-actions button:first-child:hover {
     background: #00cc77;
     transform: translateY(-1px);
 }
@@ -1263,4 +1264,32 @@
     outline: none;
     border-color: #00ff99;
     box-shadow: 0 0 10px rgba(0,255,153,0.35);
+}
+
+#showtimeList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.showtime-btn {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #30363d;
+    background: #ffffff;
+    color: #0b1320;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.showtime-btn.active {
+    background: #00ff99;
+    color: #0b1320;
+    border-color: #00ff99;
+}
+.showtime-btn:hover {
+    background: rgba(0,255,153,0.15);
+    border-color: #00ff99;
+    transform: translateY(-1px);
 }

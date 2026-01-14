@@ -5,6 +5,7 @@ import java.util.*;
 
 import model.Payment;
 import utils.DBConnection;
+import utils.PaymentMapper;
 
 public class PaymentDAO {
 	
@@ -50,7 +51,7 @@ public class PaymentDAO {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return mapPayment(rs);
+            	return PaymentMapper.mapPayment(rs);
             }
 
         } catch (SQLException e) {
@@ -69,7 +70,7 @@ public class PaymentDAO {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                payments.add(mapPayment(rs));
+                payments.add(PaymentMapper.mapPayment(rs));
             }
 
         } catch (SQLException e) {
@@ -114,18 +115,6 @@ public class PaymentDAO {
         }
         return 0;
     }
-
-    private Payment mapPayment(ResultSet rs) throws SQLException {
-
-        Payment p = new Payment();
-        p.setPaymentId(rs.getInt("PaymentId"));
-        p.setTicketId(rs.getInt("TicketId"));
-        p.setPaymentMethod(rs.getString("PaymentMethod"));
-        p.setAmount(rs.getBigDecimal("Amount"));
-        p.setPaymentDate(rs.getTimestamp("PaymentDate"));
-        p.setStatus(rs.getString("Status"));
-        return p;
-    }
     
     public List<Payment> filterPayments(
             Integer ticketId, String status, String method) {
@@ -154,7 +143,7 @@ public class PaymentDAO {
                 ps.setString(idx++, "%" + method + "%");
 
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) list.add(mapPayment(rs));
+            while (rs.next()) list.add(PaymentMapper.mapPayment(rs));
 
         } catch (SQLException e) {
             e.printStackTrace();

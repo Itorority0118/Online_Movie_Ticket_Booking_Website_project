@@ -8,7 +8,6 @@ import javax.mail.*;
 import javax.mail.internet.*;
 
 import model.OrderDTO;
-import model.Ticket;
 
 public class EmailUtil {
 

@@ -3,6 +3,7 @@ package dao;
 import model.Seat;
 
 import utils.DBConnection;
+import utils.SeatMapper;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class SeatDAO {
 			ps.setInt(1, seatId);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
-				return mapSeat(rs);
+			    return SeatMapper.mapFullSeat(rs);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -38,7 +39,7 @@ public class SeatDAO {
 			ps.setInt(1, roomId);
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
-				list.add(mapSeat(rs));
+			    list.add(SeatMapper.mapFullSeat(rs));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -77,7 +78,7 @@ public class SeatDAO {
 
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
-				list.add(mapSeat(rs));
+			    list.add(SeatMapper.mapFullSeat(rs));
 			}
 
 		} catch (SQLException e) {
@@ -149,11 +150,6 @@ public class SeatDAO {
 		}
 	}
 
-	private Seat mapSeat(ResultSet rs) throws SQLException {
-		return new Seat(rs.getInt("SeatId"), rs.getInt("RoomId"), rs.getString("SeatNumber"), rs.getString("SeatRow"),
-				rs.getInt("SeatCol"), rs.getString("SeatType"), rs.getString("Status"));
-	}
-
 	public List<Seat> getSeatsByShowtime(int showtimeId) {
 		List<Seat> list = new ArrayList<>();
 
@@ -183,18 +179,11 @@ public class SeatDAO {
 			ResultSet rs = ps.executeQuery();
 
 			while (rs.next()) {
-				Seat seat = new Seat();
-				seat.setSeatId(rs.getInt("SeatId"));
-				seat.setSeatRow(rs.getString("SeatRow"));
-				seat.setSeatCol(rs.getInt("SeatCol"));
-				seat.setSeatType(rs.getString("SeatType"));
-				seat.setStatus(rs.getString("Status"));
-				list.add(seat);
+			    list.add(SeatMapper.mapSeatForShowtime(rs));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return list;
 	}
-
 }
